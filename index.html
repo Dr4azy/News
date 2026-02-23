@@ -3,66 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Sans CNews v33</title>
+    <title>News Sans CNews v34</title>
     <style>
         /* --- SYSTÈME DE THÈMES --- */
-        :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --success: #2e7d32; }
+        :root { --bg: #ffffff; --card: #ffffff; --accent: #2563eb; --text: #000000; --meta: #555555; --border: #eeeeee; --success: #10b981; }
         
-        /* THÈMES SOMBRES */
-        body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; --success: #1b5e20; }
-        body.theme-matrix  { --bg: #000000; --card: #001100; --accent: #00ff41; --text: #00ff41; --meta: #008f11; --border: #003b00; --success: #00ff41; }
-        body.theme-dracula { --bg: #282a36; --card: #44475a; --accent: #bd93f9; --text: #f8f8f2; --meta: #6272a4; --border: #44475a; --success: #50fa7b; }
-        body.theme-ocean   { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f1f5f9; --meta: #94a3b8; --border: #334155; --success: #10b981; }
+        /* 10 THÈMES CLAIRS (VRAIMENT CLAIRS) */
+        body.theme-neige     { --bg: #ffffff; --card: #ffffff; --accent: #000000; --text: #000000; --meta: #666666; --border: #ebebeb; }
+        body.theme-azur      { --bg: #f0f9ff; --card: #ffffff; --accent: #0077cc; --text: #001122; --meta: #446688; --border: #d0e8f8; }
+        body.theme-journal   { --bg: #fdfaf0; --card: #f9f4e8; --accent: #800000; --text: #1a1a1a; --meta: #5a5a5a; --border: #e2d7bf; }
+        body.theme-menthe    { --bg: #f0fdf4; --card: #ffffff; --accent: #15803d; --text: #064e3b; --meta: #166534; --border: #bbf7d0; }
+        body.theme-lavande   { --bg: #f5f3ff; --card: #ffffff; --accent: #6d28d9; --text: #2e1065; --meta: #5b21b6; --border: #ddd6fe; }
+        body.theme-rose      { --bg: #fff1f2; --card: #ffffff; --accent: #be123c; --text: #4c0519; --meta: #9f1239; --border: #fecdd3; }
+        body.theme-sable     { --bg: #fafaf9; --card: #ffffff; --accent: #a16207; --text: #44403c; --meta: #78716c; --border: #e7e5e4; }
+        body.theme-citron    { --bg: #fefce8; --card: #ffffff; --accent: #854d0e; --text: #422006; --meta: #713f12; --border: #fef08a; }
+        body.theme-nuage     { --bg: #f8fafc; --card: #ffffff; --accent: #334155; --text: #0f172a; --meta: #475569; --border: #e2e8f0; }
+        body.theme-nordic    { --bg: #f3f4f6; --card: #ffffff; --accent: #4c566a; --text: #2e3440; --meta: #434c5e; --border: #d8dee9; }
 
-        /* 10 THÈMES CLAIRS (Fond blanc/clair, Écriture sombre) */
-        body.theme-clair     { --bg: #ffffff; --card: #ffffff; --accent: #2563eb; --text: #000000; --meta: #4b5563; --border: #e5e7eb; --success: #10b981; }
-        body.theme-papier    { --bg: #fdfdfd; --card: #ffffff; --accent: #333333; --text: #111111; --meta: #666666; --border: #d1d5db; --success: #059669; }
-        body.theme-journal   { --bg: #fdfaf0; --card: #f9f4e8; --accent: #7a1a1a; --text: #1a1a1a; --meta: #5a5a5a; --border: #e2d7bf; --success: #1e5631; }
-        body.theme-nordic    { --bg: #f3f4f6; --card: #ffffff; --accent: #5e81ac; --text: #2e3440; --meta: #4c566a; --border: #d8dee9; --success: #88c0d0; }
-        body.theme-menthe    { --bg: #f0fdf4; --card: #ffffff; --accent: #16a34a; --text: #064e3b; --meta: #15803d; --border: #bbf7d0; --success: #16a34a; }
-        body.theme-lavande   { --bg: #f5f3ff; --card: #ffffff; --accent: #7c3aed; --text: #2e1065; --meta: #6d28d9; --border: #ddd6fe; --success: #7c3aed; }
-        body.theme-rose      { --bg: #fff1f2; --card: #ffffff; --accent: #e11d48; --text: #4c0519; --meta: #be123c; --border: #fecdd3; --success: #e11d48; }
-        body.theme-sable     { --bg: #fafaf9; --card: #ffffff; --accent: #d97706; --text: #44403c; --meta: #78716c; --border: #e7e5e4; --success: #b45309; }
-        body.theme-azur      { --bg: #f0f9ff; --card: #ffffff; --accent: #0ea5e9; --text: #0c4a6e; --meta: #0369a1; --border: #bae6fd; --success: #0ea5e9; }
-        body.theme-citron    { --bg: #fefce8; --card: #ffffff; --accent: #ca8a04; --text: #422006; --meta: #854d0e; --border: #fef08a; --success: #ca8a04; }
+        /* THÈMES SOMBRES (CONSERVÉS DE LA V30) */
+        body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #a855f7; --text: #dddddd; --meta: #888888; --border: #222222; }
+        body.theme-cyber   { --bg: #000000; --card: #000000; --accent: #ffd700; --text: #ffd700; --meta: #aa8800; --border: #ffd700; }
 
-        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: 0.3s; }
-        header { background: rgba(0,0,0,0.05); padding: 10px; text-align: center; border-bottom: 1px solid var(--border); }
-        .sticky-controls { position: sticky; top: 0; z-index: 1000; background: var(--bg); border-bottom: 2px solid var(--accent); }
-        .controls { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
-        .row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; align-items: center; }
-        input, select, button { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.9rem; }
-
-        #grid { padding: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
-        .card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid var(--border); cursor: pointer; }
-        .card-content { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; }
-        .card-title { font-weight: bold; font-size: 1.05rem; margin-bottom: 8px; line-height: 1.3; color: var(--text); text-decoration: none; }
+        body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); transition: 0.2s; }
         
-        .read-btn { background: var(--accent); color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: auto; cursor: pointer; }
-        /* Pour les accents clairs/jaunes, on met le texte du bouton en noir */
-        body.theme-citron .read-btn, body.theme-cyber .read-btn, body.theme-sable .read-btn { color: #000; }
+        /* Correction Header et Sticky */
+        header { background: var(--bg); padding: 15px; text-align: center; border-bottom: 1px solid var(--border); }
+        .sticky-controls { position: sticky; top: 0; z-index: 1000; background: var(--bg); border-bottom: 2px solid var(--accent); padding: 10px; }
+        
+        .controls { display: flex; flex-direction: column; gap: 8px; max-width: 1200px; margin: 0 auto; }
+        .row { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+        
+        input, select, button { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.95rem; }
+        
+        /* Grille d'articles */
+        #grid { padding: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .card img { width: 100%; height: 190px; object-fit: cover; }
+        .card-content { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
+        .card-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 10px; line-height: 1.3; color: var(--text); text-decoration: none; }
+        
+        .read-btn { background: var(--accent); color: #ffffff !important; border: none; padding: 12px; border-radius: 8px; font-weight: bold; margin-top: auto; cursor: pointer; }
+        body.theme-cyber .read-btn { color: #000000 !important; }
 
-        .save-btn { background: transparent; color: var(--meta); border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-top: 6px; cursor: pointer; }
+        .save-btn { background: transparent; color: var(--meta); border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-top: 8px; cursor: pointer; font-size: 0.8rem; }
         .save-btn.saved { background: var(--success) !important; color: white !important; border-color: var(--success); }
 
-        .full-modal { display: none; position: fixed; inset: 0; z-index: 4000; overflow-y: auto; background: var(--bg); }
-        .modal-header { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--bg); border-bottom: 1px solid var(--border); z-index: 10; }
-        .modal-container { max-width: 800px; margin: 0 auto; padding: 20px; }
-
-        .option-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
-        .source-item { padding: 15px 0; border-bottom: 1px solid var(--border); }
-        .source-grid { display: flex; gap: 5px; margin-bottom: 5px; align-items: center; }
-        .source-grid input { flex: 1; min-width: 0; padding: 5px; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; }
-        .source-url-input { width: 100%; font-size: 0.75rem; background: rgba(0,0,0,0.05); border: 1px solid var(--border); padding: 5px; color: var(--meta); border-radius: 4px; box-sizing: border-box; }
+        /* Modales */
+        .full-modal { display: none; position: fixed; inset: 0; z-index: 4000; background: var(--bg); overflow-y: auto; }
+        .modal-header { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--bg); border-bottom: 1px solid var(--border); }
+        .modal-container { max-width: 750px; margin: 0 auto; padding: 20px; }
         
-        .pin-btn { min-width: 40px; background: var(--border); color: var(--text); border: none; }
+        .option-box { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 20px; }
+        .source-item { padding: 12px 0; border-bottom: 1px solid var(--border); }
+        
+        .pin-btn { background: var(--border); color: var(--text); padding: 5px 10px; border-radius: 5px; cursor: pointer; }
         .pin-btn.pinned { background: var(--accent); color: white; }
-        .del-btn { min-width: 40px; background: #ef4444; color: white; border: none; }
 
-        .rss-help { background: rgba(0,0,0,0.03); border: 1px dashed var(--accent); padding: 10px; font-size: 0.8rem; border-radius: 8px; margin-bottom: 15px; line-height: 1.4; }
-        .spin { animation: rotation 1s infinite linear; }
-        @keyframes rotation { from { transform: rotate(0deg); } to { transform: rotate(359deg); } }
+        /* Boutons Catégories */
+        .btn-cat { white-space: nowrap; padding: 8px 15px; cursor: pointer; }
+        .btn-cat.active { background: var(--accent); color: white; border-color: var(--accent); }
     </style>
 </head>
 <body id="bodyTag">
@@ -70,57 +69,39 @@
 <div id="readerModal" class="full-modal">
     <div class="modal-header">
         <span id="readerSource" style="font-weight: bold;">Article</span>
-        <button onclick="closeReader()" style="background:var(--accent); color:white; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;">✕ FERMER</button>
+        <button onclick="closeReader()" style="background:var(--accent); color:white; border:none; padding:8px 15px; border-radius:20px;">FERMER</button>
     </div>
     <div class="modal-container" id="readerView"></div>
 </div>
 
 <div id="sourceModal" class="full-modal">
     <div class="modal-header">
-        <span style="font-weight: bold;">Réglages</span>
-        <button onclick="document.getElementById('sourceModal').style.display='none'" style="background:var(--accent); color:white; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;">✕ RETOUR</button>
+        <span style="font-weight: bold;">Configuration</span>
+        <button onclick="document.getElementById('sourceModal').style.display='none'" style="background:var(--accent); color:white; border:none; padding:8px 15px; border-radius:20px;">RETOUR</button>
     </div>
     <div class="modal-container">
         <div class="option-box">
-            <h3>🎨 Palette</h3>
+            <h3>🎨 Choisir un thème</h3>
             <select id="themeSelect" onchange="changeTheme(this.value)" style="width: 100%;">
-                <optgroup label="Thèmes Clairs">
-                    <option value="clair">Clair Pur</option>
-                    <option value="papier">Papier Blanc</option>
-                    <option value="journal">Journal Ancien</option>
-                    <option value="nordic">Nordique</option>
-                    <option value="menthe">Menthe</option>
-                    <option value="lavande">Lavande</option>
-                    <option value="rose">Rose</option>
-                    <option value="sable">Sable</option>
-                    <option value="azur">Azur</option>
-                    <option value="citron">Citron</option>
+                <optgroup label="CLARTÉ MAXIMALE">
+                    <option value="neige">Neige (Noir sur Blanc)</option>
+                    <option value="nuage">Nuage (Gris Bleu sur Blanc)</option>
+                    <option value="azur">Azur (Bleu sur Blanc)</option>
+                    <option value="journal">Journal (Papier Crème)</option>
+                    <option value="menthe">Menthe (Vert sur Blanc)</option>
+                    <option value="lavande">Lavande (Violet sur Blanc)</option>
+                    <option value="rose">Rose (Rouge sur Blanc)</option>
+                    <option value="sable">Sable (Brun sur Blanc)</option>
+                    <option value="citron">Citron (Jaune sur Blanc)</option>
+                    <option value="nordic">Nordic (Gris sur Blanc)</option>
                 </optgroup>
-                <optgroup label="Thèmes Sombres">
-                    <option value="cyber">Cyber</option>
-                    <option value="night">Nuit</option>
-                    <option value="matrix">Matrix</option>
-                    <option value="dracula">Dracula</option>
-                    <option value="ocean">Océan</option>
+                <optgroup label="SOMBRE">
+                    <option value="night">Nuit profonde</option>
+                    <option value="cyber">Cyberpunk</option>
                 </optgroup>
             </select>
         </div>
-
-        <div class="option-box">
-            <h3>➕ Ajouter une source</h3>
-            <div class="rss-help">
-                Cherchez "Flux RSS [Site]" sur Google. Copiez le lien .xml.
-            </div>
-            <input type="text" id="newName" placeholder="Nom" style="width:95%; margin-bottom:5px;">
-            <input type="text" id="newUrl" placeholder="URL RSS" style="width:95%; margin-bottom:5px;">
-            <input type="text" id="newCat" placeholder="Catégorie" style="width:95%; margin-bottom:10px;">
-            <button onclick="addSource()" style="width:100%; background:var(--accent); color:white; font-weight:bold;">VALIDER</button>
-        </div>
-
-        <div class="option-box">
-            <h3>📡 Mes sources</h3>
-            <div id="sourceList"></div>
-        </div>
+        <div class="option-box" id="sourceList"></div>
     </div>
 </div>
 
@@ -129,14 +110,14 @@
 <div class="sticky-controls">
     <div class="controls">
         <div class="row">
-            <input type="text" id="search" style="flex-grow:1" placeholder="🔍 Chercher...">
-            <button id="refreshBtn" onclick="fetchAll()">🔄</button>
+            <input type="text" id="search" style="flex-grow:1" placeholder="Chercher un article...">
+            <button onclick="fetchAll()">🔄</button>
             <button onclick="document.getElementById('sourceModal').style.display='block'">⚙️</button>
         </div>
         <div id="catBar" class="row"></div>
         <div class="row">
-            <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Sources</option></select>
-            <button id="vaultBtn" onclick="toggleVault()" style="background:var(--card); min-width: 80px;">💾 Coffre</button>
+            <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Toutes les sources</option></select>
+            <button id="vaultBtn" onclick="toggleVault()">💾 COFFRE</button>
         </div>
     </div>
 </div>
@@ -144,25 +125,22 @@
 <div id="grid"></div>
 
 <script>
-const defaultSources = [
+let sources = JSON.parse(localStorage.getItem('nsc_sources')) || [
     { name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml", cat: "Info", pinned: true },
     { name: "NASA", url: "https://www.nasa.gov/rss/dyn/breaking_news.rss", cat: "Espace", pinned: false }
 ];
-
-let sources = JSON.parse(localStorage.getItem('nsc_sources')) || defaultSources;
 let vault = JSON.parse(localStorage.getItem('nsc_vault')) || [];
 let allArticles = [];
 let isVaultView = false;
 let currentCat = "Tous";
 
 function changeTheme(theme) {
-    document.getElementById('bodyTag').className = (theme === 'cyber') ? "" : "theme-" + theme;
+    document.getElementById('bodyTag').className = (theme === 'neige') ? "" : "theme-" + theme;
     localStorage.setItem('nsc_theme', theme);
 }
 
 async function fetchAll() {
     if(isVaultView) return;
-    document.getElementById('refreshBtn').classList.add('spin');
     let sourceBundles = {};
     
     await Promise.all(sources.map(async s => {
@@ -176,11 +154,7 @@ async function fetchAll() {
                         const m = (item.content || item.description).match(/<img[^>]+src="([^">]+)"/);
                         if(m) img = m[1];
                     }
-                    return {
-                        id: item.guid || item.link, title: item.title, link: item.link,
-                        img: img, source: s.name, category: s.cat, pinned: s.pinned,
-                        date: item.pubDate, content: item.content || item.description
-                    };
+                    return { id: item.guid || item.link, title: item.title, link: item.link, img: img, source: s.name, category: s.cat, date: item.pubDate, content: item.content || item.description };
                 });
             }
         } catch(e) {}
@@ -188,12 +162,12 @@ async function fetchAll() {
 
     let topPinned = [];
     let restOfNews = [];
-    let pinnedSourceNames = sources.filter(s => s.pinned).map(s => s.name);
+    let pinnedNames = sources.filter(s => s.pinned).map(s => s.name);
 
-    Object.keys(sourceBundles).forEach(sourceName => {
-        let bundle = sourceBundles[sourceName];
-        if (pinnedSourceNames.includes(sourceName) && bundle.length > 0) {
-            topPinned.push({...bundle[0], isTop: true}); 
+    Object.keys(sourceBundles).forEach(name => {
+        let bundle = sourceBundles[name];
+        if (pinnedNames.includes(name) && bundle.length > 0) {
+            topPinned.push({...bundle[0], isTop: true});
             restOfNews.push(...bundle.slice(1));
         } else {
             restOfNews.push(...bundle);
@@ -202,7 +176,6 @@ async function fetchAll() {
 
     restOfNews.sort((a,b) => new Date(b.date) - new Date(a.date));
     allArticles = [...topPinned, ...restOfNews];
-    document.getElementById('refreshBtn').classList.remove('spin');
     updateUI(); render();
 }
 
@@ -212,101 +185,60 @@ function render() {
     const sourceF = document.getElementById('sourceSelect').value;
     let list = isVaultView ? vault : allArticles;
 
-    let filtered = list.filter(a => 
-        a.title.toLowerCase().includes(search) && 
-        (currentCat === "Tous" || a.category === currentCat) &&
-        (sourceF === "Tous" || a.source === sourceF)
-    );
-
-    grid.innerHTML = filtered.map(a => {
+    grid.innerHTML = list.filter(a => 
+        a.title.toLowerCase().includes(search) && (currentCat === "Tous" || a.category === currentCat) && (sourceF === "Tous" || a.source === sourceF)
+    ).map(a => {
         const inVault = vault.some(v => v.id === a.id);
-        const isUne = !isVaultView && a.isTop;
         return `
-        <div class="card" style="${isUne ? 'border: 2px solid var(--accent)' : ''}">
-            <a href="${a.link}" target="_blank"><img src="${a.img || 'https://via.placeholder.com/400x200/cccccc/666666?text='+a.source}"></a>
+        <div class="card" style="${a.isTop ? 'border: 2px solid var(--accent)' : ''}">
+            <img src="${a.img || 'https://via.placeholder.com/400x200?text='+a.source}">
             <div class="card-content">
-                <a href="${a.link}" target="_blank" class="card-title">${isUne ? '📌 ':''}${a.title}</a>
-                <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">${a.source} • ${new Date(a.date).toLocaleDateString()}</div>
+                <a href="${a.link}" target="_blank" class="card-title">${a.isTop ? '📌 ':''}${a.title}</a>
+                <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">${a.source}</div>
                 <button class="read-btn" onclick="openReader('${a.id}')">LIRE L'ARTICLE</button>
-                <button class="save-btn ${inVault?'saved':''}" onclick="toggleSave('${a.id}')">
-                    ${inVault ? '💾 SAUVEGARDÉ' : '💾 SAUVEGARDER'}
-                </button>
+                <button class="save-btn ${inVault?'saved':''}" onclick="toggleSave('${a.id}')">${inVault?'SAUVEGARDÉ':'SAUVEGARDER'}</button>
             </div>
-        </div>
-    `}).join('');
+        </div>`
+    }).join('');
 }
 
 function openReader(id) {
     const art = [...allArticles, ...vault].find(a => a.id === id);
     if(!art) return;
     document.getElementById('readerSource').innerText = art.source;
-    document.getElementById('readerView').innerHTML = `
-        <h1 style="font-family:sans-serif; margin-top:0;">${art.title}</h1>
-        <div style="opacity:0.6; margin-bottom:20px; font-size:0.9rem;">${new Date(art.date).toLocaleString()}</div>
-        <div style="line-height:1.7; font-family:serif; font-size:1.2rem;">${art.content}</div>
-        <hr style="border:0; border-top:1px solid var(--border); margin:30px 0;">
-        <center><a href="${art.link}" target="_blank" style="color:var(--accent); font-weight:bold; text-decoration:none;">LIRE L'ORIGINAL</a></center>
-    `;
+    document.getElementById('readerView').innerHTML = `<h1 style="margin-top:0;">${art.title}</h1><div style="line-height:1.6; font-size:1.1rem;">${art.content}</div>`;
     document.getElementById('readerModal').style.display = 'block';
-    document.body.style.overflow = 'hidden';
 }
 
-function closeReader() { document.getElementById('readerModal').style.display = 'none'; document.body.style.overflow = 'auto'; }
+function closeReader() { document.getElementById('readerModal').style.display = 'none'; }
 
 function toggleSave(id) {
     const idx = vault.findIndex(v => v.id === id);
     if(idx > -1) vault.splice(idx, 1);
-    else {
-        const art = allArticles.find(a => a.id === id);
-        if(art) vault.push({...art});
-    }
+    else vault.push({...allArticles.find(a => a.id === id)});
     localStorage.setItem('nsc_vault', JSON.stringify(vault));
     render();
 }
 
-function addSource() {
-    const n = document.getElementById('newName').value, u = document.getElementById('newUrl').value, c = document.getElementById('newCat').value;
-    if(n && u) {
-        sources.push({name:n, url:u, cat:c||"Info", pinned: false});
-        saveS(); 
-        document.getElementById('newName').value = ""; document.getElementById('newUrl').value = "";
-        updateUI(); fetchAll();
-    }
-}
-
 function updateUI() {
     const cats = ["Tous", ...new Set(sources.map(s => s.cat))];
-    document.getElementById('catBar').innerHTML = cats.map(c => 
-        `<button class="btn-cat ${currentCat === c ? 'active' : ''}" onclick="setCat('${c}')">${c}</button>`
-    ).join('');
-    
+    document.getElementById('catBar').innerHTML = cats.map(c => `<button class="btn-cat ${currentCat===c?'active':''}" onclick="currentCat='${c}'; updateUI(); render();">${c}</button>`).join('');
     const sel = document.getElementById('sourceSelect');
-    sel.innerHTML = '<option value="Tous">Toutes les sources</option>';
-    sources.forEach(s => sel.innerHTML += `<option value="${s.name}">${s.name}</option>`);
-
-    document.getElementById('sourceList').innerHTML = sources.map((s, i) => `
+    sel.innerHTML = '<option value="Tous">Toutes les sources</option>' + sources.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
+    document.getElementById('sourceList').innerHTML = '<h3>Mes sources</h3>' + sources.map((s, i) => `
         <div class="source-item">
-            <div class="source-grid">
-                <input type="text" value="${s.name}" onchange="sources[${i}].name=this.value; saveS();">
-                <input type="text" value="${s.cat}" onchange="sources[${i}].cat=this.value; saveS();">
-                <button class="pin-btn ${s.pinned?'pinned':''}" onclick="sources[${i}].pinned=!sources[${i}].pinned; saveS(); updateUI(); fetchAll();">${s.pinned?'📌':'📍'}</button>
-                <button class="del-btn" onclick="sources.splice(${i},1); saveS(); updateUI(); fetchAll();">X</button>
-            </div>
-            <input type="text" value="${s.url}" onchange="sources[${i}].url=this.value; saveS();" class="source-url-input">
-        </div>
-    `).join('');
+            ${s.name} <button class="pin-btn ${s.pinned?'pinned':''}" onclick="sources[${i}].pinned=!sources[s.pinned]; localStorage.setItem('nsc_sources', JSON.stringify(sources)); fetchAll();">${s.pinned?'📌':'📍'}</button>
+        </div>`).join('');
 }
 
-function saveS() { localStorage.setItem('nsc_sources', JSON.stringify(sources)); }
-function setCat(c) { currentCat = c; updateUI(); render(); }
-function toggleVault() { isVaultView = !isVaultView; document.getElementById('vaultBtn').innerHTML = isVaultView ? "🌐 FLUX" : "💾 COFFRE"; render(); }
+function toggleVault() { isVaultView = !isVaultView; document.getElementById('vaultBtn').innerText = isVaultView ? "FLUX" : "COFFRE"; render(); }
 
 const savedT = localStorage.getItem('nsc_theme');
-if(savedT) { document.getElementById('themeSelect').value = savedT; changeTheme(savedT); }
-
+if(savedT) changeTheme(savedT);
 document.getElementById('search').addEventListener('input', render);
 document.getElementById('sourceSelect').addEventListener('change', render);
 fetchAll();
 </script>
 </body>
-</html>
+    </html>
+                                                                      
