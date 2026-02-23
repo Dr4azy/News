@@ -2,12 +2,21 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Les News sans Cnews</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="News">
+    
+    <link rel="apple-touch-icon" href="https://i.ibb.co/v48S06m7/news-icon.png">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/v48S06m7/news-icon.png">
+    
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Les%20News%20sans%20Cnews%22,%22short_name%22:%22News%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23121212%22,%22theme_color%22:%22%23000000%22,%22icons%22:[{%22src%22:%22https://i.ibb.co/v48S06m7/news-icon.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}">
+
     <style>
-        /* --- SYSTÈME DE THÈMES --- */
+        /* --- SYSTÈME DE THÈMES (Identique V41) --- */
         :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --success: #2e7d32; --read-bg: var(--accent); --read-txt: #000; }
-        
         body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; --read-bg: #8e44ad; --read-txt: #fff; }
         body.theme-matrix  { --bg: #000000; --card: #001100; --accent: #00ff41; --text: #00ff41; --meta: #008f11; --border: #003b00; --read-bg: #00ff41; --read-txt: #000; }
         body.theme-dracula { --bg: #282a36; --card: #44475a; --accent: #bd93f9; --text: #f8f8f2; --meta: #6272a4; --border: #44475a; --read-bg: #bd93f9; --read-txt: #000; }
@@ -21,13 +30,13 @@
         body.theme-copper  { --bg: #1a120b; --card: #2d1e12; --accent: #d97706; --text: #fef3c7; --meta: #92400e; --border: #452e1a; --read-bg: #d97706; --read-txt: #fff; }
         body.theme-cyber2  { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --read-bg: #444; --read-txt: #fff; }
 
-        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: 0.3s; }
+        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: 0.3s; -webkit-tap-highlight-color: transparent; }
         body.modal-open { overflow: hidden; }
-        header { background: rgba(0,0,0,0.2); padding: 10px; text-align: center; border-bottom: 1px solid var(--border); }
+        header { background: rgba(0,0,0,0.2); padding: 10px; text-align: center; border-bottom: 1px solid var(--border); padding-top: env(safe-area-inset-top); }
         .sticky-controls { position: sticky; top: 0; z-index: 1000; background: var(--bg); border-bottom: 2px solid var(--accent); }
         .controls { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
         .row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; align-items: center; }
-        input, select, button { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.9rem; }
+        input, select, button { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.9rem; outline: none; }
         .btn-cat { background: var(--card); color: var(--text); border: 1px solid var(--border); white-space: nowrap; cursor: pointer; }
         .btn-cat.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: bold; }
         #grid { padding: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
@@ -39,7 +48,7 @@
         .save-btn { background: transparent; color: var(--meta); border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-top: 8px; cursor: pointer; }
         .save-btn.saved { background: #2e7d32 !important; color: white !important; border-color: #2e7d32; }
         .full-modal { display: none; position: fixed; inset: 0; z-index: 4000; overflow-y: auto; background: var(--bg); }
-        .modal-header { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--bg); border-bottom: 1px solid var(--border); z-index: 10; }
+        .modal-header { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--bg); border-bottom: 1px solid var(--border); z-index: 10; padding-top: calc(15px + env(safe-area-inset-top)); }
         .modal-container { max-width: 800px; margin: 0 auto; padding: 20px; }
         #readerView img { max-width: 100%; height: auto !important; border-radius: 8px; margin: 15px 0; display: block; }
         .option-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
@@ -120,6 +129,13 @@
 <div id="grid"></div>
 
 <script>
+// SERVICE WORKER INLINE POUR PWA
+if ('serviceWorker' in navigator) {
+    const swCode = `self.addEventListener('fetch', function(e) { e.respondWith(fetch(e.request).catch(() => caches.match(e.request))); });`;
+    const blob = new Blob([swCode], {type: 'text/javascript'});
+    navigator.serviceWorker.register(URL.createObjectURL(blob));
+}
+
 let sources = JSON.parse(localStorage.getItem('nsc_sources')) || [{ name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml", cat: "Actu", pinned: true }];
 let vault = JSON.parse(localStorage.getItem('nsc_vault')) || [];
 let allArticles = [];
@@ -154,7 +170,6 @@ async function fetchAll() {
             const data = await res.json();
             if(data.status === 'ok') {
                 sourceBundles[s.name] = data.items.map(item => {
-                    // RÉTABLISSEMENT DU SCAN D'IMAGE (TYPE V17)
                     let imgUrl = item.enclosure?.link || item.thumbnail || "";
                     if (!imgUrl) {
                         const content = item.content || item.description || "";
@@ -264,4 +279,5 @@ document.getElementById('sourceSelect').addEventListener('change', render);
 fetchAll();
 </script>
 </body>
-</html>
+    </html>
+    
