@@ -8,11 +8,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/initials/svg?seed=News&backgroundColor=000000&fontSize=40&fontWeight=700&fontFamily=Arial">
-    <link rel="icon" type="image/svg+xml" href="https://api.dicebear.com/7.x/initials/svg?seed=News&backgroundColor=000000&fontSize=40&fontWeight=700&fontFamily=Arial">
+    <link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/initials/svg?seed=NEWS&backgroundColor=000000&fontSize=28&fontWeight=700">
+    <link rel="icon" type="image/svg+xml" href="https://api.dicebear.com/7.x/initials/svg?seed=NEWS&backgroundColor=000000&fontSize=28&fontWeight=700">
 
     <style>
-        /* --- SYSTÈME DE THÈMES (Identique V41) --- */
         :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --success: #2e7d32; --read-bg: var(--accent); --read-txt: #000; }
         body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; --read-bg: #8e44ad; --read-txt: #fff; }
         body.theme-matrix  { --bg: #000000; --card: #001100; --accent: #00ff41; --text: #00ff41; --meta: #008f11; --border: #003b00; --read-bg: #00ff41; --read-txt: #000; }
@@ -91,8 +90,8 @@
         <div class="option-box">
             <h3>➕ Ajouter une source</h3>
             <div class="rss-help">
-                Pour ajouter un média, cherchez "Flux RSS [Nom du site]" sur Google. Copiez l'adresse du lien (souvent un fichier .xml) et collez-la ci-dessus.<br>
-                Exemple : https://www.lemonde.fr/rss/une.xml
+                Cherchez "Flux RSS [Nom du site]" sur Google. Copiez l'adresse et collez-la ici.<br>
+                Ex : https://www.lemonde.fr/rss/une.xml
             </div>
             <input type="text" id="newName" placeholder="Nom" style="width:94%; margin-bottom:5px;">
             <input type="text" id="newUrl" placeholder="URL RSS" style="width:94%; margin-bottom:5px;">
@@ -111,7 +110,7 @@
 <div class="sticky-controls">
     <div class="controls">
         <div class="row">
-            <input type="text" id="search" style="flex-grow:1" placeholder="Chercher un article...">
+            <input type="text" id="search" style="flex-grow:1" placeholder="Chercher...">
             <button id="refreshBtn" onclick="fetchAll()">🔄</button>
             <button onclick="openModal('sourceModal')">⚙️</button>
         </div>
@@ -134,11 +133,7 @@ let currentCat = "Tous";
 
 function openModal(id) { document.getElementById(id).style.display = 'block'; document.body.classList.add('modal-open'); }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; document.body.classList.remove('modal-open'); }
-
-function changeTheme(theme) {
-    document.getElementById('bodyTag').className = (theme === 'cyber') ? "" : "theme-" + theme;
-    localStorage.setItem('nsc_theme', theme);
-}
+function changeTheme(theme) { document.getElementById('bodyTag').className = (theme === 'cyber') ? "" : "theme-" + theme; localStorage.setItem('nsc_theme', theme); }
 
 function timeSince(date) {
     const seconds = Math.floor((new Date() - new Date(date)) / 1000);
@@ -166,24 +161,17 @@ async function fetchAll() {
                         const match = content.match(/<img[^>]+src="([^">]+)"/);
                         if (match) imgUrl = match[1];
                     }
-                    return {
-                        id: item.guid || item.link, title: item.title, link: item.link,
-                        img: imgUrl, source: s.name, category: s.cat, date: item.pubDate, 
-                        content: item.content || item.description
-                    }
+                    return { id: item.guid || item.link, title: item.title, link: item.link, img: imgUrl, source: s.name, category: s.cat, date: item.pubDate, content: item.content || item.description }
                 });
             }
         } catch(e) {}
     }));
-
     let topPinned = []; let restOfNews = [];
     let pinnedNames = sources.filter(s => s.pinned).map(s => s.name);
     Object.keys(sourceBundles).forEach(name => {
         let bundle = sourceBundles[name];
-        if (pinnedNames.includes(name) && bundle.length > 0) {
-            topPinned.push({...bundle[0], isTop: true});
-            restOfNews.push(...bundle.slice(1));
-        } else { restOfNews.push(...bundle); }
+        if (pinnedNames.includes(name) && bundle.length > 0) { topPinned.push({...bundle[0], isTop: true}); restOfNews.push(...bundle.slice(1)); } 
+        else { restOfNews.push(...bundle); }
     });
     restOfNews.sort((a,b) => new Date(b.date) - new Date(a.date));
     allArticles = [...topPinned, ...restOfNews];
@@ -196,24 +184,17 @@ function render() {
     const search = document.getElementById('search').value.toLowerCase();
     const sourceF = document.getElementById('sourceSelect').value;
     let list = isVaultView ? vault : allArticles;
-
-    grid.innerHTML = list.filter(a => 
-        a.title.toLowerCase().includes(search) && (currentCat === "Tous" || a.category === currentCat) && (sourceF === "Tous" || a.source === sourceF)
+    grid.innerHTML = list.filter(a => a.title.toLowerCase().includes(search) && (currentCat === "Tous" || a.category === currentCat) && (sourceF === "Tous" || a.source === sourceF)
     ).map(a => {
         const inVault = vault.some(v => v.id === a.id);
         const d = new Date(a.date);
-        return `
-        <div class="card" style="${a.isTop ? 'border: 1px solid var(--accent)' : ''}">
+        return `<div class="card" style="${a.isTop ? 'border: 1px solid var(--accent)' : ''}">
             <img src="${a.img || 'https://via.placeholder.com/400x200/222/555?text='+a.source}" onclick="openReader('${a.id}')">
             <div class="card-content">
                 <a href="${a.link}" target="_blank" class="card-title">${a.isTop ? '📌 ':''}${a.title}</a>
-                <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">
-                    ${a.source} • ${d.toLocaleDateString('fr-FR', {day:'2-digit', month:'2-digit'})} à ${d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'})} (${timeSince(a.date)})
-                </div>
-                <button class="read-btn" onclick="openReader('${a.id}')">LIRE L'ARTICLE</button>
-                <button class="save-btn ${inVault?'saved':''}" onclick="toggleSave('${a.id}')">
-                    ${inVault ? 'SAUVEGARDÉ' : 'SAUVEGARDER'}
-                </button>
+                <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">${a.source} • ${timeSince(a.date)}</div>
+                <button class="read-btn" onclick="openReader('${a.id}')">LIRE</button>
+                <button class="save-btn ${inVault?'saved':''}" onclick="toggleSave('${a.id}')">${inVault ? 'SAUVÉ' : 'SAUVER'}</button>
             </div>
         </div>`
     }).join('');
@@ -237,11 +218,7 @@ function toggleSave(id) {
 
 function addSource() {
     const n = document.getElementById('newName').value, u = document.getElementById('newUrl').value, c = document.getElementById('newCat').value;
-    if(n && u) {
-        sources.push({name:n, url:u, cat:c||"Actu", pinned: false});
-        localStorage.setItem('nsc_sources', JSON.stringify(sources));
-        updateUI(); fetchAll();
-    }
+    if(n && u) { sources.push({name:n, url:u, cat:c||"Actu", pinned: false}); localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll(); }
 }
 
 function updateUI() {
@@ -269,5 +246,5 @@ document.getElementById('sourceSelect').addEventListener('change', render);
 fetchAll();
 </script>
 </body>
-    </html>
-
+                    </html>
+                    
