@@ -45,17 +45,17 @@
         .option-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
         .rss-help { background: rgba(0,0,0,0.2); border: 1px dashed var(--accent); padding: 10px; font-size: 0.8rem; border-radius: 8px; margin-bottom: 15px; color: var(--meta); line-height: 1.4; }
         
-        /* --- ADAPTATION TAILLE BLOCS SOURCES (v1.2) --- */
+        /* --- ADAPTATION TAILLE BLOCS SOURCES (v1.3) --- */
         .source-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
         .source-grid { 
             display: grid; 
-            grid-template-columns: 2fr 1fr 40px 40px; /* Adapte les proportions sur une seule ligne */
+            grid-template-columns: 1fr 1fr 40px 40px; /* Nom et Catégorie à 50/50 du reste de l'espace */
             gap: 5px; 
             align-items: center; 
             margin-bottom: 5px; 
         }
         .source-grid input { 
-            width: 100%; /* Occupe tout l'espace de sa colonne de grille */
+            width: 100%; 
             box-sizing: border-box; 
             padding: 8px; 
             background: var(--bg); 
@@ -282,5 +282,5 @@ document.getElementById('sourceSelect').addEventListener('change', render);
 fetchAll();
 </script>
 </body>
-    </html>
+            </html>
     
