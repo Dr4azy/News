@@ -153,7 +153,7 @@
         <div id="catBar" class="row"></div>
         <div class="row">
             <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Toutes les sources</option></select>
-            <button id="vaultBtn" onclick="toggleVault()" style="min-width: 115px; font-weight: bold;">💾 COFFRE</button>
+            <button id="vaultBtn" onclick="toggleVault()" style="min-width: 110px;">💾 COFFRE</button>
         </div>
     </div>
 </div>
@@ -195,7 +195,7 @@ function timeSince(date) {
 }
 
 async function fetchAll() {
-    if(isVaultView) return; // Ne pas rafraîchir les flux si on est dans le coffre
+    if(isVaultView) return;
     document.getElementById('refreshBtn').classList.add('spin');
     let sourceBundles = {};
     await Promise.all(sources.map(async s => {
@@ -239,24 +239,14 @@ function render() {
     const search = document.getElementById('search').value.toLowerCase();
     const sourceF = document.getElementById('sourceSelect').value;
     
-    // LOGIQUE DE FILTRAGE STRICTE
     let list = isVaultView ? vault : allArticles;
 
-    const filtered = list.filter(a => {
+    grid.innerHTML = list.filter(a => {
         const matchesSearch = a.title.toLowerCase().includes(search);
         const matchesCat = (currentCat === "Tous" || a.category === currentCat);
         const matchesSource = (sourceF === "Tous" || a.source === sourceF);
         return matchesSearch && matchesCat && matchesSource;
-    });
-
-    if (filtered.length === 0) {
-        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 50px; color: var(--meta);">
-            ${isVaultView ? "Votre coffre est vide. Sauvegardez des articles pour les retrouver ici." : "Aucun article trouvé."}
-        </div>`;
-        return;
-    }
-
-    grid.innerHTML = filtered.map(a => {
+    }).map(a => {
         const inVault = vault.some(v => v.id === a.id);
         const d = new Date(a.date);
         const timeStr = d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
@@ -291,8 +281,6 @@ function toggleSave(id) {
     const idx = vault.findIndex(v => v.id === id);
     if(idx > -1) {
         vault.splice(idx, 1);
-        // Si on est dans le coffre et qu'on retire l'article, il doit disparaître immédiatement
-        if(isVaultView) render(); 
     } else {
         const art = allArticles.find(a => a.id === id);
         if(art) vault.push({...art});
@@ -312,10 +300,9 @@ function addSource() {
 
 function updateUI() {
     const cats = ["Tous", ...new Set(sources.map(s => s.cat))];
-    document.getElementById('catBar').innerHTML = cats.map(c => `<button class="btn-cat ${currentCat===c?'active':''}" onclick="currentCat='${c}'; render();">${c}</button>`).join('');
+    document.getElementById('catBar').innerHTML = cats.map(c => `<button class="btn-cat ${currentCat===c?'active':''}" onclick="currentCat='${c}'; updateUI(); render();">${c}</button>`).join('');
     const sel = document.getElementById('sourceSelect');
     sel.innerHTML = '<option value="Tous">Toutes les sources</option>' + sources.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
-    
     document.getElementById('sourceList').innerHTML = sources.map((s, i) => `
         <div class="source-item">
             <div class="source-grid">
@@ -328,4 +315,19 @@ function updateUI() {
 }
 
 function toggleVault() { 
-    isVaultView = !isVaultVi
+    isVaultView = !isVaultView; 
+    const btn = document.getElementById('vaultBtn');
+    // On conserve strictement le même style de texte (Majuscules)
+    btn.innerHTML = isVaultView ? "📡 FLUX" : "💾 COFFRE";
+    render(); 
+}
+
+const savedT = localStorage.getItem('nsc_theme');
+if(savedT) { document.getElementById('themeSelect').value = savedT; changeTheme(savedT); }
+document.getElementById('search').addEventListener('input', render);
+document.getElementById('sourceSelect').addEventListener('change', render);
+fetchAll();
+</script>
+</body>
+    </html>
+    
