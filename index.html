@@ -33,14 +33,11 @@
         #splash-screen h1 { color: white; font-family: sans-serif; font-size: 1.5rem; letter-spacing: 2px; margin: 0; }
         
         body { background: #000000; margin: 0; }
-        /* L'interface est invisible par défaut */
         header, .sticky-controls, #grid { opacity: 0; }
-        /* Devient visible quand la classe .ready est ajoutée au body */
         body.ready header, body.ready .sticky-controls, body.ready #grid { opacity: 1; transition: opacity 0.5s ease-in; }
     </style>
 
     <style>
-        /* Retour aux bordures grises originales (#333) */
         :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --read-bg: var(--accent); --read-txt: #000; }
         body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; --read-bg: #8e44ad; --read-txt: #fff; }
         body.theme-matrix  { --bg: #000000; --card: #001100; --accent: #00ff41; --text: #00ff41; --meta: #008f11; --border: #003b00; --read-bg: #00ff41; --read-txt: #000; }
@@ -130,7 +127,7 @@
         <div class="option-box">
             <h3>➕ Ajouter une source</h3>
             <div class="rss-help">
-                Pour ajouter un média, cherchez "Flux RSS [Nom du site]" sur Google. Copiez l'adresse du lien (souvent un fichier .xml) et collez-la ci-dessus.
+                Cherchez "Flux RSS [Nom du site]" sur Google. Copiez l'adresse du lien et collez-la ci-dessus.
             </div>
             <input type="text" id="newName" placeholder="Nom" style="width:94%; margin-bottom:5px;">
             <input type="text" id="newUrl" placeholder="URL RSS" style="width:94%; margin-bottom:5px;">
@@ -156,7 +153,7 @@
         <div id="catBar" class="row"></div>
         <div class="row">
             <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Toutes les sources</option></select>
-            <button id="vaultBtn" onclick="toggleVault()" style="min-width: 80px;">💾 Coffre</button>
+            <button id="vaultBtn" onclick="toggleVault()" style="min-width: 110px;">💾 COFFRE</button>
         </div>
     </div>
 </div>
@@ -170,7 +167,6 @@ let allArticles = [];
 let isVaultView = false;
 let currentCat = "Tous";
 
-// Animation d'accueil améliorée
 window.addEventListener('load', () => {
     const splash = document.getElementById('splash-screen');
     setTimeout(() => {
@@ -242,21 +238,25 @@ function render() {
     const grid = document.getElementById('grid');
     const search = document.getElementById('search').value.toLowerCase();
     const sourceF = document.getElementById('sourceSelect').value;
+    
     let list = isVaultView ? vault : allArticles;
 
-    grid.innerHTML = list.filter(a => 
-        a.title.toLowerCase().includes(search) && (currentCat === "Tous" || a.category === currentCat) && (sourceF === "Tous" || a.source === sourceF)
-    ).map(a => {
+    grid.innerHTML = list.filter(a => {
+        const matchesSearch = a.title.toLowerCase().includes(search);
+        const matchesCat = (currentCat === "Tous" || a.category === currentCat);
+        const matchesSource = (sourceF === "Tous" || a.source === sourceF);
+        return matchesSearch && matchesCat && matchesSource;
+    }).map(a => {
         const inVault = vault.some(v => v.id === a.id);
         const d = new Date(a.date);
         const timeStr = d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
         const dateStr = d.toLocaleDateString('fr-FR', {day:'2-digit', month:'2-digit'});
 
         return `
-        <div class="card" style="${a.isTop ? 'border: 2px solid var(--accent)' : ''}">
+        <div class="card" style="${a.isTop && !isVaultView ? 'border: 2px solid var(--accent)' : ''}">
             <a href="${a.link}" target="_blank"><img src="${a.img || 'https://via.placeholder.com/400x200/000/fff?text='+a.source}"></a>
             <div class="card-content">
-                <a href="${a.link}" target="_blank" class="card-title">${a.isTop ? '📌 ':''}${a.title}</a>
+                <a href="${a.link}" target="_blank" class="card-title">${a.isTop && !isVaultView ? '📌 ':''}${a.title}</a>
                 <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">
                     <b>${a.source}</b> • ${dateStr} à ${timeStr} (${timeSince(a.date)})
                 </div>
@@ -279,8 +279,9 @@ function openReader(id) {
 
 function toggleSave(id) {
     const idx = vault.findIndex(v => v.id === id);
-    if(idx > -1) vault.splice(idx, 1);
-    else {
+    if(idx > -1) {
+        vault.splice(idx, 1);
+    } else {
         const art = allArticles.find(a => a.id === id);
         if(art) vault.push({...art});
     }
@@ -315,7 +316,9 @@ function updateUI() {
 
 function toggleVault() { 
     isVaultView = !isVaultView; 
-    document.getElementById('vaultBtn').innerText = isVaultView ? "FLUX" : "COFFRE"; 
+    const btn = document.getElementById('vaultBtn');
+    // On conserve strictement le même style de texte (Majuscules)
+    btn.innerHTML = isVaultView ? "📡 FLUX" : "💾 COFFRE";
     render(); 
 }
 
@@ -326,5 +329,5 @@ document.getElementById('sourceSelect').addEventListener('change', render);
 fetchAll();
 </script>
 </body>
-            </html>
-            
+    </html>
+    
