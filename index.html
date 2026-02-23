@@ -26,33 +26,34 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            opacity: 0;
-            visibility: visible;
+            opacity: 1;
             transition: opacity 0.6s ease-in-out;
         }
         #splash-screen svg { width: 120px; height: 120px; margin-bottom: 20px; }
         #splash-screen h1 { color: white; font-family: sans-serif; font-size: 1.5rem; letter-spacing: 2px; margin: 0; }
         
-        /* On cache l'appli au début pour ne pas la voir derrière le splash */
         body { background: #000000; margin: 0; }
-        header, .sticky-controls, #grid { opacity: 0; transition: opacity 0.8s ease-in; }
-        body.ready header, body.ready .sticky-controls, body.ready #grid { opacity: 1; }
+        /* L'interface est invisible par défaut */
+        header, .sticky-controls, #grid { opacity: 0; }
+        /* Devient visible quand la classe .ready est ajoutée au body */
+        body.ready header, body.ready .sticky-controls, body.ready #grid { opacity: 1; transition: opacity 0.5s ease-in; }
     </style>
 
     <style>
-        :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #1a1a1a; --read-bg: var(--accent); --read-txt: #000; }
-        body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #111; --read-bg: #8e44ad; --read-txt: #fff; }
-        body.theme-matrix  { --bg: #000000; --card: #001100; --accent: #00ff41; --text: #00ff41; --meta: #008f11; --border: #002200; --read-bg: #00ff41; --read-txt: #000; }
-        body.theme-dracula { --bg: #282a36; --card: #44475a; --accent: #bd93f9; --text: #f8f8f2; --meta: #6272a4; --border: #21222c; --read-bg: #bd93f9; --read-txt: #000; }
-        body.theme-ocean   { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f1f5f9; --meta: #94a3b8; --border: #0f172a; --read-bg: #38bdf8; --read-txt: #000; }
-        body.theme-blood   { --bg: #1a0505; --card: #2d0a0a; --accent: #ff4d4d; --text: #ffcccc; --meta: #a35a5a; --border: #1a0505; --read-bg: #ff4d4d; --read-txt: #fff; }
-        body.theme-forest  { --bg: #051a10; --card: #0a2d1d; --accent: #4ade80; --text: #ccffeb; --meta: #5a7a6a; --border: #051a10; --read-bg: #4ade80; --read-txt: #000; }
-        body.theme-gold    { --bg: #1a1605; --card: #2d260a; --accent: #fbbf24; --text: #fef3c7; --meta: #78350f; --border: #1a1605; --read-bg: #fbbf24; --read-txt: #000; }
-        body.theme-vapor   { --bg: #1a1a2e; --card: #16213e; --accent: #e94560; --text: #ffffff; --meta: #95a5a6; --border: #10101a; --read-bg: #e94560; --read-txt: #fff; }
-        body.theme-neon    { --bg: #000; --card: #111; --accent: #ff00ff; --text: #00ffff; --meta: #777; --border: #1a1a1a; --read-bg: #ff00ff; --read-txt: #000; }
-        body.theme-coffee  { --bg: #1c1917; --card: #292524; --accent: #d6d3d1; --text: #fafaf9; --meta: #a8a29e; --border: #171717; --read-bg: #d6d3d1; --read-txt: #000; }
-        body.theme-copper  { --bg: #1a120b; --card: #2d1e12; --accent: #d97706; --text: #fef3c7; --meta: #92400e; --border: #121212; --read-bg: #d97706; --read-txt: #fff; }
-        body.theme-cyber2  { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #111; --read-bg: #444; --read-txt: #fff; }
+        /* Retour aux bordures grises originales (#333) */
+        :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --read-bg: var(--accent); --read-txt: #000; }
+        body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; --read-bg: #8e44ad; --read-txt: #fff; }
+        body.theme-matrix  { --bg: #000000; --card: #001100; --accent: #00ff41; --text: #00ff41; --meta: #008f11; --border: #003b00; --read-bg: #00ff41; --read-txt: #000; }
+        body.theme-dracula { --bg: #282a36; --card: #44475a; --accent: #bd93f9; --text: #f8f8f2; --meta: #6272a4; --border: #44475a; --read-bg: #bd93f9; --read-txt: #000; }
+        body.theme-ocean   { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f1f5f9; --meta: #94a3b8; --border: #334155; --read-bg: #38bdf8; --read-txt: #000; }
+        body.theme-blood   { --bg: #1a0505; --card: #2d0a0a; --accent: #ff4d4d; --text: #ffcccc; --meta: #a35a5a; --border: #4d1414; --read-bg: #ff4d4d; --read-txt: #fff; }
+        body.theme-forest  { --bg: #051a10; --card: #0a2d1d; --accent: #4ade80; --text: #ccffeb; --meta: #5a7a6a; --border: #144d32; --read-bg: #4ade80; --read-txt: #000; }
+        body.theme-gold    { --bg: #1a1605; --card: #2d260a; --accent: #fbbf24; --text: #fef3c7; --meta: #78350f; --border: #4d4414; --read-bg: #fbbf24; --read-txt: #000; }
+        body.theme-vapor   { --bg: #1a1a2e; --card: #16213e; --accent: #e94560; --text: #ffffff; --meta: #95a5a6; --border: #0f3460; --read-bg: #e94560; --read-txt: #fff; }
+        body.theme-neon    { --bg: #000; --card: #111; --accent: #ff00ff; --text: #00ffff; --meta: #777; --border: #333; --read-bg: #ff00ff; --read-txt: #000; }
+        body.theme-coffee  { --bg: #1c1917; --card: #292524; --accent: #d6d3d1; --text: #fafaf9; --meta: #a8a29e; --border: #44403c; --read-bg: #d6d3d1; --read-txt: #000; }
+        body.theme-copper  { --bg: #1a120b; --card: #2d1e12; --accent: #d97706; --text: #fef3c7; --meta: #92400e; --border: #452e1a; --read-bg: #d97706; --read-txt: #fff; }
+        body.theme-cyber2  { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --read-bg: #444; --read-txt: #fff; }
 
         body { font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: background 0.3s; }
         body.modal-open { overflow: hidden; }
@@ -129,7 +130,7 @@
         <div class="option-box">
             <h3>➕ Ajouter une source</h3>
             <div class="rss-help">
-                Cherchez "Flux RSS [Nom du site]" sur Google. Copiez l'adresse du lien et collez-la ci-dessus.
+                Pour ajouter un média, cherchez "Flux RSS [Nom du site]" sur Google. Copiez l'adresse du lien (souvent un fichier .xml) et collez-la ci-dessus.
             </div>
             <input type="text" id="newName" placeholder="Nom" style="width:94%; margin-bottom:5px;">
             <input type="text" id="newUrl" placeholder="URL RSS" style="width:94%; margin-bottom:5px;">
@@ -169,21 +170,14 @@ let allArticles = [];
 let isVaultView = false;
 let currentCat = "Tous";
 
-window.addEventListener('DOMContentLoaded', () => {
+// Animation d'accueil améliorée
+window.addEventListener('load', () => {
     const splash = document.getElementById('splash-screen');
     setTimeout(() => {
-        splash.style.opacity = '1';
-        document.getElementById('theme-meta').setAttribute('content', '#000000');
-    }, 50);
-
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            splash.style.opacity = '0';
-            // On affiche le menu seulement quand le splash commence à disparaître
-            document.body.classList.add('ready');
-            setTimeout(() => splash.style.display = 'none', 600);
-        }, 1200);
-    });
+        splash.style.opacity = '0';
+        document.body.classList.add('ready');
+        setTimeout(() => splash.style.display = 'none', 600);
+    }, 1500);
 });
 
 function openModal(id) { document.getElementById(id).style.display = 'block'; document.body.classList.add('modal-open'); }
@@ -248,17 +242,11 @@ function render() {
     const grid = document.getElementById('grid');
     const search = document.getElementById('search').value.toLowerCase();
     const sourceF = document.getElementById('sourceSelect').value;
-    
-    // Correction de la logique Coffre / Flux
     let list = isVaultView ? vault : allArticles;
 
-    grid.innerHTML = list.filter(a => {
-        const matchesSearch = a.title.toLowerCase().includes(search);
-        // En mode coffre, on ne filtre pas par catégorie/source sauf si l'utilisateur le demande explicitement
-        const matchesCat = (currentCat === "Tous" || a.category === currentCat);
-        const matchesSource = (sourceF === "Tous" || a.source === sourceF);
-        return matchesSearch && matchesCat && matchesSource;
-    }).map(a => {
+    grid.innerHTML = list.filter(a => 
+        a.title.toLowerCase().includes(search) && (currentCat === "Tous" || a.category === currentCat) && (sourceF === "Tous" || a.source === sourceF)
+    ).map(a => {
         const inVault = vault.some(v => v.id === a.id);
         const d = new Date(a.date);
         const timeStr = d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
@@ -291,9 +279,8 @@ function openReader(id) {
 
 function toggleSave(id) {
     const idx = vault.findIndex(v => v.id === id);
-    if(idx > -1) {
-        vault.splice(idx, 1);
-    } else {
+    if(idx > -1) vault.splice(idx, 1);
+    else {
         const art = allArticles.find(a => a.id === id);
         if(art) vault.push({...art});
     }
@@ -310,15 +297,6 @@ function addSource() {
     }
 }
 
-function deleteSource(i) {
-    if(confirm("Voulez-vous vraiment supprimer cette source ?")) {
-        sources.splice(i,1); 
-        localStorage.setItem('nsc_sources', JSON.stringify(sources)); 
-        updateUI(); 
-        fetchAll();
-    }
-}
-
 function updateUI() {
     const cats = ["Tous", ...new Set(sources.map(s => s.cat))];
     document.getElementById('catBar').innerHTML = cats.map(c => `<button class="btn-cat ${currentCat===c?'active':''}" onclick="currentCat='${c}'; updateUI(); render();">${c}</button>`).join('');
@@ -330,5 +308,23 @@ function updateUI() {
                 <input type="text" value="${s.name}" onchange="sources[${i}].name=this.value; localStorage.setItem('nsc_sources', JSON.stringify(sources));">
                 <input type="text" value="${s.cat}" onchange="sources[${i}].cat=this.value; localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI();">
                 <button class="pin-btn ${s.pinned?'pinned':''}" onclick="sources[${i}].pinned=!sources[${i}].pinned; localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll();">${s.pinned?'📌':'📍'}</button>
-                <button class="del-btn" onclick="deleteSource(${i})">X</button>
-        
+                <button class="del-btn" onclick="if(confirm('Supprimer cette source ?')){sources.splice(${i},1); localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll();}">X</button>
+            </div>
+        </div>`).join('');
+}
+
+function toggleVault() { 
+    isVaultView = !isVaultView; 
+    document.getElementById('vaultBtn').innerText = isVaultView ? "FLUX" : "COFFRE"; 
+    render(); 
+}
+
+const savedT = localStorage.getItem('nsc_theme');
+if(savedT) { document.getElementById('themeSelect').value = savedT; changeTheme(savedT); }
+document.getElementById('search').addEventListener('input', render);
+document.getElementById('sourceSelect').addEventListener('change', render);
+fetchAll();
+</script>
+</body>
+            </html>
+            
