@@ -24,37 +24,29 @@
         body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: 0.3s; }
         body.modal-open { overflow: hidden; }
         header { background: rgba(0,0,0,0.2); padding: 10px; text-align: center; border-bottom: 1px solid var(--border); }
-        
         .sticky-controls { position: sticky; top: 0; z-index: 1000; background: var(--bg); border-bottom: 2px solid var(--accent); }
         .controls { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
         .row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; align-items: center; }
-        
         input, select, button { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.9rem; }
         .btn-cat { background: var(--card); color: var(--text); border: 1px solid var(--border); white-space: nowrap; cursor: pointer; }
         .btn-cat.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: bold; }
-
         #grid { padding: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
         .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; }
         .card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid var(--border); cursor: pointer; }
         .card-content { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; }
         .card-title { font-weight: bold; font-size: 1.05rem; margin-bottom: 8px; line-height: 1.3; color: var(--text); text-decoration: none; }
-        
-        .read-btn { background: var(--read-bg); color: var(--read-txt); border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: auto; cursor: pointer; transition: 0.2s; }
+        .read-btn { background: var(--read-bg); color: var(--read-txt); border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: auto; cursor: pointer; }
         .save-btn { background: transparent; color: var(--meta); border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-top: 8px; cursor: pointer; }
         .save-btn.saved { background: #2e7d32 !important; color: white !important; border-color: #2e7d32; }
-
         .full-modal { display: none; position: fixed; inset: 0; z-index: 4000; overflow-y: auto; background: var(--bg); }
         .modal-header { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--bg); border-bottom: 1px solid var(--border); z-index: 10; }
         .modal-container { max-width: 800px; margin: 0 auto; padding: 20px; }
         #readerView img { max-width: 100%; height: auto !important; border-radius: 8px; margin: 15px 0; display: block; }
-
         .option-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
         .rss-help { background: rgba(0,0,0,0.2); border: 1px dashed var(--accent); padding: 10px; font-size: 0.8rem; border-radius: 8px; margin-bottom: 15px; color: var(--meta); line-height: 1.4; }
-        
         .source-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
         .source-grid { display: flex; gap: 5px; align-items: center; margin-bottom: 5px; }
         .source-grid input { flex: 1; padding: 5px; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; font-size: 0.8rem; }
-        
         .pin-btn { min-width: 40px; background: var(--border); color: var(--text); border: none; cursor: pointer; }
         .pin-btn.pinned { background: var(--accent); color: #000; }
         .del-btn { min-width: 40px; background: #ef4444; color: white; border: none; cursor: pointer; }
@@ -81,24 +73,21 @@
         <div class="option-box">
             <h3>🎨 Thème</h3>
             <select id="themeSelect" onchange="changeTheme(this.value)" style="width: 100%;">
-                <option value="cyber">Cyber</option>
-                <option value="cyber2">Cyber 2</option>
-                <option value="night">Nuit</option>
-                <option value="matrix">Matrix</option>
-                <option value="dracula">Dracula</option>
-                <option value="ocean">Océan</option>
-                <option value="blood">Blood</option>
-                <option value="forest">Forest</option>
-                <option value="gold">Gold</option>
-                <option value="vapor">Vaporwave</option>
-                <option value="neon">Neon</option>
-                <option value="coffee">Coffee</option>
+                <option value="cyber">Cyber</option><option value="cyber2">Cyber 2</option>
+                <option value="night">Nuit</option><option value="matrix">Matrix</option>
+                <option value="dracula">Dracula</option><option value="ocean">Océan</option>
+                <option value="blood">Blood</option><option value="forest">Forest</option>
+                <option value="gold">Gold</option><option value="vapor">Vaporwave</option>
+                <option value="neon">Neon</option><option value="coffee">Coffee</option>
                 <option value="copper">Copper</option>
             </select>
         </div>
         <div class="option-box">
             <h3>➕ Ajouter une source</h3>
-            <div class="rss-help">Cherchez "Flux RSS [Site]" sur Google. Copiez le lien .xml et collez-le ici.</div>
+            <div class="rss-help">
+                Pour ajouter un média, cherchez "Flux RSS [Nom du site]" sur Google. Copiez l'adresse du lien (souvent un fichier .xml) et collez-la ci-dessus.<br>
+                Exemple : https://www.lemonde.fr/rss/une.xml
+            </div>
             <input type="text" id="newName" placeholder="Nom" style="width:94%; margin-bottom:5px;">
             <input type="text" id="newUrl" placeholder="URL RSS" style="width:94%; margin-bottom:5px;">
             <input type="text" id="newCat" placeholder="Catégorie" style="width:94%; margin-bottom:10px;">
@@ -164,11 +153,17 @@ async function fetchAll() {
             const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(s.url)}&t=${Date.now()}`);
             const data = await res.json();
             if(data.status === 'ok') {
-                sourceBundles[s.name] = data.items.map(item => ({
-                    id: item.guid || item.link, title: item.title, link: item.link,
-                    img: item.enclosure?.link || item.thumbnail || "",
-                    source: s.name, category: s.cat, date: item.pubDate, content: item.content || item.description
-                }));
+                sourceBundles[s.name] = data.items.map(item => {
+                    let foundImg = item.enclosure?.link || item.thumbnail || "";
+                    if (!foundImg && item.description) {
+                        const m = item.description.match(/<img[^>]+src="([^">]+)"/);
+                        if (m) foundImg = m[1];
+                    }
+                    return {
+                        id: item.guid || item.link, title: item.title, link: item.link,
+                        img: foundImg, source: s.name, category: s.cat, date: item.pubDate, content: item.content || item.description
+                    }
+                });
             }
         } catch(e) {}
     }));
@@ -199,15 +194,13 @@ function render() {
     ).map(a => {
         const inVault = vault.some(v => v.id === a.id);
         const d = new Date(a.date);
-        const dateStr = d.toLocaleDateString('fr-FR', {day:'2-digit', month:'2-digit'});
-        const hourStr = d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
         return `
         <div class="card" style="${a.isTop ? 'border: 1px solid var(--accent)' : ''}">
             <img src="${a.img || 'https://via.placeholder.com/400x200/222/555?text='+a.source}" onclick="openReader('${a.id}')">
             <div class="card-content">
                 <a href="${a.link}" target="_blank" class="card-title">${a.isTop ? '📌 ':''}${a.title}</a>
                 <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">
-                    ${a.source} • ${dateStr} à ${hourStr} (${timeSince(a.date)})
+                    ${a.source} • ${d.toLocaleDateString('fr-FR', {day:'2-digit', month:'2-digit'})} à ${d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'})} (${timeSince(a.date)})
                 </div>
                 <button class="read-btn" onclick="openReader('${a.id}')">LIRE L'ARTICLE</button>
                 <button class="save-btn ${inVault?'saved':''}" onclick="toggleSave('${a.id}')">
