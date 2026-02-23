@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" style="background: #000000;">
+<html lang="fr" style="background: #ffffff;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +7,11 @@
 
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="News">
-    <meta name="theme-color" content="#000000">
+    
+    <meta name="theme-color" id="theme-meta" content="#ffffff">
+    <meta name="background-color" content="#ffffff">
 
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23000000%22/><text y=%2250%%22 x=%2250%%22 font-size=%2270%22 text-anchor=%22middle%22 dy=%22.35em%22 fill=%22white%22 font-family=%22Arial, sans-serif%22 font-weight=%22bold%22>N</text></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23000000%22/><text y=%2250%%22 x=%2250%%22 font-size=%2270%22 text-anchor=%22middle%22 dy=%22.35em%22 fill=%22white%22 font-family=%22Arial, sans-serif%22 font-weight=%22bold%22>N</text></svg>">
@@ -24,17 +26,18 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            opacity: 1;
+            opacity: 0;
             visibility: visible;
-            transition: opacity 0.4s ease-out;
+            transition: opacity 0.6s ease-in-out;
         }
         #splash-screen svg { width: 120px; height: 120px; margin-bottom: 20px; }
         #splash-screen h1 { color: white; font-family: sans-serif; font-size: 1.5rem; letter-spacing: 2px; margin: 0; }
-        body { background: #000000; margin: 0; }
+        
+        body { background: #000000; margin: 0; opacity: 0; transition: opacity 0.5s ease-in; }
+        body.ready { opacity: 1; }
     </style>
 
     <style>
-        /* --- SYSTÈME DE THÈMES --- */
         :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --read-bg: var(--accent); --read-txt: #000; }
         
         body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; --read-bg: #8e44ad; --read-txt: #fff; }
@@ -73,6 +76,7 @@
         .modal-container { max-width: 800px; margin: 0 auto; padding: 20px; }
         #readerView img { max-width: 100%; height: auto !important; border-radius: 8px; margin: 15px 0; display: block; }
         .option-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
+        .rss-help { background: rgba(0,0,0,0.2); border: 1px dashed var(--accent); padding: 10px; font-size: 0.8rem; border-radius: 8px; margin-bottom: 15px; color: var(--meta); line-height: 1.4; }
         
         .source-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
         .source-grid { display: grid; grid-template-columns: 1fr 1fr 40px 40px; gap: 5px; align-items: center; margin-bottom: 5px; }
@@ -123,6 +127,9 @@
         </div>
         <div class="option-box">
             <h3>➕ Ajouter une source</h3>
+            <div class="rss-help">
+                Pour ajouter un média, cherchez "Flux RSS [Nom du site]" sur Google. Copiez l'adresse du lien (souvent un fichier .xml) et collez-la ci-dessus.
+            </div>
             <input type="text" id="newName" placeholder="Nom" style="width:94%; margin-bottom:5px;">
             <input type="text" id="newUrl" placeholder="URL RSS" style="width:94%; margin-bottom:5px;">
             <input type="text" id="newCat" placeholder="Catégorie" style="width:94%; margin-bottom:10px;">
@@ -161,20 +168,27 @@ let allArticles = [];
 let isVaultView = false;
 let currentCat = "Tous";
 
-// MASQUER LE SPLASH SCREEN APRÈS LE CHARGEMENT
-window.addEventListener('load', () => {
+window.addEventListener('DOMContentLoaded', () => {
+    const splash = document.getElementById('splash-screen');
     setTimeout(() => {
-        const splash = document.getElementById('splash-screen');
-        splash.style.opacity = '0';
-        setTimeout(() => splash.style.display = 'none', 400);
-    }, 1200);
+        splash.style.opacity = '1';
+        document.body.classList.add('ready');
+        document.getElementById('theme-meta').setAttribute('content', '#000000');
+    }, 50);
+
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            splash.style.opacity = '0';
+            setTimeout(() => splash.style.display = 'none', 600);
+        }, 1200);
+    });
 });
 
 function openModal(id) { document.getElementById(id).style.display = 'block'; document.body.classList.add('modal-open'); }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; document.body.classList.remove('modal-open'); }
 
 function changeTheme(theme) {
-    document.getElementById('bodyTag').className = (theme === 'cyber') ? "" : "theme-" + theme;
+    document.getElementById('bodyTag').className = (theme === 'cyber') ? "ready" : "ready theme-" + theme;
     localStorage.setItem('nsc_theme', theme);
 }
 
@@ -244,9 +258,9 @@ function render() {
 
         return `
         <div class="card" style="${a.isTop ? 'border: 2px solid var(--accent)' : ''}">
-            <img src="${a.img || 'https://via.placeholder.com/400x200/000/fff?text='+a.source}" onclick="openReader('${a.id}')">
+            <a href="${a.link}" target="_blank"><img src="${a.img || 'https://via.placeholder.com/400x200/000/fff?text='+a.source}"></a>
             <div class="card-content">
-                <span class="card-title" onclick="openReader('${a.id}')">${a.isTop ? '📌 ':''}${a.title}</span>
+                <a href="${a.link}" target="_blank" class="card-title">${a.isTop ? '📌 ':''}${a.title}</a>
                 <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">
                     <b>${a.source}</b> • ${dateStr} à ${timeStr} (${timeSince(a.date)})
                 </div>
@@ -312,4 +326,5 @@ document.getElementById('sourceSelect').addEventListener('change', render);
 fetchAll();
 </script>
 </body>
-</html>
+    </html>
+    
