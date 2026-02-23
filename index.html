@@ -3,78 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Sans CNews v3</title>
+    <title>News Sans CNews v4</title>
     <style>
-        :root { --bg: #0f0f0f; --card: #1a1a1a; --accent: #ffd700; --text: #f0f0f0; }
-        body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 60px; }
+        :root { --bg: #0f111a; --card: #1a1c2c; --accent: #ffd700; --text: #e0e0e0; --pinned: #2d2d44; }
+        body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 80px; }
         
-        header { background: #1a1a1a; padding: 15px; text-align: center; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 1000; }
+        header { background: #1a1c2c; padding: 15px; text-align: center; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 1000; }
         
-        .controls { padding: 10px; display: flex; flex-direction: column; gap: 8px; background: #1a1a1a; }
-        .row { display: flex; gap: 5px; overflow-x: auto; }
-        input, select, button { background: #2a2a2a; color: white; border: 1px solid #444; padding: 12px; border-radius: 8px; flex-grow: 1; }
-        .btn-icon { flex-grow: 0; min-width: 45px; cursor: pointer; }
-        .active-cat { background: var(--accent); color: black; }
+        .controls { padding: 12px; display: flex; flex-direction: column; gap: 10px; background: #161826; border-bottom: 1px solid #333; }
+        .row { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+        input, select, button { background: #25283d; color: white; border: 1px solid #444; padding: 12px; border-radius: 10px; font-size: 0.9rem; }
+        .btn-icon { min-width: 48px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .active-btn { background: var(--accent); color: black; border-color: var(--accent); }
 
-        #grid { padding: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border-radius: 12px; overflow: hidden; position: relative; border: 1px solid #222; }
-        .card img { width: 100%; height: 180px; object-fit: cover; background: #222; display: block; }
-        .card-content { padding: 12px; }
-        .card-title { font-weight: bold; margin-bottom: 8px; line-height: 1.3; }
-        .card-footer { display: flex; justify-content: space-between; font-size: 0.8rem; color: #888; align-items: center; }
+        #grid { padding: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
         
-        .fav-btn { color: #555; font-size: 1.5rem; cursor: pointer; transition: 0.2s; }
-        .fav-btn.active { color: var(--accent); }
+        /* Styles des Cartes */
+        .card { background: var(--card); border-radius: 15px; overflow: hidden; position: relative; border: 1px solid #2d2d44; display: flex; flex-direction: column; transition: 0.3s; }
+        .card.pinned { border: 2px solid var(--accent); background: var(--pinned); order: -1; } /* Les épinglés montent en haut */
+        .card img { width: 100%; height: 180px; object-fit: cover; background: #222; }
+        .card-content { padding: 12px; flex-grow: 1; }
+        .card-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; line-height: 1.3; }
+        .card-footer { display: flex; flex-direction: column; gap: 5px; font-size: 0.75rem; color: #aaa; border-top: 1px solid #2d2d44; padding-top: 10px; }
+        
+        .actions { display: flex; justify-content: space-around; padding: 10px; background: rgba(0,0,0,0.2); border-top: 1px solid #2d2d44; }
+        .action-btn { cursor: pointer; font-size: 1.2rem; filter: grayscale(1); transition: 0.2s; }
+        .action-btn:hover, .action-btn.active { filter: grayscale(0); transform: scale(1.1); }
 
-        /* Modal pour gérer les sources */
-        #sourceModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; padding: 20px; }
-        .source-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #333; }
+        /* Modal */
+        #sourceModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; padding: 25px; overflow-y: auto; }
+        .source-item { background: #25283d; margin: 5px 0; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>les news sans cnews</h1>
-</header>
+<header><h1>les news sans cnews</h1></header>
 
 <div class="controls">
     <div class="row">
-        <input type="text" id="searchInput" placeholder="🔍 Rechercher...">
+        <input type="text" id="searchInput" style="flex-grow:1" placeholder="🔍 Rechercher...">
         <button onclick="document.getElementById('sourceModal').style.display='block'" class="btn-icon">⚙️</button>
     </div>
+    <div class="row" id="catBar">
+        <button class="active-btn" onclick="setCat('Tous')">Tous</button>
+    </div>
     <div class="row">
-        <select id="sourceSelect"><option value="Tous">Toutes les sources</option></select>
-        <button id="favToggle" onclick="toggleShowFavs()" class="btn-icon">⭐</button>
+        <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Toutes les sources</option></select>
+        <button id="showArchivedBtn" onclick="toggleArchiveView()" class="btn-icon" title="Voir Archives">📦</button>
     </div>
 </div>
 
 <div id="grid"></div>
 
 <div id="sourceModal">
-    <h3>Gérer mes flux RSS</h3>
-    <input type="text" id="newSourceName" placeholder="Nom (ex: NASA)">
-    <input type="text" id="newSourceUrl" placeholder="Lien RSS (XML)">
-    <button onclick="addSource()" style="background: green; margin-top: 5px;">Ajouter</button>
-    <div id="sourceList" style="margin-top: 20px; max-height: 300px; overflow-y: auto;"></div>
-    <button onclick="document.getElementById('sourceModal').style.display='none'" style="margin-top: 20px;">Fermer</button>
+    <h2>⚙️ Configuration des Flux</h2>
+    <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+        <input type="text" id="newSourceName" placeholder="Nom du média">
+        <input type="text" id="newSourceUrl" placeholder="Lien RSS (XML)">
+        <select id="newSourceCat">
+            <option value="Info">Info</option>
+            <option value="Tech">Tech</option>
+            <option value="Sport">Sport</option>
+            <option value="Loisirs">Loisirs</option>
+        </select>
+        <button onclick="addSource()" style="background:var(--accent); color:black; font-weight:bold;">AJOUTER LA SOURCE</button>
+    </div>
+    <hr>
+    <div id="sourceList"></div>
+    <button onclick="document.getElementById('sourceModal').style.display='none'" style="width:100%; margin-top:20px;">FERMER</button>
 </div>
 
 <script>
-// --- INITIALISATION ---
-let defaultSources = [
-    { name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml" },
-    { name: "NASA", url: "https://www.nasa.gov/rss/dyn/breaking_news.rss" }
+// --- DONNÉES ---
+let sources = JSON.parse(localStorage.getItem('nsc_sources')) || [
+    { name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml", cat: "Info" },
+    { name: "NASA", url: "https://www.nasa.gov/rss/dyn/breaking_news.rss", cat: "Tech" }
 ];
-
-let sources = JSON.parse(localStorage.getItem('news_sources')) || defaultSources;
-let favorites = JSON.parse(localStorage.getItem('news_favs')) || [];
+let pinned = JSON.parse(localStorage.getItem('nsc_pinned')) || [];
+let archived = JSON.parse(localStorage.getItem('nsc_archived')) || [];
 let allArticles = [];
-let showOnlyFavs = false;
+let currentCat = "Tous";
+let viewArchived = false;
 
-// --- MOTEUR DE REQUÊTE ---
+// --- TEMPS RELATIF ---
+function timeAgo(date) {
+    const seconds = Math.floor((new Date() - date) / 1000);
+    let interval = seconds / 31536000;
+    if (interval > 1) return "Il y a " + Math.floor(interval) + " ans";
+    interval = seconds / 2592000;
+    if (interval > 1) return "Il y a " + Math.floor(interval) + " mois";
+    interval = seconds / 86400;
+    if (interval > 1) return "Il y a " + Math.floor(interval) + " j";
+    interval = seconds / 3600;
+    if (interval > 1) return "Il y a " + Math.floor(interval) + " h";
+    interval = seconds / 60;
+    if (interval > 1) return "Il y a " + Math.floor(interval) + " min";
+    return "À l'instant";
+}
+
+// --- LOGIQUE RÉCUPÉRATION ---
 async function fetchAll() {
     allArticles = [];
-    document.getElementById('grid').innerHTML = "Chargement...";
+    document.getElementById('grid').innerHTML = "Chargement des news...";
     
     const promises = sources.map(s => 
         fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(s.url)}`)
@@ -82,12 +112,11 @@ async function fetchAll() {
         .then(data => {
             if(data.status === 'ok') {
                 data.items.forEach(item => {
+                    const id = item.guid || item.link;
                     allArticles.push({
-                        id: item.guid || item.link,
-                        title: item.title,
-                        link: item.link,
+                        id, title: item.title, link: item.link,
                         img: item.enclosure.link || item.thumbnail || '',
-                        source: s.name,
+                        source: s.name, category: s.cat,
                         date: new Date(item.pubDate)
                     });
                 });
@@ -97,69 +126,98 @@ async function fetchAll() {
 
     await Promise.all(promises);
     allArticles.sort((a,b) => b.date - a.date);
-    updateSourceSelect();
+    updateInterface();
     render();
 }
 
-// --- AFFICHAGE ---
+// --- INTERFACE ---
+function updateInterface() {
+    const sel = document.getElementById('sourceSelect');
+    const catBar = document.getElementById('catBar');
+    const categories = ["Tous", ...new Set(sources.map(s => s.cat))];
+    
+    sel.innerHTML = '<option value="Tous">Toutes les sources</option>';
+    sources.forEach(s => sel.innerHTML += `<option value="${s.name}">${s.name}</option>`);
+
+    catBar.innerHTML = categories.map(c => 
+        `<button class="${currentCat === c ? 'active-btn' : ''}" onclick="setCat('${c}')">${c}</button>`
+    ).join('');
+
+    document.getElementById('sourceList').innerHTML = sources.map((s, i) => `
+        <div class="source-item">
+            <span><b>${s.name}</b> (${s.cat})</span>
+            <button onclick="removeSource(${i})" style="background:red; padding:5px 10px;">X</button>
+        </div>
+    `).join('');
+}
+
 function render() {
     const grid = document.getElementById('grid');
     const search = document.getElementById('searchInput').value.toLowerCase();
     const sourceFilter = document.getElementById('sourceSelect').value;
 
     let filtered = allArticles.filter(a => {
+        const isArchived = archived.includes(a.id);
+        if (viewArchived) return isArchived; // Si mode archive, on ne montre QUE les archives
+        if (isArchived) return false; // Sinon, on cache les archivés
+        
         const mSearch = a.title.toLowerCase().includes(search);
         const mSource = (sourceFilter === "Tous" || a.source === sourceFilter);
-        const mFav = showOnlyFavs ? favorites.some(f => f.id === a.id) : true;
-        return mSearch && mSource && mFav;
+        const mCat = (currentCat === "Tous" || a.category === currentCat);
+        return mSearch && mSource && mCat;
     });
 
-    // Si on affiche les favoris et qu'on n'est pas en train de chercher dans les news fraiches
-    if(showOnlyFavs) filtered = favorites;
-
-    grid.innerHTML = filtered.map(a => `
-        <div class="card">
+    grid.innerHTML = filtered.map(a => {
+        const isPinned = pinned.includes(a.id);
+        return `
+        <div class="card ${isPinned ? 'pinned' : ''}">
             <a href="${a.link}" target="_blank" style="text-decoration:none; color:inherit;">
                 <img src="${a.img}" onerror="this.src='https://via.placeholder.com/400x200/222/ffd700?text=${a.source}'">
                 <div class="card-content">
                     <div class="card-title">${a.title}</div>
+                    <div class="card-footer">
+                        <span>📍 ${a.source} (${a.category})</span>
+                        <span>🕒 ${a.date.toLocaleString('fr-FR')} (${timeAgo(a.date)})</span>
+                    </div>
                 </div>
             </a>
-            <div class="card-content">
-                <div class="card-footer">
-                    <span>${a.source}</span>
-                    <span class="fav-btn ${favorites.some(f => f.id === a.id) ? 'active' : ''}" onclick="toggleFav('${a.id.replace(/'/g, "\\'")}')">★</span>
-                </div>
+            <div class="actions">
+                <span class="action-btn ${isPinned ? 'active' : ''}" onclick="togglePin('${a.id}')">📌</span>
+                <span class="action-btn" onclick="toggleArchive('${a.id}')">${viewArchived ? '⏪' : '📦'}</span>
             </div>
         </div>
-    `).join('');
+    `}).join('');
 }
 
-// --- LOGIQUE DES SOURCES ---
-function updateSourceSelect() {
-    const sel = document.getElementById('sourceSelect');
-    const val = sel.value;
-    sel.innerHTML = '<option value="Tous">Toutes les sources</option>';
-    sources.forEach(s => {
-        sel.innerHTML += `<option value="${s.name}">${s.name}</option>`;
-    });
-    sel.value = val;
-    
-    // Update List in Modal
-    document.getElementById('sourceList').innerHTML = sources.map((s, i) => `
-        <div class="source-item">
-            <span>${s.name}</span>
-            <button onclick="removeSource(${i})" style="padding:2px 8px; background:red;">X</button>
-        </div>
-    `).join('');
+// --- FONCTIONS ACTIONS ---
+function setCat(c) { currentCat = c; updateInterface(); render(); }
+function toggleArchiveView() { 
+    viewArchived = !viewArchived; 
+    document.getElementById('showArchivedBtn').classList.toggle('active-btn', viewArchived);
+    render(); 
+}
+
+function togglePin(id) {
+    if(pinned.includes(id)) pinned = pinned.filter(p => p !== id);
+    else pinned.push(id);
+    localStorage.setItem('nsc_pinned', JSON.stringify(pinned));
+    render();
+}
+
+function toggleArchive(id) {
+    if(archived.includes(id)) archived = archived.filter(a => a !== id);
+    else archived.push(id);
+    localStorage.setItem('nsc_archived', JSON.stringify(archived));
+    render();
 }
 
 function addSource() {
     const name = document.getElementById('newSourceName').value;
     const url = document.getElementById('newSourceUrl').value;
+    const cat = document.getElementById('newSourceCat').value;
     if(name && url) {
-        sources.push({name, url});
-        localStorage.setItem('news_sources', JSON.stringify(sources));
+        sources.push({name, url, cat});
+        localStorage.setItem('nsc_sources', JSON.stringify(sources));
         fetchAll();
         document.getElementById('newSourceName').value = '';
         document.getElementById('newSourceUrl').value = '';
@@ -168,34 +226,15 @@ function addSource() {
 
 function removeSource(i) {
     sources.splice(i, 1);
-    localStorage.setItem('news_sources', JSON.stringify(sources));
+    localStorage.setItem('nsc_sources', JSON.stringify(sources));
     fetchAll();
 }
 
-// --- FAVORIS ---
-function toggleFav(id) {
-    const index = favorites.findIndex(f => f.id === id);
-    if(index > -1) {
-        favorites.splice(index, 1);
-    } else {
-        const art = allArticles.find(a => a.id === id);
-        if(art) favorites.push(art);
-    }
-    localStorage.setItem('news_favs', JSON.stringify(favorites));
-    render();
-}
-
-function toggleShowFavs() {
-    showOnlyFavs = !showOnlyFavs;
-    document.getElementById('favToggle').classList.toggle('active-cat', showOnlyFavs);
-    render();
-}
-
-// --- EVENTS ---
 document.getElementById('searchInput').addEventListener('input', render);
 document.getElementById('sourceSelect').addEventListener('change', render);
 
 fetchAll();
 </script>
 </body>
-</html>
+    </html>
+    
