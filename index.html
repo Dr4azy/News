@@ -4,19 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Les News sans Cnews</title>
-    
+
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="NewsNSC">
-    <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#121212">
 
-    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAADFai3fAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAABhWlDQ1BJQ0MgcHJvZmlsZQAAeJydks8rBGEcx98as9mSUnKREwdpS9pdyYVfByclByUHe9pZ7Y95m9nZ9Y4DBy4uXm7+Ai4u8nBycfEnuLq4SInXmZ0Zp9mZfSre06un5/N5v5/P830+p88A1StWpY00Anm9YZidCImZ2Xlx/AsI0EALAnSFrWpYocIsTIBX6Xf7H129isGq66H310dfXayGfFCoZfXGAnof3eOalY7Y8eheNWIYAn3DshmGf2TZZIe8YmVD+TjYp/p0vGqfPAn79E4mLAfCAdatB0Zt06O8I7vMGrvK6n7D5Gk9u3Y0H6tD38N26RtoXfQ98p6+U9p+0K+q92vXpG3B0GvR22yGvXfA0GvS5XqYfXfK9T85z+6v90BfR6tB96PfoVv85e/2+TfP11P2C0/oNfW7A98HhTqUfD9ofhA8P4j3S40hXfN26fV66P0v3O88q0/67T9m389LvgD/6f0zD14/uAAAAAlQTFRF////AAAAAgID3YlB1AAAAAF0Uk5TAEDm2GYAAAABYktHRACIBR1IAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH6AMXDA0rFqE/YwAAAGxJREFUeNrt2rENwCAMBEEyA9L9t8wSUIAn6S7+r9Y8+Y7WAgAAAAAAAAAA4M/pC/S6Yp7P3mO9oY/p6XWpX36u2OfDPH/T60m9Xidv6E19fE9v7pff6+QNPXunZfKmZfL2fC9v6AAAAAAAAAAAAH97AwCqCAs9qS6iAAAAAElFTkSuQmCC">
-    <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAADFai3fAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAABhWlDQ1BJQ0MgcHJvZmlsZQAAeJydks8rBGEcx98as9mSUnKREwdpS9pdyYVfByclByUHe9pZ7Y95m9nZ9Y4DBy4uXm7+Ai4u8nBycfEnuLq4SInXmZ0Zp9mZfSre06un5/N5v5/P830+p88A1StWpY00Anm9YZidCImZ2Xlx/AsI0EALAnSFrWpYocIsTIBX6Xf7H129isGq66H310dfXayGfFCoZfXGAnof3eOalY7Y8eheNWIYAn3DshmGf2TZZIe8YmVD+TjYp/p0vGqfPAn79E4mLAfCAdatB0Zt06O8I7vMGrvK6n7D5Gk9u3Y0H6tD38N26RtoXfQ98p6+U9p+0K+q92vXpG3B0GvR22yGvXfA0GvS5XqYfXfK9T85z+6v90BfR6tB96PfoVv85e/2+TfP11P2C0/oNfW7A98HhTqUfD9ofhA8P4j3S40hXfN26fV66P0v3O88q0/67T9m389LvgD/6f0zD14/uAAAAAlQTFRF////AAAAAgID3YlB1AAAAAF0Uk5TAEDm2GYAAAABYktHRACIBR1IAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH6AMXDA0rFqE/YwAAAGxJREFUeNrt2rENwCAMBEEyA9L9t8wSUIAn6S7+r9Y8+Y7WAgAAAAAAAAAA4M/pC/S6Yp7P3mO9oY/p6XWpX36u2OfDPH/T60m9Xidv6E19fE9v7pff6+QNPXunZfKmZfL2fC9v6AAAAAAAAAAAAH97AwCqCAs9qS6iAAAAAElFTkSuQmCC">
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAAADezj9AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH6AMXDA0SHe96VAAAAmhJREFUeNrt20FrE0EYxvH/ZpM0pSkaS6stSIsiXgS9iYIHKXjxInjxInjxInjxInjxInjxInjxInjxInjxInjxInjxInjxIiiIUKm2pS0mTbPd7XjoIajYpE0m7p6dfR8IZmZ3H76878ybZUDX63V9v99vO9Uu0An6AsD/X3X76vY9FIB9ALvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtBt9Y7QNcL+AgB9v9+3XasDdP0G/9p1H8S9P9EAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjQtMDMtMjNUMTE6MTM6MTgrMDA6MDBl6S8JAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDI0LTAzLTIzVDExOjEzOjE4KzAwOjAw7p3P8QAAAABJRU5ErkJggg==">
+    <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAAADezj9AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH6AMXDA0SHe96VAAAAmhJREFUeNrt20FrE0EYxvH/ZpM0pSkaS6stSIsiXgS9iYIHKXjxInjxInjxInjxInjxInjxInjxInjxInjxInjxInjxInjxIiiIUKm2pS0mTbPd7XjoIajYpE0m7p6dfR8IZmZ3H76878ybZUDX63V9v99vO9Uu0An6AsD/X3X76vY9FIB9ALvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtAVAKvVrtBt9Y7QNcL+AgB9v9+3XasDdP0G/9p1H8S9P9EAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjQtMDMtMjNUMTE6MTM6MTgrMDA6MDBl6S8JAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDI0LTAzLTIzVDExOjEzOjE4KzAwOjAw7p3P8QAAAABJRU5ErkJggg==">
 
     <style>
         /* --- SYSTÈME DE THÈMES --- */
         :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --success: #2e7d32; --read-bg: var(--accent); --read-txt: #000; }
+        
         body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; --read-bg: #8e44ad; --read-txt: #fff; }
         body.theme-matrix  { --bg: #000000; --card: #001100; --accent: #00ff41; --text: #00ff41; --meta: #008f11; --border: #003b00; --read-bg: #00ff41; --read-txt: #000; }
         body.theme-dracula { --bg: #282a36; --card: #44475a; --accent: #bd93f9; --text: #f8f8f2; --meta: #6272a4; --border: #44475a; --read-bg: #bd93f9; --read-txt: #000; }
@@ -55,8 +56,23 @@
         .rss-help { background: rgba(0,0,0,0.2); border: 1px dashed var(--accent); padding: 10px; font-size: 0.8rem; border-radius: 8px; margin-bottom: 15px; color: var(--meta); line-height: 1.4; }
         
         .source-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
-        .source-grid { display: grid; grid-template-columns: 1fr 1fr 40px 40px; gap: 5px; align-items: center; margin-bottom: 5px; }
-        .source-grid input { width: 100%; box-sizing: border-box; padding: 8px; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; font-size: 0.8rem; }
+        .source-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr 40px 40px; 
+            gap: 5px; 
+            align-items: center; 
+            margin-bottom: 5px; 
+        }
+        .source-grid input { 
+            width: 100%; 
+            box-sizing: border-box; 
+            padding: 8px; 
+            background: var(--bg); 
+            border: 1px solid var(--border); 
+            color: var(--text); 
+            border-radius: 4px; 
+            font-size: 0.8rem; 
+        }
         .pin-btn { min-width: 40px; background: var(--border); color: var(--text); border: none; cursor: pointer; height: 35px; border-radius: 4px; }
         .pin-btn.pinned { background: var(--accent); color: #000; }
         .del-btn { min-width: 40px; background: #ef4444; color: white; border: none; cursor: pointer; height: 35px; border-radius: 4px; }
@@ -95,6 +111,10 @@
         </div>
         <div class="option-box">
             <h3>➕ Ajouter une source</h3>
+            <div class="rss-help">
+                Pour ajouter un média, cherchez "Flux RSS [Nom du site]" sur Google. Copiez l'adresse du lien (souvent un fichier .xml) et collez-la ci-dessus.<br>
+                Exemple : https://www.lemonde.fr/rss/une.xml
+            </div>
             <input type="text" id="newName" placeholder="Nom" style="width:94%; margin-bottom:5px;">
             <input type="text" id="newUrl" placeholder="URL RSS" style="width:94%; margin-bottom:5px;">
             <input type="text" id="newCat" placeholder="Catégorie" style="width:94%; margin-bottom:10px;">
@@ -270,5 +290,4 @@ document.getElementById('sourceSelect').addEventListener('change', render);
 fetchAll();
 </script>
 </body>
-    </html>
-    
+</html>
