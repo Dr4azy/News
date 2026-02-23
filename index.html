@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Sans CNews v16</title>
+    <title>News Sans CNews v17</title>
     <style>
         :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; }
         body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; }
@@ -40,7 +40,7 @@
 <div class="sticky-controls">
     <div class="controls">
         <div class="row">
-            <input type="text" id="search" style="flex-grow:1" placeholder="🔍 Rechercher...">
+            <input type="text" id="search" style="flex-grow:1" placeholder="🔍 Chercher...">
             <button id="refreshBtn" onclick="fetchAll()" title="Actualiser">🔄</button>
             <button onclick="document.getElementById('sourceModal').style.display='block'">⚙️</button>
         </div>
@@ -106,22 +106,20 @@ async function fetchAll() {
     refreshBtn.classList.add('spin');
     
     let sourceBundles = {};
-    document.getElementById('grid').innerHTML = "<div style='text-align:center; padding:50px; color:#888;'>Actualisation des images...</div>";
+    document.getElementById('grid').innerHTML = "<div style='text-align:center; padding:50px; color:#888;'>Scan des images et news...</div>";
     
     await Promise.all(sources.map(async s => {
         try {
             const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(s.url)}&t=${Date.now()}`);
             const data = await res.json();
             if(data && data.status === 'ok') {
-                sourceBundles[s.name] = data.items.map(item => {
-                    // LOGIQUE D'IMAGE AMÉLIORÉE (NYT, NASA, etc.)
+                // TRI CHRONOLOGIQUE PAR SOURCE
+                const sortedItems = data.items.sort((a,b) => new Date(b.pubDate) - new Date(a.pubDate));
+                
+                sourceBundles[s.name] = sortedItems.map(item => {
                     let img = "";
-                    
-                    // 1. Chercher dans Enclosure (Standard)
                     if (item.enclosure && item.enclosure.link) img = item.enclosure.link;
-                    // 2. Chercher dans Thumbnail (Spécifique NYT/API)
                     if (!img && item.thumbnail) img = item.thumbnail;
-                    // 3. Chercher dans le contenu ou la description (Regex)
                     if (!img && (item.content || item.description)) {
                         const content = item.content || item.description;
                         const match = content.match(/<img[^>]+src="([^">]+)"/);
@@ -220,7 +218,7 @@ function render() {
                         <b>${a.source}</b> • ${a.category}<br>
                         🕒 ${new Date(a.date).toLocaleDateString()} (${timeAgo(a.date)})
                         <button onclick="event.preventDefault(); toggleSave('${a.id}')" style="margin-top:12px; width:100%; padding:10px; background:${inVault?'#2e7d32':'transparent'}; border:1px solid ${inVault?'#2e7d32':'#444'}; color:${inVault?'white':'#888'}; border-radius:8px; font-weight:bold; cursor:pointer;">
-                            ${inVault ? '💾 SAUVÉ' : '💾 GARDER'}
+                            ${inVault ? '💾 SAUVEGARDÉ' : '💾 SAUVEGARDER'}
                         </button>
                     </div>
                 </div>
