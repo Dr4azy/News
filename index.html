@@ -3,20 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Sans CNews v35</title>
+    <title>Les News dans Cnews</title>
     <style>
-        /* --- SYSTÈME DE THÈMES SOMBRES --- */
-        :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --success: #2e7d32; }
+        /* --- SYSTÈME DE THÈMES ÉTENDU --- */
+        :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --success: #2e7d32; --read-bg: var(--accent); --read-txt: #000; }
         
-        body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; --success: #1b5e20; }
-        body.theme-matrix  { --bg: #000000; --card: #001100; --accent: #00ff41; --text: #00ff41; --meta: #008f11; --border: #003b00; --success: #00ff41; }
-        body.theme-dracula { --bg: #282a36; --card: #44475a; --accent: #bd93f9; --text: #f8f8f2; --meta: #6272a4; --border: #44475a; --success: #50fa7b; }
-        body.theme-ocean   { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f1f5f9; --meta: #94a3b8; --border: #334155; --success: #10b981; }
+        /* Thèmes Sombres */
+        body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; --read-txt: #fff; }
+        body.theme-matrix  { --bg: #000000; --card: #001100; --accent: #00ff41; --text: #00ff41; --meta: #008f11; --border: #003b00; --read-txt: #000; }
+        body.theme-dracula { --bg: #282a36; --card: #44475a; --accent: #bd93f9; --text: #f8f8f2; --meta: #6272a4; --border: #44475a; --read-txt: #000; }
+        body.theme-ocean   { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f1f5f9; --meta: #94a3b8; --border: #334155; --read-txt: #000; }
+        body.theme-blood   { --bg: #1a0505; --card: #2d0a0a; --accent: #ff4d4d; --text: #ffcccc; --meta: #a35a5a; --border: #4d1414; --read-txt: #fff; }
+        body.theme-forest  { --bg: #051a10; --card: #0a2d1d; --accent: #4ade80; --text: #ccffeb; --meta: #5a7a6a; --border: #144d32; --read-txt: #000; }
+        body.theme-gold    { --bg: #1a1605; --card: #2d260a; --accent: #fbbf24; --text: #fef3c7; --meta: #78350f; --border: #4d4414; --read-txt: #000; }
+        
+        /* Thème Cyber2 (Bouton Gris) */
+        body.theme-cyber2  { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --read-bg: #444; --read-txt: #fff; }
 
-        /* Verrouillage du scroll arrière-plan */
-        body.modal-open { overflow: hidden; }
+        /* Nouveaux thèmes variés */
+        body.theme-vapor   { --bg: #1a1a2e; --card: #16213e; --accent: #e94560; --text: #ffffff; --meta: #95a5a6; --border: #0f3460; --read-txt: #fff; }
+        body.theme-neon    { --bg: #000; --card: #111; --accent: #ff00ff; --text: #00ffff; --meta: #777; --border: #333; --read-txt: #000; }
+        body.theme-slate   { --bg: #1e293b; --card: #334155; --accent: #94a3b8; --text: #f8fafc; --meta: #64748b; --border: #475569; --read-txt: #000; }
+        body.theme-coffee  { --bg: #1c1917; --card: #292524; --accent: #d6d3d1; --text: #fafaf9; --meta: #a8a29e; --border: #44403c; --read-txt: #000; }
+        body.theme-copper  { --bg: #1a120b; --card: #2d1e12; --accent: #d97706; --text: #fef3c7; --meta: #92400e; --border: #452e1a; --read-txt: #fff; }
 
         body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: 0.3s; }
+        body.modal-open { overflow: hidden; }
+        
         header { background: rgba(0,0,0,0.2); padding: 10px; text-align: center; border-bottom: 1px solid var(--border); }
         .sticky-controls { position: sticky; top: 0; z-index: 1000; background: var(--bg); border-bottom: 2px solid var(--accent); }
         .controls { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
@@ -24,7 +37,6 @@
         
         input, select, button { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.9rem; }
 
-        /* Correction Boutons Catégories (Jaunes par défaut) */
         .btn-cat { background: var(--card); color: var(--text); border: 1px solid var(--border); white-space: nowrap; cursor: pointer; }
         .btn-cat.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: bold; }
 
@@ -34,33 +46,19 @@
         .card-content { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; }
         .card-title { font-weight: bold; font-size: 1.05rem; margin-bottom: 8px; line-height: 1.3; color: var(--text); text-decoration: none; }
         
-        .read-btn { background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: auto; cursor: pointer; }
-        body.theme-night .read-btn, body.theme-ocean .read-btn, body.theme-dracula .read-btn { color: #fff; }
+        .read-btn { background: var(--read-bg); color: var(--read-txt); border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: auto; cursor: pointer; }
 
-        /* --- MODE LECTURE OPTIMISÉ --- */
+        /* Bouton sauvegarder (Devient Vert quand cliqué) */
+        .save-btn { background: transparent; color: var(--meta); border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-top: 8px; cursor: pointer; transition: 0.2s; }
+        .save-btn.saved { background: #2e7d32 !important; color: white !important; border-color: #2e7d32; }
+
+        /* MODE LECTURE IMAGES */
         .full-modal { display: none; position: fixed; inset: 0; z-index: 4000; overflow-y: auto; background: var(--bg); }
         .modal-header { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--bg); border-bottom: 1px solid var(--border); z-index: 10; }
         .modal-container { max-width: 800px; margin: 0 auto; padding: 20px; }
-        
-        /* Ajustement des images dans le lecteur */
-        #readerView img { 
-            max-width: 100%; 
-            height: auto !important; 
-            border-radius: 8px; 
-            margin: 15px 0;
-            display: block;
-        }
-        #readerView iframe { max-width: 100%; border: none; }
+        #readerView img { max-width: 100%; height: auto !important; border-radius: 8px; margin: 15px 0; display: block; }
 
         .option-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
-        .source-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
-        .source-grid { display: flex; gap: 5px; align-items: center; }
-        .source-grid input { flex: 1; padding: 5px; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; }
-        
-        .pin-btn { min-width: 40px; background: var(--border); color: var(--text); border: none; cursor: pointer; }
-        .pin-btn.pinned { background: var(--accent); color: #000; }
-        .del-btn { min-width: 40px; background: #ef4444; color: white; border: none; cursor: pointer; }
-
         .spin { animation: rotation 1s infinite linear; }
         @keyframes rotation { from { transform: rotate(0deg); } to { transform: rotate(359deg); } }
     </style>
@@ -82,42 +80,43 @@
     </div>
     <div class="modal-container">
         <div class="option-box">
-            <h3>🎨 Thème</h3>
+            <h3>🎨 Palette</h3>
             <select id="themeSelect" onchange="changeTheme(this.value)" style="width: 100%;">
-                <option value="cyber">Cyber (Jaune/Noir)</option>
-                <option value="night">Nuit (Violet/Noir)</option>
-                <option value="matrix">Matrix (Vert/Noir)</option>
-                <option value="dracula">Dracula (Gothique)</option>
-                <option value="ocean">Océan (Bleu nuit)</option>
+                <option value="cyber">Cyber (Jaune)</option>
+                <option value="cyber2">Cyber 2 (Bouton Gris)</option>
+                <option value="night">Nuit (Violet)</option>
+                <option value="matrix">Matrix (Vert)</option>
+                <option value="dracula">Dracula</option>
+                <option value="ocean">Océan</option>
+                <option value="blood">Blood</option>
+                <option value="forest">Forest</option>
+                <option value="gold">Gold</option>
+                <option value="vapor">Vaporwave</option>
+                <option value="neon">Neon</option>
+                <option value="slate">Slate</option>
+                <option value="coffee">Coffee</option>
+                <option value="copper">Copper</option>
             </select>
         </div>
         <div class="option-box">
-            <h3>➕ Source RSS</h3>
-            <input type="text" id="newName" placeholder="Nom" style="width:94%; margin-bottom:5px;">
-            <input type="text" id="newUrl" placeholder="URL .xml" style="width:94%; margin-bottom:5px;">
-            <input type="text" id="newCat" placeholder="Dossier" style="width:94%; margin-bottom:10px;">
-            <button onclick="addSource()" style="width:100%; background:var(--accent); color:#000; font-weight:bold;">AJOUTER SOURCE</button>
-        </div>
-        <div class="option-box">
-            <h3>📡 Gestion</h3>
             <div id="sourceList"></div>
         </div>
     </div>
 </div>
 
-<header><h1>les news sans cnews</h1></header>
+<header><h1>Les News dans Cnews</h1></header>
 
 <div class="sticky-controls">
     <div class="controls">
         <div class="row">
-            <input type="text" id="search" style="flex-grow:1" placeholder="Rechercher...">
+            <input type="text" id="search" style="flex-grow:1" placeholder="Chercher...">
             <button id="refreshBtn" onclick="fetchAll()">🔄</button>
             <button onclick="openModal('sourceModal')">⚙️</button>
         </div>
         <div id="catBar" class="row"></div>
         <div class="row">
-            <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Sources</option></select>
-            <button id="vaultBtn" onclick="toggleVault()" style="min-width: 80px;">💾 Coffre</button>
+            <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Toutes les sources</option></select>
+            <button id="vaultBtn" onclick="toggleVault()">💾 Coffre</button>
         </div>
     </div>
 </div>
@@ -126,26 +125,30 @@
 
 <script>
 let sources = JSON.parse(localStorage.getItem('nsc_sources')) || [
-    { name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml", cat: "Info", pinned: true }
+    { name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml", cat: "Info", pinned: true },
+    { name: "NASA", url: "https://www.nasa.gov/rss/dyn/breaking_news.rss", cat: "Espace", pinned: false }
 ];
 let vault = JSON.parse(localStorage.getItem('nsc_vault')) || [];
 let allArticles = [];
 let isVaultView = false;
 let currentCat = "Tous";
 
-function openModal(id) {
-    document.getElementById(id).style.display = 'block';
-    document.body.classList.add('modal-open');
-}
-
-function closeModal(id) {
-    document.getElementById(id).style.display = 'none';
-    document.body.classList.remove('modal-open');
-}
+function openModal(id) { document.getElementById(id).style.display = 'block'; document.body.classList.add('modal-open'); }
+function closeModal(id) { document.getElementById(id).style.display = 'none'; document.body.classList.remove('modal-open'); }
 
 function changeTheme(theme) {
     document.getElementById('bodyTag').className = (theme === 'cyber') ? "" : "theme-" + theme;
     localStorage.setItem('nsc_theme', theme);
+}
+
+function timeSince(date) {
+    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+    let interval = seconds / 3600;
+    if (interval > 24) return Math.floor(interval / 24) + "j";
+    if (interval >= 1) return Math.floor(interval) + "h";
+    interval = seconds / 60;
+    if (interval >= 1) return Math.floor(interval) + "m";
+    return Math.floor(seconds) + "s";
 }
 
 async function fetchAll() {
@@ -167,20 +170,10 @@ async function fetchAll() {
         } catch(e) {}
     }));
 
-    let topPinned = [];
     let restOfNews = [];
-    let pinnedNames = sources.filter(s => s.pinned).map(s => s.name);
-
-    Object.keys(sourceBundles).forEach(name => {
-        let bundle = sourceBundles[name];
-        if (pinnedNames.includes(name) && bundle.length > 0) {
-            topPinned.push({...bundle[0], isTop: true});
-            restOfNews.push(...bundle.slice(1));
-        } else { restOfNews.push(...bundle); }
-    });
-
+    Object.keys(sourceBundles).forEach(name => restOfNews.push(...sourceBundles[name]));
     restOfNews.sort((a,b) => new Date(b.date) - new Date(a.date));
-    allArticles = [...topPinned, ...restOfNews];
+    allArticles = restOfNews;
     document.getElementById('refreshBtn').classList.remove('spin');
     updateUI(); render();
 }
@@ -195,14 +188,19 @@ function render() {
         a.title.toLowerCase().includes(search) && (currentCat === "Tous" || a.category === currentCat) && (sourceF === "Tous" || a.source === sourceF)
     ).map(a => {
         const inVault = vault.some(v => v.id === a.id);
+        const timeStr = timeSince(a.date);
         return `
-        <div class="card" style="${a.isTop ? 'border: 1px solid var(--accent)' : ''}">
+        <div class="card">
             <img src="${a.img || 'https://via.placeholder.com/400x200/222/555?text='+a.source}" onclick="openReader('${a.id}')">
             <div class="card-content">
-                <a href="${a.link}" target="_blank" class="card-title">${a.isTop ? '📌 ':''}${a.title}</a>
-                <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">${a.source}</div>
-                <button class="read-btn" onclick="openReader('${a.id}')">LIRE</button>
-                <button class="save-btn ${inVault?'saved':''}" style="margin-top:8px; font-size:0.8rem; border:1px solid var(--border); background:none; color:var(--meta); border-radius:5px; padding:5px;" onclick="toggleSave('${a.id}')">${inVault?'SAUVÉ':'SAUVER'}</button>
+                <a href="${a.link}" target="_blank" class="card-title">${a.title}</a>
+                <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">
+                    ${a.source} • ${new Date(a.date).toLocaleDateString()} (${timeStr})
+                </div>
+                <button class="read-btn" onclick="openReader('${a.id}')">LIRE L'ARTICLE</button>
+                <button class="save-btn ${inVault?'saved':''}" onclick="toggleSave('${a.id}')">
+                    ${inVault ? '💾 SAUVEGARDÉ' : '💾 SAUVEGARDER'}
+                </button>
             </div>
         </div>`
     }).join('');
@@ -212,7 +210,7 @@ function openReader(id) {
     const art = [...allArticles, ...vault].find(a => a.id === id);
     if(!art) return;
     document.getElementById('readerSource').innerText = art.source;
-    document.getElementById('readerView').innerHTML = `<h2 style="margin-top:0;">${art.title}</h2><div style="line-height:1.7; font-size:1.1rem;">${art.content}</div><br><center><a href="${art.link}" target="_blank" style="color:var(--accent)">Lire l'original</a></center>`;
+    document.getElementById('readerView').innerHTML = `<h2>${art.title}</h2><p style="color:var(--meta)">${new Date(art.date).toLocaleString()}</p><hr border="0" style="border-top:1px solid var(--border)"><div style="line-height:1.7;">${art.content}</div>`;
     openModal('readerModal');
 }
 
@@ -224,32 +222,12 @@ function toggleSave(id) {
     render();
 }
 
-function addSource() {
-    const n = document.getElementById('newName').value, u = document.getElementById('newUrl').value, c = document.getElementById('newCat').value;
-    if(n && u) {
-        sources.push({name:n, url:u, cat:c||"Info", pinned: false});
-        localStorage.setItem('nsc_sources', JSON.stringify(sources));
-        updateUI(); fetchAll();
-    }
-}
-
 function updateUI() {
     const cats = ["Tous", ...new Set(sources.map(s => s.cat))];
-    document.getElementById('catBar').innerHTML = cats.map(c => 
-        `<button class="btn-cat ${currentCat===c?'active':''}" onclick="currentCat='${c}'; updateUI(); render();">${c}</button>`
-    ).join('');
-    
+    document.getElementById('catBar').innerHTML = cats.map(c => `<button class="btn-cat ${currentCat===c?'active':''}" onclick="currentCat='${c}'; updateUI(); render();">${c}</button>`).join('');
     const sel = document.getElementById('sourceSelect');
     sel.innerHTML = '<option value="Tous">Toutes les sources</option>' + sources.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
-    
-    document.getElementById('sourceList').innerHTML = sources.map((s, i) => `
-        <div class="source-item">
-            <div class="source-grid">
-                <input type="text" value="${s.name}" onchange="sources[${i}].name=this.value; localStorage.setItem('nsc_sources', JSON.stringify(sources));">
-                <button class="pin-btn ${s.pinned?'pinned':''}" onclick="sources[${i}].pinned=!sources[i].pinned; localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll();">${s.pinned?'📌':'📍'}</button>
-                <button class="del-btn" onclick="sources.splice(${i},1); localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll();">X</button>
-            </div>
-        </div>`).join('');
+    document.getElementById('sourceList').innerHTML = '<h3>Sources</h3>' + sources.map((s, i) => `<div style="display:flex; gap:10px; margin-bottom:5px;"><span>${s.name}</span></div>`).join('');
 }
 
 function toggleVault() { isVaultView = !isVaultView; document.getElementById('vaultBtn').innerText = isVaultView ? "FLUX" : "COFFRE"; render(); }
@@ -261,5 +239,4 @@ document.getElementById('sourceSelect').addEventListener('change', render);
 fetchAll();
 </script>
 </body>
-    </html>
-    
+</html>
