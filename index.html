@@ -45,14 +45,29 @@
         .option-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
         .rss-help { background: rgba(0,0,0,0.2); border: 1px dashed var(--accent); padding: 10px; font-size: 0.8rem; border-radius: 8px; margin-bottom: 15px; color: var(--meta); line-height: 1.4; }
         
-        /* --- CORRECTION SECTION SOURCES --- */
+        /* --- ADAPTATION TAILLE BLOCS SOURCES (v1.2) --- */
         .source-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
-        .source-grid { display: flex; gap: 5px; align-items: center; margin-bottom: 5px; flex-wrap: wrap; }
-        .source-grid input { flex: 1; min-width: 120px; padding: 8px; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; font-size: 0.8rem; }
-        .pin-btn { min-width: 40px; background: var(--border); color: var(--text); border: none; cursor: pointer; height: 35px; }
+        .source-grid { 
+            display: grid; 
+            grid-template-columns: 2fr 1fr 40px 40px; /* Adapte les proportions sur une seule ligne */
+            gap: 5px; 
+            align-items: center; 
+            margin-bottom: 5px; 
+        }
+        .source-grid input { 
+            width: 100%; /* Occupe tout l'espace de sa colonne de grille */
+            box-sizing: border-box; 
+            padding: 8px; 
+            background: var(--bg); 
+            border: 1px solid var(--border); 
+            color: var(--text); 
+            border-radius: 4px; 
+            font-size: 0.8rem; 
+        }
+        .pin-btn { min-width: 40px; background: var(--border); color: var(--text); border: none; cursor: pointer; height: 35px; border-radius: 4px; }
         .pin-btn.pinned { background: var(--accent); color: #000; }
-        .del-btn { min-width: 40px; background: #ef4444; color: white; border: none; cursor: pointer; height: 35px; }
-        /* --------------------------------- */
+        .del-btn { min-width: 40px; background: #ef4444; color: white; border: none; cursor: pointer; height: 35px; border-radius: 4px; }
+        /* --------------------------------------------- */
 
         .spin { animation: rotation 1s infinite linear; }
         @keyframes rotation { from { transform: rotate(0deg); } to { transform: rotate(359deg); } }
@@ -267,4 +282,5 @@ document.getElementById('sourceSelect').addEventListener('change', render);
 fetchAll();
 </script>
 </body>
-</html>
+    </html>
+    
