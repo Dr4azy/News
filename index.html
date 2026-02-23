@@ -3,159 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Sans CNews v17 - Stable</title>
+    <title>News Sans CNews v21</title>
     <style>
-        :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; }
-        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; }
-        header { background: #1a1a1a; padding: 10px; text-align: center; border-bottom: 1px solid #333; }
+        /* Variables de thèmes */
+        :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; }
+        
+        body.theme-journal { --bg: #f4ecd8; --card: #efe6cf; --accent: #2c3e50; --text: #2c3e50; --meta: #5d6d7e; }
+        body.theme-night { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; }
+        body.theme-light { --bg: #ffffff; --card: #f0f0f0; --accent: #2980b9; --text: #222; --meta: #777; }
+
+        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: background 0.3s; }
+        header { background: rgba(0,0,0,0.2); padding: 10px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
         header h1 { font-size: 1.1rem; margin: 0; letter-spacing: 1px; text-transform: lowercase; }
-        .sticky-controls { position: sticky; top: 0; z-index: 1000; background: #121212; border-bottom: 2px solid var(--accent); }
+        
+        .sticky-controls { position: sticky; top: 0; z-index: 1000; background: var(--bg); border-bottom: 2px solid var(--accent); padding-bottom: 5px; }
         .controls { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
         .row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; align-items: center; }
-        input, select, button { background: #252525; color: white; border: 1px solid #444; padding: 10px; border-radius: 8px; font-size: 0.9rem; }
         
-        .btn-cat { white-space: nowrap; cursor: pointer; border: 1px solid #444; padding: 6px 12px; transition: 0.2s; }
-        .btn-cat.active { background: var(--accent) !important; color: #000 !important; font-weight: bold; border-color: var(--accent); }
+        input, select, button { background: rgba(125,125,125,0.1); color: var(--text); border: 1px solid rgba(125,125,125,0.3); padding: 10px; border-radius: 8px; font-size: 0.9rem; }
+        
+        .btn-cat { white-space: nowrap; cursor: pointer; padding: 6px 12px; }
+        .btn-cat.active { background: var(--accent) !important; color: white !important; font-weight: bold; border-color: var(--accent); }
+        body:not(.theme-journal):not(.theme-light) .btn-cat.active { color: #000 !important; }
 
         #grid { padding: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #222; display: flex; flex-direction: column; height: 100%; }
-        .card img { width: 100%; height: 190px; object-fit: cover; background: #222; display: block; }
-        .card-content { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .card-title { font-weight: bold; font-size: 1rem; margin-bottom: 8px; line-height: 1.3; color: #fff; }
-        .card-meta { font-size: 0.75rem; color: #aaa; border-top: 1px solid #333; padding-top: 8px; }
+        .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid rgba(125,125,125,0.1); display: flex; flex-direction: column; }
+        .card img { width: 100%; height: 180px; object-fit: cover; background: rgba(0,0,0,0.1); cursor: pointer; }
+        .card-content { padding: 12px; }
+        .card-title { font-weight: bold; font-size: 1rem; margin-bottom: 8px; line-height: 1.3; cursor: pointer; }
         
+        .read-btn { background: var(--accent); color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: 10px; width: 100%; cursor: pointer; }
+        body:not(.theme-journal):not(.theme-light) .read-btn { color: #000; }
+        .save-btn { background: transparent; color: var(--meta); border: 1px solid var(--meta); padding: 8px; border-radius: 6px; margin-top: 5px; width: 100%; cursor: pointer; }
+
+        /* Modal Mode Lecture Adaptatif */
+        #readerModal { display: none; position: fixed; inset: 0; z-index: 4000; overflow-y: auto; padding: 20px; font-family: 'Georgia', serif; }
+        body.theme-journal #readerModal, body.theme-light #readerModal { background: #fbfbfb; color: #222; }
+        body:not(.theme-journal):not(.theme-light) #readerModal { background: #121212; color: #eee; }
+        
+        .reader-content { max-width: 700px; margin: 0 auto; line-height: 1.7; font-size: 1.2rem; }
+        .reader-close { position: sticky; top: 0; background: var(--accent); color: #000; padding: 10px; border: none; border-radius: 50%; width: 40px; height: 40px; font-weight: bold; cursor: pointer; }
+
         #sourceModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; padding: 20px; overflow-y: auto; }
-        #helpModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 3000; padding: 20px; align-items: center; justify-content: center; }
-        .help-content { background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid var(--accent); max-width: 500px; line-height: 1.6; }
-        .source-item { background: #252525; margin-bottom: 10px; border-radius: 8px; padding: 12px; border: 1px solid #444; }
-        
         .spin { animation: rotation 1s infinite linear; }
         @keyframes rotation { from { transform: rotate(0deg); } to { transform: rotate(359deg); } }
     </style>
 </head>
-<body>
+<body id="bodyTag">
+
+<div id="readerModal">
+    <button class="reader-close" onclick="closeReader()">✕</button>
+    <div id="readerView" class="reader-content"></div>
+</div>
 
 <header><h1>les news sans cnews</h1></header>
 
 <div class="sticky-controls">
     <div class="controls">
         <div class="row">
-            <input type="text" id="search" style="flex-grow:1" placeholder="🔍 Rechercher...">
-            <button id="refreshBtn" onclick="fetchAll()" title="Actualiser">🔄</button>
+            <input type="text" id="search" style="flex-grow:1" placeholder="🔍 Chercher...">
+            <select id="themeSelect" onchange="changeTheme(this.value)" style="width: 100px;">
+                <option value="cyber">Cyber</option>
+                <option value="journal">Journal</option>
+                <option value="night">Nuit</option>
+                <option value="light">Clair</option>
+            </select>
+            <button id="refreshBtn" onclick="fetchAll()">🔄</button>
             <button onclick="document.getElementById('sourceModal').style.display='block'">⚙️</button>
         </div>
         <div id="catBar" class="row"></div>
         <div class="row">
-            <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Toutes les sources</option></select>
-            <button id="vaultBtn" onclick="toggleVault()" style="background:#333; min-width: 90px;">💾 Coffre</button>
+            <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Sources</option></select>
+            <button id="vaultBtn" onclick="toggleVault()" style="background:#333; min-width: 80px;">💾 Coffre</button>
         </div>
     </div>
 </div>
 
 <div id="grid"></div>
 
-<div id="helpModal">
-    <div class="help-content">
-        <h2 style="color:var(--accent); margin-top:0;">C'est quoi un lien RSS ? ❓</h2>
-        <p>Un flux <b>RSS</b> est un lien spécial qui contient les derniers articles d'un site.</p>
-        <p><b>Exemples :</b> <br>
-        - <i>nytimes.com/services/xml/rss/nyt/HomePage.xml</i><br>
-        - <i>lemonde.fr/rss/une.xml</i></p>
-        <button onclick="document.getElementById('helpModal').style.display='none'" style="width:100%; background:var(--accent); color:black; font-weight:bold; margin-top:10px; padding:12px; border:none; border-radius:8px; cursor:pointer;">J'AI COMPRIS</button>
-    </div>
-</div>
-
 <div id="sourceModal">
     <h3>⚙️ Configuration</h3>
-    <div style="background:#1a1a1a; padding:15px; border-radius:10px; border:1px solid var(--accent); margin-bottom:20px;">
-        <input type="text" id="newName" placeholder="Nom du média" style="width:95%; margin-bottom:8px;">
-        <div style="display:flex; gap:5px; align-items:center; width:100%; margin-bottom:8px;">
-            <input type="text" id="newUrl" placeholder="Lien RSS" style="flex-grow:1">
-            <button onclick="document.getElementById('helpModal').style.display='flex'" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">❓</button>
-        </div>
-        <input type="text" id="newCat" placeholder="Catégorie" style="width:95%; margin-bottom:12px;">
-        <button onclick="addSource()" style="width:100%; background:var(--accent); color:black; font-weight:bold;">AJOUTER</button>
-    </div>
     <div id="sourceList"></div>
-    <button onclick="document.getElementById('sourceModal').style.display='none'" style="width:100%; margin-top:20px; background:#444;">FERMER</button>
+    <button onclick="document.getElementById('sourceModal').style.display='none'" style="width:100%; margin-top:20px; padding:15px;">FERMER</button>
 </div>
 
 <script>
 let sources = JSON.parse(localStorage.getItem('nsc_sources')) || [
-    { name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml", cat: "Info", pinned: false },
-    { name: "NY Times", url: "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml", cat: "International", pinned: false },
-    { name: "NASA", url: "https://www.nasa.gov/rss/dyn/breaking_news.rss", cat: "Espace", pinned: true }
+    { name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml", cat: "Info" },
+    { name: "NY Times", url: "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml", cat: "International" },
+    { name: "NASA", url: "https://www.nasa.gov/rss/dyn/breaking_news.rss", cat: "Espace" }
 ];
 let vault = JSON.parse(localStorage.getItem('nsc_vault')) || [];
-let currentCat = "Tous";
-let allArticlesParsed = [];
+let allArticles = [];
 let isVaultView = false;
+let currentCat = "Tous";
 
-function timeAgo(dateStr) {
-    try {
-        const seconds = Math.floor((new Date() - new Date(dateStr)) / 1000);
-        if (seconds < 3600) return Math.floor(seconds/60) + "m";
-        if (seconds < 86400) return Math.floor(seconds/3600) + "h";
-        return Math.floor(seconds/86400) + "j";
-    } catch(e) { return "?"; }
+// Gestion du thème
+function changeTheme(theme) {
+    const b = document.getElementById('bodyTag');
+    b.className = "";
+    if(theme !== 'cyber') b.classList.add('theme-' + theme);
+    localStorage.setItem('nsc_theme', theme);
+}
+// Charger thème sauvegardé
+if(localStorage.getItem('nsc_theme')) {
+    const t = localStorage.getItem('nsc_theme');
+    document.getElementById('themeSelect').value = t;
+    changeTheme(t);
 }
 
 async function fetchAll() {
     if(isVaultView) return;
-    const refreshBtn = document.getElementById('refreshBtn');
-    refreshBtn.classList.add('spin');
-    
+    document.getElementById('refreshBtn').classList.add('spin');
     let sourceBundles = {};
-    document.getElementById('grid').innerHTML = "<div style='text-align:center; padding:50px; color:#888;'>Récupération des news...</div>";
     
     await Promise.all(sources.map(async s => {
         try {
             const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(s.url)}&t=${Date.now()}`);
             const data = await res.json();
-            if(data && data.status === 'ok') {
-                // Tri par date pour chaque source
-                const sortedItems = data.items.sort((a,b) => new Date(b.pubDate) - new Date(a.pubDate));
-                
-                sourceBundles[s.name] = sortedItems.map(item => {
+            if(data.status === 'ok') {
+                sourceBundles[s.name] = data.items.map(item => {
                     let img = item.enclosure?.link || item.thumbnail || "";
                     if (!img && (item.content || item.description)) {
                         const m = (item.content || item.description).match(/<img[^>]+src="([^">]+)"/);
                         if(m) img = m[1];
                     }
-
                     return {
                         id: item.guid || item.link, title: item.title, link: item.link,
                         img: img, source: s.name, category: s.cat,
-                        date: item.pubDate, isPinnedSource: s.pinned
+                        date: item.pubDate, fullContent: item.content || item.description
                     };
                 });
             }
-        } catch(e) { console.error(e); }
+        } catch(e) {}
     }));
 
-    let pinnedHeads = [];
-    let normalPool = [];
-    Object.keys(sourceBundles).forEach(name => {
-        const srcCfg = sources.find(s => s.name === name);
-        let items = sourceBundles[name];
-        if (srcCfg?.pinned && items.length > 0) {
-            pinnedHeads.push(items[0]);
-            normalPool.push(items.slice(1));
-        } else {
-            normalPool.push(items);
-        }
-    });
-    
-    pinnedHeads.sort((a,b) => new Date(b.date) - new Date(a.date));
     let alternating = [];
-    let max = Math.max(...normalPool.map(l => l.length), 0);
+    let pools = Object.values(sourceBundles);
+    let max = Math.max(...pools.map(p => p.length), 0);
     for (let i = 0; i < max; i++) {
-        normalPool.forEach(list => { if (list[i]) alternating.push(list[i]); });
+        pools.forEach(p => { if(p[i]) alternating.push(p[i]); });
     }
-
-    allArticlesParsed = [...pinnedHeads, ...alternating];
-    refreshBtn.classList.remove('spin');
+    allArticles = alternating;
+    document.getElementById('refreshBtn').classList.remove('spin');
     updateUI();
+    render();
+}
+
+function render() {
+    const grid = document.getElementById('grid');
+    const search = document.getElementById('search').value.toLowerCase();
+    const sourceF = document.getElementById('sourceSelect').value;
+    let list = isVaultView ? vault : allArticles;
+
+    let filtered = list.filter(a => 
+        a.title.toLowerCase().includes(search) && 
+        (currentCat === "Tous" || a.category === currentCat) &&
+        (sourceF === "Tous" || a.source === sourceF)
+    );
+
+    grid.innerHTML = filtered.map(a => {
+        const inVault = vault.some(v => v.id === a.id);
+        return `
+        <div class="card">
+            <img src="${a.img || 'https://via.placeholder.com/400x200/222/555?text='+a.source}" onclick="openReader('${a.id}')">
+            <div class="card-content">
+                <div class="card-title" onclick="openReader('${a.id}')">${a.title}</div>
+                <div style="font-size:0.75rem; color:var(--meta); margin-bottom:10px;">${a.source} • ${new Date(a.date).toLocaleDateString()}</div>
+                <button class="read-btn" onclick="openReader('${a.id}')">LIRE</button>
+                <button class="save-btn" onclick="toggleSave('${a.id}')">
+                    ${inVault ? '💾 SAUVEGARDÉ' : '💾 SAUVEGARDER'}
+                </button>
+            </div>
+        </div>
+    `}).join('');
+}
+
+function openReader(id) {
+    const art = [...allArticles, ...vault].find(a => a.id === id);
+    if(!art) return;
+    const reader = document.getElementById('readerView');
+    reader.innerHTML = `
+        <h1>${art.title}</h1>
+        <p style="opacity:0.6; font-size:0.9rem;">${art.source} | ${new Date(art.date).toLocaleString()}</p>
+        <hr style="border:0; border-top:1px solid rgba(125,125,125,0.2); margin:20px 0;">
+        <div>${art.fullContent}</div>
+        <br><a href="${art.link}" target="_blank" style="color:var(--accent);">Ouvrir le site original</a>
+    `;
+    document.getElementById('readerModal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeReader() {
+    document.getElementById('readerModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+function toggleSave(id) {
+    const idx = vault.findIndex(v => v.id === id);
+    if(idx > -1) vault.splice(idx, 1);
+    else {
+        const art = allArticles.find(a => a.id === id);
+        if(art) vault.push({...art});
+    }
+    localStorage.setItem('nsc_vault', JSON.stringify(vault));
     render();
 }
 
@@ -164,100 +215,26 @@ function updateUI() {
     document.getElementById('catBar').innerHTML = cats.map(c => 
         `<button class="btn-cat ${currentCat === c ? 'active' : ''}" onclick="setCat('${c}')">${c}</button>`
     ).join('');
-
+    
     const sel = document.getElementById('sourceSelect');
-    const curVal = sel.value;
-    sel.innerHTML = '<option value="Tous">Toutes les sources</option>';
+    sel.innerHTML = '<option value="Tous">Sources</option>';
     sources.forEach(s => sel.innerHTML += `<option value="${s.name}">${s.name}</option>`);
-    sel.value = curVal;
 
     document.getElementById('sourceList').innerHTML = sources.map((s, i) => `
-        <div class="source-item">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <b>${s.name}</b>
-                <div style="display:flex; gap:8px;">
-                    <button onclick="togglePinSource(${i})" style="background:${s.pinned? 'var(--accent)':'#444'}; color:${s.pinned?'#000':'#fff'}">${s.pinned?'📍':'📌'}</button>
-                    <button onclick="removeSource(${i})" style="background:#cc0000; border:none; padding:5px 10px; border-radius:5px;">X</button>
-                </div>
-            </div>
-            <div style="display:flex; gap:5px;">
-                <input type="text" value="${s.name}" onchange="editSource(${i}, 'name', this.value)" style="flex:1;">
-                <input type="text" value="${s.cat}" onchange="editSource(${i}, 'cat', this.value)" style="flex:1;">
-            </div>
+        <div style="background:rgba(125,125,125,0.1); padding:10px; margin-bottom:5px; border-radius:8px; display:flex; justify-content:space-between;">
+            <span>${s.name}</span>
+            <button onclick="sources.splice(${i},1); localStorage.setItem('nsc_sources', JSON.stringify(sources)); fetchAll();">X</button>
         </div>
     `).join('');
-}
-
-function render() {
-    const grid = document.getElementById('grid');
-    const search = document.getElementById('search').value.toLowerCase();
-    const sourceF = document.getElementById('sourceSelect').value;
-    let targetList = isVaultView ? vault : allArticlesParsed;
-
-    let filtered = targetList.filter(a => {
-        const mSearch = a.title.toLowerCase().includes(search);
-        const mCat = (currentCat === "Tous" || a.category === currentCat);
-        const mSrc = (sourceF === "Tous" || a.source === sourceF);
-        return mSearch && mCat && mSrc;
-    });
-
-    grid.innerHTML = filtered.map(a => {
-        const inVault = vault.some(v => v.id === a.id);
-        const isHead = !isVaultView && a.isPinnedSource && allArticlesParsed.indexOf(a) < sources.filter(s=>s.pinned).length;
-        
-        return `
-        <div class="card" style="${isHead ? 'border: 2px solid var(--accent)' : ''}">
-            <a href="${a.link}" target="_blank" style="text-decoration:none; color:inherit;">
-                <img src="${a.img || 'https://via.placeholder.com/400x200/222/555?text='+encodeURIComponent(a.source)}" onerror="this.src='https://via.placeholder.com/400x200/222/555?text=${encodeURIComponent(a.source)}'">
-                <div class="card-content">
-                    <div class="card-title">${a.title}</div>
-                    <div class="card-meta">
-                        <b>${a.source}</b> • ${a.category}<br>
-                        🕒 ${new Date(a.date).toLocaleDateString()} (${timeAgo(a.date)})
-                        <button onclick="event.preventDefault(); toggleSave('${a.id}')" style="margin-top:12px; width:100%; padding:10px; background:${inVault?'#2e7d32':'transparent'}; border:1px solid ${inVault?'#2e7d32':'#444'}; color:${inVault?'white':'#888'}; border-radius:8px; font-weight:bold; cursor:pointer;">
-                            ${inVault ? '💾 SAUVEGARDÉ' : '💾 SAUVEGARDER'}
-                        </button>
-                    </div>
-                </div>
-            </a>
-        </div>
-    `}).join('');
 }
 
 function setCat(c) { currentCat = c; updateUI(); render(); }
 function toggleVault() {
     isVaultView = !isVaultView;
     const btn = document.getElementById('vaultBtn');
-    btn.style.background = isVaultView ? "var(--accent)" : "#333";
-    btn.style.color = isVaultView ? "black" : "white";
-    btn.innerHTML = isVaultView ? "🌐 NEWS" : "💾 COFFRE";
-    if(!isVaultView) fetchAll(); else render();
-}
-function toggleSave(id) {
-    const index = vault.findIndex(v => v.id === id);
-    if(index > -1) vault.splice(index, 1);
-    else {
-        const art = allArticlesParsed.find(a => a.id === id);
-        if(art) vault.push({...art});
-    }
-    localStorage.setItem('nsc_vault', JSON.stringify(vault));
+    btn.innerHTML = isVaultView ? "🌐 FLUX" : "💾 COFFRE";
     render();
 }
-function togglePinSource(i) { sources[i].pinned = !sources[i].pinned; saveAndRefresh(); }
-function editSource(i, field, value) { sources[i][field] = value; saveAndRefresh(); }
-function saveAndRefresh() { localStorage.setItem('nsc_sources', JSON.stringify(sources)); fetchAll(); }
-
-function addSource() {
-    const n = document.getElementById('newName').value;
-    const u = document.getElementById('newUrl').value;
-    const c = document.getElementById('newCat').value || "Info";
-    if(n && u) {
-        sources.push({name:n, url:u, cat:c, pinned:false});
-        saveAndRefresh();
-        document.getElementById('newName').value=''; document.getElementById('newUrl').value=''; document.getElementById('newCat').value='';
-    }
-}
-function removeSource(i) { if(confirm("Supprimer ?")) { sources.splice(i, 1); saveAndRefresh(); } }
 
 document.getElementById('search').addEventListener('input', render);
 document.getElementById('sourceSelect').addEventListener('change', render);
