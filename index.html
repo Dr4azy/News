@@ -3,45 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Sans CNews v30</title>
+    <title>News Sans CNews v31</title>
     <style>
-        /* --- SYSTÈME DE THÈMES (Sombres & Clairs) --- */
+        /* --- SYSTÈME DE THÈMES --- */
         :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --success: #2e7d32; }
         
-        /* Thèmes Sombres */
+        /* THÈMES SOMBRES */
         body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; --success: #1b5e20; }
         body.theme-matrix  { --bg: #000000; --card: #001100; --accent: #00ff41; --text: #00ff41; --meta: #008f11; --border: #003b00; --success: #00ff41; }
-        body.theme-dracula { --bg: #282a36; --card: #44475a; --accent: #bd93f9; --text: #f8f8f2; --meta: #6272a4; --border: #44475a; --success: #50fa7b; }
-        body.theme-ocean   { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f1f5f9; --meta: #94a3b8; --border: #334155; --success: #10b981; }
-        body.theme-mars    { --bg: #2b1111; --card: #3d1a1a; --accent: #ff4d4d; --text: #ffcccc; --meta: #a35a5a; --border: #5a2a2a; --success: #ff4d4d; }
         
-        /* Thèmes Clairs */
-        body.theme-light     { --bg: #ffffff; --card: #f3f4f6; --accent: #2563eb; --text: #1f2937; --meta: #6b7280; --border: #e5e7eb; --success: #10b981; }
-        body.theme-journal   { --bg: #f4ecd8; --card: #efe6cf; --accent: #2c3e50; --text: #2c3e50; --meta: #5d6d7e; --border: #dcd0b9; --success: #27ae60; }
-        body.theme-snow      { --bg: #f9fafb; --card: #ffffff; --accent: #000000; --text: #111827; --meta: #9ca3af; --border: #eeeeee; --success: #059669; }
-        body.theme-rose      { --bg: #fff1f2; --card: #ffe4e6; --accent: #e11d48; --text: #881337; --meta: #fb7185; --border: #fecdd3; --success: #be123c; }
-        body.theme-mint      { --bg: #f0fdf4; --card: #dcfce7; --accent: #16a34a; --text: #14532d; --meta: #4ade80; --border: #bbf7d0; --success: #15803d; }
-        body.theme-lavender  { --bg: #f5f3ff; --card: #ede9fe; --accent: #7c3aed; --text: #4c1d95; --meta: #a78bfa; --border: #ddd6fe; --success: #6d28d9; }
-        body.theme-sand      { --bg: #fafaf9; --card: #f5f5f4; --accent: #d97706; --text: #44403c; --meta: #a8a29e; --border: #e7e5e4; --success: #b45309; }
-        body.theme-nord      { --bg: #eceff4; --card: #e5e9f0; --accent: #5e81ac; --text: #2e3440; --meta: #4c566a; --border: #d8dee9; --success: #88c0d0; }
+        /* THÈMES TRÈS CLAIRS (Écriture Sombre) */
+        body.theme-light     { --bg: #ffffff; --card: #ffffff; --accent: #0056b3; --text: #1a1a1a; --meta: #555555; --border: #dddddd; --success: #28a745; }
+        body.theme-journal   { --bg: #fdfaf0; --card: #fdfaf0; --accent: #800000; --text: #1a1a1a; --meta: #444444; --border: #dcd0b9; --success: #1e5631; }
+        body.theme-paper     { --bg: #f4f4f4; --card: #ffffff; --accent: #333333; --text: #000000; --meta: #666666; --border: #cccccc; --success: #222222; }
+        body.theme-sky       { --bg: #f0f7ff; --card: #ffffff; --accent: #0077cc; --text: #002244; --meta: #557799; --border: #d0e0f0; --success: #008855; }
+        body.theme-soft-rose { --bg: #fff5f5; --card: #ffffff; --accent: #d63384; --text: #440022; --meta: #884466; --border: #ffe0e0; --success: #a01040; }
+        body.theme-nord-light { --bg: #e5e9f0; --card: #eceff4; --accent: #5e81ac; --text: #2e3440; --meta: #4c566a; --border: #d8dee9; --success: #81a1c1; }
 
-        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: 0.3s; }
-        header { background: rgba(0,0,0,0.05); padding: 10px; text-align: center; border-bottom: 1px solid var(--border); }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: background 0.2s, color 0.2s; }
+        
+        header { background: rgba(0,0,0,0.05); padding: 12px; text-align: center; border-bottom: 1px solid var(--border); }
         .sticky-controls { position: sticky; top: 0; z-index: 1000; background: var(--bg); border-bottom: 2px solid var(--accent); }
         .controls { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
         .row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; align-items: center; }
+        
         input, select, button { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.9rem; }
+        
+        /* Correction visuelle des boutons sur thèmes clairs */
+        [class*="theme-"] .read-btn { color: white !important; }
+        body.theme-light .read-btn, body.theme-journal .read-btn, body.theme-paper .read-btn { background: var(--accent); }
 
         #grid { padding: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid var(--border); cursor: pointer; }
+        .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid var(--border); }
         .card-content { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; }
-        .card-title { font-weight: bold; font-size: 1.05rem; margin-bottom: 8px; line-height: 1.3; color: var(--text); text-decoration: none; }
+        .card-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; line-height: 1.3; color: var(--text); text-decoration: none; }
         
-        .read-btn { background: var(--accent); color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: auto; cursor: pointer; }
-        /* Ajustement couleur texte pour les boutons sur thèmes jaunes/clairs */
-        body.theme-cyber .read-btn, body.theme-journal .read-btn, body.theme-mint .read-btn, body.theme-sand .read-btn { color: black; }
-
+        .read-btn { background: var(--accent); color: black; border: none; padding: 11px; border-radius: 6px; font-weight: bold; margin-top: auto; cursor: pointer; }
         .save-btn { background: transparent; color: var(--meta); border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-top: 6px; cursor: pointer; }
         .save-btn.saved { background: var(--success) !important; color: white !important; border-color: var(--success); }
 
@@ -50,17 +48,16 @@
         .modal-container { max-width: 800px; margin: 0 auto; padding: 20px; }
 
         .option-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
-        .source-item { padding: 15px 0; border-bottom: 1px solid var(--border); }
+        .source-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
         .source-grid { display: flex; gap: 5px; margin-bottom: 5px; align-items: center; }
-        .source-grid input { flex: 1; min-width: 0; padding: 5px; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; }
-        .source-url-input { width: 100%; font-size: 0.75rem; background: rgba(0,0,0,0.05); border: 1px solid var(--border); padding: 5px; color: var(--meta); border-radius: 4px; box-sizing: border-box; }
+        .source-grid input { flex: 1; min-width: 0; padding: 6px; background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+        .source-url-input { width: 100%; font-size: 0.7rem; opacity: 0.7; padding: 4px; border: none; background: transparent; color: var(--meta); }
         
-        .pin-btn { min-width: 40px; background: var(--border); color: var(--text); border: none; }
+        .pin-btn { min-width: 40px; background: var(--border); color: var(--text); cursor: pointer; }
         .pin-btn.pinned { background: var(--accent); color: white; }
-        body.theme-cyber .pin-btn.pinned { color: black; }
-        .del-btn { min-width: 40px; background: #ef4444; color: white; border: none; }
+        .del-btn { min-width: 40px; background: #dc3545; color: white; border: none; cursor: pointer; }
 
-        .rss-help { background: rgba(0,0,0,0.03); border: 1px dashed var(--accent); padding: 10px; font-size: 0.8rem; border-radius: 8px; margin-bottom: 15px; line-height: 1.4; }
+        .rss-help { background: rgba(0,0,0,0.03); border: 1px dashed var(--accent); padding: 12px; font-size: 0.85rem; border-radius: 8px; margin-bottom: 15px; }
 
         .spin { animation: rotation 1s infinite linear; }
         @keyframes rotation { from { transform: rotate(0deg); } to { transform: rotate(359deg); } }
@@ -78,30 +75,25 @@
 
 <div id="sourceModal" class="full-modal">
     <div class="modal-header">
-        <span style="font-weight: bold;">Configuration</span>
+        <span style="font-weight: bold;">Réglages</span>
         <button onclick="document.getElementById('sourceModal').style.display='none'" style="background:var(--accent); color:white; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;">✕ RETOUR</button>
     </div>
     <div class="modal-container">
         <div class="option-box">
-            <h3>🎨 Palette de Thèmes</h3>
+            <h3>🎨 Thèmes Haute Visibilité</h3>
             <select id="themeSelect" onchange="changeTheme(this.value)" style="width: 100%;">
-                <optgroup label="Thèmes Sombres">
-                    <option value="cyber">Cyber (Jaune/Noir)</option>
-                    <option value="night">Nuit (Violet/Noir)</option>
-                    <option value="matrix">Matrix (Vert/Noir)</option>
-                    <option value="dracula">Dracula (Gothique)</option>
-                    <option value="ocean">Océan (Bleu nuit)</option>
-                    <option value="mars">Mars (Rouge)</option>
+                <optgroup label="Fonds Blancs / Écriture Sombre">
+                    <option value="light">Clair Pur (Bleu/Blanc)</option>
+                    <option value="paper">Papier Imprimé (Noir/Blanc)</option>
+                    <option value="journal">Journal Ancien (Bordeaux/Crème)</option>
+                    <option value="sky">Ciel d'été (Bleu/Blanc)</option>
+                    <option value="soft-rose">Rose Doux (Rose/Blanc)</option>
+                    <option value="nord-light">Nordique (Gris clair/Bleu)</option>
                 </optgroup>
-                <optgroup label="Thèmes Clairs">
-                    <option value="light">Clair Standard</option>
-                    <option value="journal">Journal (Papier)</option>
-                    <option value="snow">Snow (Ultra Pur)</option>
-                    <option value="rose">Rose Pastel</option>
-                    <option value="mint">Menthe Fraîche</option>
-                    <option value="lavender">Lavande</option>
-                    <option value="sand">Sable (Doux)</option>
-                    <option value="nord">Nord (Gris-Bleu)</option>
+                <optgroup label="Fonds Sombres">
+                    <option value="cyber">Cyber (Jaune/Noir)</option>
+                    <option value="night">Nuit (OLED)</option>
+                    <option value="matrix">Matrix</option>
                 </optgroup>
             </select>
         </div>
@@ -112,14 +104,14 @@
                 <strong>Comment trouver un flux ?</strong><br>
                 Sur Google, tapez "NomDuSite flux RSS". Copiez le lien se terminant par .xml ou .rss et collez-le ci-dessous.
             </div>
-            <input type="text" id="newName" placeholder="Nom" style="width:95%; margin-bottom:5px;">
-            <input type="text" id="newUrl" placeholder="URL RSS" style="width:95%; margin-bottom:5px;">
-            <input type="text" id="newCat" placeholder="Catégorie" style="width:95%; margin-bottom:10px;">
-            <button onclick="addSource()" style="width:100%; background:var(--accent); color:white; font-weight:bold;">VALIDER</button>
+            <input type="text" id="newName" placeholder="Média" style="width:95%; margin-bottom:5px;">
+            <input type="text" id="newUrl" placeholder="Lien RSS" style="width:95%; margin-bottom:5px;">
+            <input type="text" id="newCat" placeholder="Dossier/Catégorie" style="width:95%; margin-bottom:10px;">
+            <button onclick="addSource()" style="width:100%; background:var(--accent); color:white; font-weight:bold;">ENREGISTRER</button>
         </div>
 
         <div class="option-box">
-            <h3>📡 Mes sources</h3>
+            <h3>📡 Sources actuelles</h3>
             <div id="sourceList"></div>
         </div>
     </div>
@@ -130,7 +122,7 @@
 <div class="sticky-controls">
     <div class="controls">
         <div class="row">
-            <input type="text" id="search" style="flex-grow:1" placeholder="🔍 Chercher...">
+            <input type="text" id="search" style="flex-grow:1" placeholder="🔍 Rechercher...">
             <button id="refreshBtn" onclick="fetchAll()">🔄</button>
             <button onclick="document.getElementById('sourceModal').style.display='block'">⚙️</button>
         </div>
@@ -224,7 +216,7 @@ function render() {
         const isUne = !isVaultView && a.isTop;
         return `
         <div class="card" style="${isUne ? 'border: 2px solid var(--accent)' : ''}">
-            <a href="${a.link}" target="_blank"><img src="${a.img || 'https://via.placeholder.com/400x200/222/555?text='+a.source}"></a>
+            <a href="${a.link}" target="_blank"><img src="${a.img || 'https://via.placeholder.com/400x200/cccccc/666666?text='+a.source}"></a>
             <div class="card-content">
                 <a href="${a.link}" target="_blank" class="card-title">${isUne ? '📌 ':''}${a.title}</a>
                 <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">${a.source} • ${new Date(a.date).toLocaleDateString()}</div>
@@ -244,9 +236,9 @@ function openReader(id) {
     document.getElementById('readerView').innerHTML = `
         <h1 style="font-family:sans-serif; margin-top:0;">${art.title}</h1>
         <div style="opacity:0.6; margin-bottom:20px; font-size:0.9rem;">${new Date(art.date).toLocaleString()}</div>
-        <div style="line-height:1.8; font-family:serif; font-size:1.25rem;">${art.content}</div>
+        <div style="line-height:1.7; font-family:serif; font-size:1.2rem;">${art.content}</div>
         <hr style="border:0; border-top:1px solid var(--border); margin:30px 0;">
-        <center><a href="${art.link}" target="_blank" style="color:var(--accent); font-weight:bold; text-decoration:none; border:1px solid var(--accent); padding:10px 20px; border-radius:30px;">LIRE L'ORIGINAL</a></center>
+        <center><a href="${art.link}" target="_blank" style="color:var(--accent); font-weight:bold; text-decoration:none;">LIRE L'ORIGINAL</a></center>
     `;
     document.getElementById('readerModal').style.display = 'block';
     document.body.style.overflow = 'hidden';
@@ -302,12 +294,5 @@ function saveS() { localStorage.setItem('nsc_sources', JSON.stringify(sources));
 function setCat(c) { currentCat = c; updateUI(); render(); }
 function toggleVault() { isVaultView = !isVaultView; document.getElementById('vaultBtn').innerHTML = isVaultView ? "🌐 FLUX" : "💾 COFFRE"; render(); }
 
-const savedT = localStorage.getItem('nsc_theme');
-if(savedT) { document.getElementById('themeSelect').value = savedT; changeTheme(savedT); }
-
-document.getElementById('search').addEventListener('input', render);
-document.getElementById('sourceSelect').addEventListener('change', render);
-fetchAll();
-</script>
-</body>
-</html>
+const savedT = localStorage.getItem
+    
