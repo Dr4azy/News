@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Sans CNews v19</title>
+    <title>News Sans CNews v17 - Stable</title>
     <style>
         :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; }
         body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; }
@@ -13,16 +13,22 @@
         .controls { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
         .row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; align-items: center; }
         input, select, button { background: #252525; color: white; border: 1px solid #444; padding: 10px; border-radius: 8px; font-size: 0.9rem; }
-        .btn-cat { white-space: nowrap; cursor: pointer; border: 1px solid #444; padding: 6px 12px; }
-        .btn-cat.active { background: var(--accent) !important; color: #000 !important; font-weight: bold; }
+        
+        .btn-cat { white-space: nowrap; cursor: pointer; border: 1px solid #444; padding: 6px 12px; transition: 0.2s; }
+        .btn-cat.active { background: var(--accent) !important; color: #000 !important; font-weight: bold; border-color: var(--accent); }
+
         #grid { padding: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
         .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #222; display: flex; flex-direction: column; height: 100%; }
-        .card img { width: 100%; height: 195px; object-fit: cover; background: #222; display: block; }
+        .card img { width: 100%; height: 190px; object-fit: cover; background: #222; display: block; }
         .card-content { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
         .card-title { font-weight: bold; font-size: 1rem; margin-bottom: 8px; line-height: 1.3; color: #fff; }
         .card-meta { font-size: 0.75rem; color: #aaa; border-top: 1px solid #333; padding-top: 8px; }
-        #sourceModal, #helpModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; padding: 20px; overflow-y: auto; }
-        .help-content { background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid var(--accent); max-width: 500px; margin: 50px auto; }
+        
+        #sourceModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; padding: 20px; overflow-y: auto; }
+        #helpModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 3000; padding: 20px; align-items: center; justify-content: center; }
+        .help-content { background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid var(--accent); max-width: 500px; line-height: 1.6; }
+        .source-item { background: #252525; margin-bottom: 10px; border-radius: 8px; padding: 12px; border: 1px solid #444; }
+        
         .spin { animation: rotation 1s infinite linear; }
         @keyframes rotation { from { transform: rotate(0deg); } to { transform: rotate(359deg); } }
     </style>
@@ -35,7 +41,7 @@
     <div class="controls">
         <div class="row">
             <input type="text" id="search" style="flex-grow:1" placeholder="🔍 Rechercher...">
-            <button id="refreshBtn" onclick="fetchAll()">🔄</button>
+            <button id="refreshBtn" onclick="fetchAll()" title="Actualiser">🔄</button>
             <button onclick="document.getElementById('sourceModal').style.display='block'">⚙️</button>
         </div>
         <div id="catBar" class="row"></div>
@@ -50,22 +56,28 @@
 
 <div id="helpModal">
     <div class="help-content">
-        <h2 style="color:var(--accent);">Aide RSS ❓</h2>
-        <p>Cherchez <i>"Nom du site + RSS"</i> sur Google pour trouver des flux.</p>
-        <button onclick="document.getElementById('helpModal').style.display='none'" style="width:100%; background:var(--accent); color:black; padding:12px; border-radius:8px; font-weight:bold;">OK</button>
+        <h2 style="color:var(--accent); margin-top:0;">C'est quoi un lien RSS ? ❓</h2>
+        <p>Un flux <b>RSS</b> est un lien spécial qui contient les derniers articles d'un site.</p>
+        <p><b>Exemples :</b> <br>
+        - <i>nytimes.com/services/xml/rss/nyt/HomePage.xml</i><br>
+        - <i>lemonde.fr/rss/une.xml</i></p>
+        <button onclick="document.getElementById('helpModal').style.display='none'" style="width:100%; background:var(--accent); color:black; font-weight:bold; margin-top:10px; padding:12px; border:none; border-radius:8px; cursor:pointer;">J'AI COMPRIS</button>
     </div>
 </div>
 
 <div id="sourceModal">
-    <h3 style="color:var(--accent)">⚙️ Configuration</h3>
-    <div style="background:#1a1a1a; padding:15px; border-radius:10px; border:1px solid #333; margin-bottom:20px;">
-        <input type="text" id="newName" placeholder="Nom" style="width:90%; margin-bottom:8px;">
-        <input type="text" id="newUrl" placeholder="Lien RSS" style="width:90%; margin-bottom:8px;">
-        <input type="text" id="newCat" placeholder="Catégorie" style="width:90%; margin-bottom:8px;">
-        <button onclick="addSource()" style="width:96%; background:var(--accent); color:black; font-weight:bold;">AJOUTER SOURCE</button>
+    <h3>⚙️ Configuration</h3>
+    <div style="background:#1a1a1a; padding:15px; border-radius:10px; border:1px solid var(--accent); margin-bottom:20px;">
+        <input type="text" id="newName" placeholder="Nom du média" style="width:95%; margin-bottom:8px;">
+        <div style="display:flex; gap:5px; align-items:center; width:100%; margin-bottom:8px;">
+            <input type="text" id="newUrl" placeholder="Lien RSS" style="flex-grow:1">
+            <button onclick="document.getElementById('helpModal').style.display='flex'" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">❓</button>
+        </div>
+        <input type="text" id="newCat" placeholder="Catégorie" style="width:95%; margin-bottom:12px;">
+        <button onclick="addSource()" style="width:100%; background:var(--accent); color:black; font-weight:bold;">AJOUTER</button>
     </div>
     <div id="sourceList"></div>
-    <button onclick="document.getElementById('sourceModal').style.display='none'" style="width:100%; margin-top:20px;">FERMER</button>
+    <button onclick="document.getElementById('sourceModal').style.display='none'" style="width:100%; margin-top:20px; background:#444;">FERMER</button>
 </div>
 
 <script>
@@ -79,26 +91,38 @@ let currentCat = "Tous";
 let allArticlesParsed = [];
 let isVaultView = false;
 
+function timeAgo(dateStr) {
+    try {
+        const seconds = Math.floor((new Date() - new Date(dateStr)) / 1000);
+        if (seconds < 3600) return Math.floor(seconds/60) + "m";
+        if (seconds < 86400) return Math.floor(seconds/3600) + "h";
+        return Math.floor(seconds/86400) + "j";
+    } catch(e) { return "?"; }
+}
+
 async function fetchAll() {
     if(isVaultView) return;
     const refreshBtn = document.getElementById('refreshBtn');
     refreshBtn.classList.add('spin');
     
     let sourceBundles = {};
-    document.getElementById('grid').innerHTML = "<div style='text-align:center; padding:50px; color:#888;'>Chargement des news...</div>";
+    document.getElementById('grid').innerHTML = "<div style='text-align:center; padding:50px; color:#888;'>Récupération des news...</div>";
     
     await Promise.all(sources.map(async s => {
         try {
-            // Count à 20 pour la stabilité
-            const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(s.url)}&count=20&api_key=oyzdf0m6h6p1z0h8r5w5v5z5j0j0j0j0j0j0j0j0`);
+            const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(s.url)}&t=${Date.now()}`);
             const data = await res.json();
             if(data && data.status === 'ok') {
-                sourceBundles[s.name] = data.items.map(item => {
+                // Tri par date pour chaque source
+                const sortedItems = data.items.sort((a,b) => new Date(b.pubDate) - new Date(a.pubDate));
+                
+                sourceBundles[s.name] = sortedItems.map(item => {
                     let img = item.enclosure?.link || item.thumbnail || "";
-                    if (!img && (item.description || item.content)) {
-                        const m = (item.description || item.content).match(/<img[^>]+src="([^">]+)"/);
+                    if (!img && (item.content || item.description)) {
+                        const m = (item.content || item.description).match(/<img[^>]+src="([^">]+)"/);
                         if(m) img = m[1];
                     }
+
                     return {
                         id: item.guid || item.link, title: item.title, link: item.link,
                         img: img, source: s.name, category: s.cat,
@@ -106,14 +130,14 @@ async function fetchAll() {
                     };
                 });
             }
-        } catch(e) { console.warn("Erreur sur " + s.name); }
+        } catch(e) { console.error(e); }
     }));
 
     let pinnedHeads = [];
     let normalPool = [];
     Object.keys(sourceBundles).forEach(name => {
         const srcCfg = sources.find(s => s.name === name);
-        let items = sourceBundles[name].sort((a,b) => new Date(b.date) - new Date(a.date));
+        let items = sourceBundles[name];
         if (srcCfg?.pinned && items.length > 0) {
             pinnedHeads.push(items[0]);
             normalPool.push(items.slice(1));
@@ -140,7 +164,7 @@ function updateUI() {
     document.getElementById('catBar').innerHTML = cats.map(c => 
         `<button class="btn-cat ${currentCat === c ? 'active' : ''}" onclick="setCat('${c}')">${c}</button>`
     ).join('');
-    
+
     const sel = document.getElementById('sourceSelect');
     const curVal = sel.value;
     sel.innerHTML = '<option value="Tous">Toutes les sources</option>';
@@ -148,9 +172,18 @@ function updateUI() {
     sel.value = curVal;
 
     document.getElementById('sourceList').innerHTML = sources.map((s, i) => `
-        <div style="background:#252525; padding:10px; margin-bottom:5px; border-radius:8px;">
-            <b>${s.name}</b> (${s.cat}) 
-            <button onclick="removeSource(${i})" style="float:right; background:red;">X</button>
+        <div class="source-item">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <b>${s.name}</b>
+                <div style="display:flex; gap:8px;">
+                    <button onclick="togglePinSource(${i})" style="background:${s.pinned? 'var(--accent)':'#444'}; color:${s.pinned?'#000':'#fff'}">${s.pinned?'📍':'📌'}</button>
+                    <button onclick="removeSource(${i})" style="background:#cc0000; border:none; padding:5px 10px; border-radius:5px;">X</button>
+                </div>
+            </div>
+            <div style="display:flex; gap:5px;">
+                <input type="text" value="${s.name}" onchange="editSource(${i}, 'name', this.value)" style="flex:1;">
+                <input type="text" value="${s.cat}" onchange="editSource(${i}, 'cat', this.value)" style="flex:1;">
+            </div>
         </div>
     `).join('');
 }
@@ -162,23 +195,26 @@ function render() {
     let targetList = isVaultView ? vault : allArticlesParsed;
 
     let filtered = targetList.filter(a => {
-        return a.title.toLowerCase().includes(search) && 
-               (currentCat === "Tous" || a.category === currentCat) &&
-               (sourceF === "Tous" || a.source === sourceF);
+        const mSearch = a.title.toLowerCase().includes(search);
+        const mCat = (currentCat === "Tous" || a.category === currentCat);
+        const mSrc = (sourceF === "Tous" || a.source === sourceF);
+        return mSearch && mCat && mSrc;
     });
 
     grid.innerHTML = filtered.map(a => {
         const inVault = vault.some(v => v.id === a.id);
+        const isHead = !isVaultView && a.isPinnedSource && allArticlesParsed.indexOf(a) < sources.filter(s=>s.pinned).length;
+        
         return `
-        <div class="card">
+        <div class="card" style="${isHead ? 'border: 2px solid var(--accent)' : ''}">
             <a href="${a.link}" target="_blank" style="text-decoration:none; color:inherit;">
-                <img src="${a.img || 'https://via.placeholder.com/400x200/222/555?text='+a.source}" onerror="this.src='https://via.placeholder.com/400x200/222/555?text=${a.source}'">
+                <img src="${a.img || 'https://via.placeholder.com/400x200/222/555?text='+encodeURIComponent(a.source)}" onerror="this.src='https://via.placeholder.com/400x200/222/555?text=${encodeURIComponent(a.source)}'">
                 <div class="card-content">
                     <div class="card-title">${a.title}</div>
                     <div class="card-meta">
                         <b>${a.source}</b> • ${a.category}<br>
-                        ${new Date(a.date).toLocaleDateString()}<br>
-                        <button onclick="event.preventDefault(); toggleSave('${a.id}')" style="margin-top:10px; width:100%; padding:8px; background:${inVault?'#2e7d32':'#444'}; color:white; border:none; border-radius:5px;">
+                        🕒 ${new Date(a.date).toLocaleDateString()} (${timeAgo(a.date)})
+                        <button onclick="event.preventDefault(); toggleSave('${a.id}')" style="margin-top:12px; width:100%; padding:10px; background:${inVault?'#2e7d32':'transparent'}; border:1px solid ${inVault?'#2e7d32':'#444'}; color:${inVault?'white':'#888'}; border-radius:8px; font-weight:bold; cursor:pointer;">
                             ${inVault ? '💾 SAUVEGARDÉ' : '💾 SAUVEGARDER'}
                         </button>
                     </div>
@@ -191,12 +227,15 @@ function render() {
 function setCat(c) { currentCat = c; updateUI(); render(); }
 function toggleVault() {
     isVaultView = !isVaultView;
-    document.getElementById('vaultBtn').style.background = isVaultView ? "var(--accent)" : "#333";
+    const btn = document.getElementById('vaultBtn');
+    btn.style.background = isVaultView ? "var(--accent)" : "#333";
+    btn.style.color = isVaultView ? "black" : "white";
+    btn.innerHTML = isVaultView ? "🌐 NEWS" : "💾 COFFRE";
     if(!isVaultView) fetchAll(); else render();
 }
 function toggleSave(id) {
-    const idx = vault.findIndex(v => v.id === id);
-    if(idx > -1) vault.splice(idx, 1);
+    const index = vault.findIndex(v => v.id === id);
+    if(index > -1) vault.splice(index, 1);
     else {
         const art = allArticlesParsed.find(a => a.id === id);
         if(art) vault.push({...art});
@@ -204,12 +243,21 @@ function toggleSave(id) {
     localStorage.setItem('nsc_vault', JSON.stringify(vault));
     render();
 }
-function addSource() {
-    const n = document.getElementById('newName').value, u = document.getElementById('newUrl').value, c = document.getElementById('newCat').value;
-    if(n && u) { sources.push({name:n, url:u, cat:c||"Info", pinned:false}); saveAndRefresh(); }
-}
-function removeSource(i) { sources.splice(i, 1); saveAndRefresh(); }
+function togglePinSource(i) { sources[i].pinned = !sources[i].pinned; saveAndRefresh(); }
+function editSource(i, field, value) { sources[i][field] = value; saveAndRefresh(); }
 function saveAndRefresh() { localStorage.setItem('nsc_sources', JSON.stringify(sources)); fetchAll(); }
+
+function addSource() {
+    const n = document.getElementById('newName').value;
+    const u = document.getElementById('newUrl').value;
+    const c = document.getElementById('newCat').value || "Info";
+    if(n && u) {
+        sources.push({name:n, url:u, cat:c, pinned:false});
+        saveAndRefresh();
+        document.getElementById('newName').value=''; document.getElementById('newUrl').value=''; document.getElementById('newCat').value='';
+    }
+}
+function removeSource(i) { if(confirm("Supprimer ?")) { sources.splice(i, 1); saveAndRefresh(); } }
 
 document.getElementById('search').addEventListener('input', render);
 document.getElementById('sourceSelect').addEventListener('change', render);
