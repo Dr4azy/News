@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Sans CNews v15</title>
+    <title>News Sans CNews v16</title>
     <style>
         :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; }
         body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; }
@@ -14,13 +14,12 @@
         .row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; align-items: center; }
         input, select, button { background: #252525; color: white; border: 1px solid #444; padding: 10px; border-radius: 8px; font-size: 0.9rem; }
         
-        /* Correction visuelle des catégories */
         .btn-cat { white-space: nowrap; cursor: pointer; border: 1px solid #444; padding: 6px 12px; transition: 0.2s; }
         .btn-cat.active { background: var(--accent) !important; color: #000 !important; font-weight: bold; border-color: var(--accent); }
 
         #grid { padding: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
         .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #222; display: flex; flex-direction: column; height: 100%; }
-        .card img { width: 100%; height: 180px; object-fit: cover; background: #222; display: block; }
+        .card img { width: 100%; height: 190px; object-fit: cover; background: #222; display: block; }
         .card-content { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
         .card-title { font-weight: bold; font-size: 1rem; margin-bottom: 8px; line-height: 1.3; color: #fff; }
         .card-meta { font-size: 0.75rem; color: #aaa; border-top: 1px solid #333; padding-top: 8px; }
@@ -30,7 +29,6 @@
         .help-content { background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid var(--accent); max-width: 500px; line-height: 1.6; }
         .source-item { background: #252525; margin-bottom: 10px; border-radius: 8px; padding: 12px; border: 1px solid #444; }
         
-        /* Animation simple pour le bouton refresh */
         .spin { animation: rotation 1s infinite linear; }
         @keyframes rotation { from { transform: rotate(0deg); } to { transform: rotate(359deg); } }
     </style>
@@ -59,13 +57,10 @@
 <div id="helpModal">
     <div class="help-content">
         <h2 style="color:var(--accent); margin-top:0;">C'est quoi un lien RSS ? ❓</h2>
-        <p>Un flux <b>RSS (ou XML)</b> est un lien spécial qui contient les derniers articles d'un site en temps réel.</p>
-        <p><b>Où les trouver ?</b><br>
-        1. Cherchez <i>"Nom du site + RSS"</i> sur Google.<br>
-        2. Sur les sites, cherchez l'icône orange 🟠 ou le mot "Flux".<br>
-        3. Exemples : <br>
-        - <i>lemonde.fr/rss/une.xml</i><br>
-        - <i>nasa.gov/rss/dyn/breaking_news.rss</i></p>
+        <p>Un flux <b>RSS</b> est un lien spécial qui contient les derniers articles d'un site.</p>
+        <p><b>Exemples :</b> <br>
+        - <i>nytimes.com/services/xml/rss/nyt/HomePage.xml</i><br>
+        - <i>lemonde.fr/rss/une.xml</i></p>
         <button onclick="document.getElementById('helpModal').style.display='none'" style="width:100%; background:var(--accent); color:black; font-weight:bold; margin-top:10px; padding:12px; border:none; border-radius:8px; cursor:pointer;">J'AI COMPRIS</button>
     </div>
 </div>
@@ -79,15 +74,16 @@
             <button onclick="document.getElementById('helpModal').style.display='flex'" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">❓</button>
         </div>
         <input type="text" id="newCat" placeholder="Catégorie" style="width:95%; margin-bottom:12px;">
-        <button onclick="addSource()" style="width:100%; background:var(--accent); color:black; font-weight:bold; cursor:pointer;">AJOUTER</button>
+        <button onclick="addSource()" style="width:100%; background:var(--accent); color:black; font-weight:bold;">AJOUTER</button>
     </div>
     <div id="sourceList"></div>
-    <button onclick="document.getElementById('sourceModal').style.display='none'" style="width:100%; margin-top:20px; background:#444; cursor:pointer;">FERMER</button>
+    <button onclick="document.getElementById('sourceModal').style.display='none'" style="width:100%; margin-top:20px; background:#444;">FERMER</button>
 </div>
 
 <script>
 let sources = JSON.parse(localStorage.getItem('nsc_sources')) || [
     { name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml", cat: "Info", pinned: false },
+    { name: "NY Times", url: "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml", cat: "International", pinned: false },
     { name: "NASA", url: "https://www.nasa.gov/rss/dyn/breaking_news.rss", cat: "Espace", pinned: true }
 ];
 let vault = JSON.parse(localStorage.getItem('nsc_vault')) || [];
@@ -97,8 +93,7 @@ let isVaultView = false;
 
 function timeAgo(dateStr) {
     try {
-        const d = new Date(dateStr);
-        const seconds = Math.floor((new Date() - d) / 1000);
+        const seconds = Math.floor((new Date() - new Date(dateStr)) / 1000);
         if (seconds < 3600) return Math.floor(seconds/60) + "m";
         if (seconds < 86400) return Math.floor(seconds/3600) + "h";
         return Math.floor(seconds/86400) + "j";
@@ -108,11 +103,10 @@ function timeAgo(dateStr) {
 async function fetchAll() {
     if(isVaultView) return;
     const refreshBtn = document.getElementById('refreshBtn');
-    refreshBtn.classList.add('spin'); // Animation
+    refreshBtn.classList.add('spin');
     
     let sourceBundles = {};
-    const grid = document.getElementById('grid');
-    grid.innerHTML = "<div style='text-align:center; padding:50px; color:#888;'>Chargement des flux...</div>";
+    document.getElementById('grid').innerHTML = "<div style='text-align:center; padding:50px; color:#888;'>Actualisation des images...</div>";
     
     await Promise.all(sources.map(async s => {
         try {
@@ -120,24 +114,28 @@ async function fetchAll() {
             const data = await res.json();
             if(data && data.status === 'ok') {
                 sourceBundles[s.name] = data.items.map(item => {
-                    let img = item.enclosure?.link || item.thumbnail || "";
-                    if (!img && item.description) {
-                        const m = item.description.match(/src="([^"]+)"/);
-                        if(m) img = m[1];
+                    // LOGIQUE D'IMAGE AMÉLIORÉE (NYT, NASA, etc.)
+                    let img = "";
+                    
+                    // 1. Chercher dans Enclosure (Standard)
+                    if (item.enclosure && item.enclosure.link) img = item.enclosure.link;
+                    // 2. Chercher dans Thumbnail (Spécifique NYT/API)
+                    if (!img && item.thumbnail) img = item.thumbnail;
+                    // 3. Chercher dans le contenu ou la description (Regex)
+                    if (!img && (item.content || item.description)) {
+                        const content = item.content || item.description;
+                        const match = content.match(/<img[^>]+src="([^">]+)"/);
+                        if(match) img = match[1];
                     }
+
                     return {
-                        id: item.guid || item.link, 
-                        title: item.title, 
-                        link: item.link,
-                        img: img, 
-                        source: s.name, 
-                        category: s.cat,
-                        date: item.pubDate, 
-                        isPinnedSource: s.pinned
+                        id: item.guid || item.link, title: item.title, link: item.link,
+                        img: img, source: s.name, category: s.cat,
+                        date: item.pubDate, isPinnedSource: s.pinned
                     };
                 });
             }
-        } catch(e) { console.error("Erreur sur : " + s.name, e); }
+        } catch(e) { console.error(e); }
     }));
 
     let pinnedHeads = [];
@@ -167,20 +165,17 @@ async function fetchAll() {
 }
 
 function updateUI() {
-    // Génération des boutons de catégorie
     const cats = ["Tous", ...new Set(sources.map(s => s.cat))];
     document.getElementById('catBar').innerHTML = cats.map(c => 
         `<button class="btn-cat ${currentCat === c ? 'active' : ''}" onclick="setCat('${c}')">${c}</button>`
     ).join('');
 
-    // Mise à jour du sélecteur de sources
     const sel = document.getElementById('sourceSelect');
     const curVal = sel.value;
     sel.innerHTML = '<option value="Tous">Toutes les sources</option>';
     sources.forEach(s => sel.innerHTML += `<option value="${s.name}">${s.name}</option>`);
     sel.value = curVal;
 
-    // Liste des sources dans les réglages
     document.getElementById('sourceList').innerHTML = sources.map((s, i) => `
         <div class="source-item">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -211,27 +206,21 @@ function render() {
         return mSearch && mCat && mSrc;
     });
 
-    if (filtered.length === 0) {
-        grid.innerHTML = `<div style='text-align:center; padding:50px; color:#888;'>${isVaultView ? 'Le coffre est vide.' : 'Aucun article trouvé.'}</div>`;
-        return;
-    }
-
     grid.innerHTML = filtered.map(a => {
         const inVault = vault.some(v => v.id === a.id);
         const isHead = !isVaultView && a.isPinnedSource && allArticlesParsed.indexOf(a) < sources.filter(s=>s.pinned).length;
-        const displayDate = new Date(a.date).toLocaleDateString('fr-FR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
         
         return `
         <div class="card" style="${isHead ? 'border: 2px solid var(--accent)' : ''}">
             <a href="${a.link}" target="_blank" style="text-decoration:none; color:inherit;">
-                <img src="${a.img}" onerror="this.src='https://via.placeholder.com/400x200/222/555?text=${encodeURIComponent(a.source)}'">
+                <img src="${a.img || 'https://via.placeholder.com/400x200/222/555?text='+encodeURIComponent(a.source)}" onerror="this.src='https://via.placeholder.com/400x200/222/555?text=${encodeURIComponent(a.source)}'">
                 <div class="card-content">
                     <div class="card-title">${a.title}</div>
                     <div class="card-meta">
                         <b>${a.source}</b> • ${a.category}<br>
-                        🕒 ${displayDate} (${timeAgo(a.date)})
+                        🕒 ${new Date(a.date).toLocaleDateString()} (${timeAgo(a.date)})
                         <button onclick="event.preventDefault(); toggleSave('${a.id}')" style="margin-top:12px; width:100%; padding:10px; background:${inVault?'#2e7d32':'transparent'}; border:1px solid ${inVault?'#2e7d32':'#444'}; color:${inVault?'white':'#888'}; border-radius:8px; font-weight:bold; cursor:pointer;">
-                            ${inVault ? '💾 DANS LE COFFRE' : '💾 SAUVEGARDER'}
+                            ${inVault ? '💾 SAUVÉ' : '💾 GARDER'}
                         </button>
                     </div>
                 </div>
@@ -240,21 +229,15 @@ function render() {
     `}).join('');
 }
 
-function setCat(c) { 
-    currentCat = c; 
-    updateUI(); // Force la mise à jour visuelle des boutons
-    render(); 
-}
-
+function setCat(c) { currentCat = c; updateUI(); render(); }
 function toggleVault() {
     isVaultView = !isVaultView;
     const btn = document.getElementById('vaultBtn');
     btn.style.background = isVaultView ? "var(--accent)" : "#333";
     btn.style.color = isVaultView ? "black" : "white";
-    btn.innerHTML = isVaultView ? "🌐 FLUX NEWS" : "💾 COFFRE";
+    btn.innerHTML = isVaultView ? "🌐 NEWS" : "💾 COFFRE";
     if(!isVaultView) fetchAll(); else render();
 }
-
 function toggleSave(id) {
     const index = vault.findIndex(v => v.id === id);
     if(index > -1) vault.splice(index, 1);
@@ -265,7 +248,6 @@ function toggleSave(id) {
     localStorage.setItem('nsc_vault', JSON.stringify(vault));
     render();
 }
-
 function togglePinSource(i) { sources[i].pinned = !sources[i].pinned; saveAndRefresh(); }
 function editSource(i, field, value) { sources[i][field] = value; saveAndRefresh(); }
 function saveAndRefresh() { localStorage.setItem('nsc_sources', JSON.stringify(sources)); fetchAll(); }
