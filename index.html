@@ -3,27 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Sans CNews v32</title>
+    <title>News Sans CNews v33</title>
     <style>
         /* --- SYSTÈME DE THÈMES --- */
         :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --success: #2e7d32; }
         
-        /* Thèmes Sombres (V30) */
+        /* THÈMES SOMBRES */
         body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; --success: #1b5e20; }
         body.theme-matrix  { --bg: #000000; --card: #001100; --accent: #00ff41; --text: #00ff41; --meta: #008f11; --border: #003b00; --success: #00ff41; }
         body.theme-dracula { --bg: #282a36; --card: #44475a; --accent: #bd93f9; --text: #f8f8f2; --meta: #6272a4; --border: #44475a; --success: #50fa7b; }
         body.theme-ocean   { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f1f5f9; --meta: #94a3b8; --border: #334155; --success: #10b981; }
-        body.theme-mars    { --bg: #2b1111; --card: #3d1a1a; --accent: #ff4d4d; --text: #ffcccc; --meta: #a35a5a; --border: #5a2a2a; --success: #ff4d4d; }
-        
-        /* Nouveaux Thèmes Clairs (Contrastes Inversés : Fond clair / Texte Sombre) */
-        body.theme-light     { --bg: #ffffff; --card: #f8f9fa; --accent: #0056b3; --text: #121212; --meta: #555555; --border: #dee2e6; --success: #198754; }
-        body.theme-journal   { --bg: #fdfaf0; --card: #f4eee1; --accent: #7a1a1a; --text: #2b2b2b; --meta: #5d5d5d; --border: #dcd0b9; --success: #1e5631; }
-        body.theme-mint      { --bg: #f0fdf4; --card: #ffffff; --accent: #16a34a; --text: #064e3b; --meta: #15803d; --border: #bbf7d0; --success: #16a34a; }
-        body.theme-lavender  { --bg: #f5f3ff; --card: #ffffff; --accent: #7c3aed; --text: #2e1065; --meta: #6d28d9; --border: #ddd6fe; --success: #7c3aed; }
-        body.theme-rose      { --bg: #fff1f2; --card: #ffffff; --accent: #e11d48; --text: #4c0519; --meta: #be123c; --border: #fecdd3; --success: #e11d48; }
-        body.theme-nord-light { --bg: #eceff4; --card: #ffffff; --accent: #5e81ac; --text: #2e3440; --meta: #4c566a; --border: #d8dee9; --success: #88c0d0; }
 
-        /* Style Général */
+        /* 10 THÈMES CLAIRS (Fond blanc/clair, Écriture sombre) */
+        body.theme-clair     { --bg: #ffffff; --card: #ffffff; --accent: #2563eb; --text: #000000; --meta: #4b5563; --border: #e5e7eb; --success: #10b981; }
+        body.theme-papier    { --bg: #fdfdfd; --card: #ffffff; --accent: #333333; --text: #111111; --meta: #666666; --border: #d1d5db; --success: #059669; }
+        body.theme-journal   { --bg: #fdfaf0; --card: #f9f4e8; --accent: #7a1a1a; --text: #1a1a1a; --meta: #5a5a5a; --border: #e2d7bf; --success: #1e5631; }
+        body.theme-nordic    { --bg: #f3f4f6; --card: #ffffff; --accent: #5e81ac; --text: #2e3440; --meta: #4c566a; --border: #d8dee9; --success: #88c0d0; }
+        body.theme-menthe    { --bg: #f0fdf4; --card: #ffffff; --accent: #16a34a; --text: #064e3b; --meta: #15803d; --border: #bbf7d0; --success: #16a34a; }
+        body.theme-lavande   { --bg: #f5f3ff; --card: #ffffff; --accent: #7c3aed; --text: #2e1065; --meta: #6d28d9; --border: #ddd6fe; --success: #7c3aed; }
+        body.theme-rose      { --bg: #fff1f2; --card: #ffffff; --accent: #e11d48; --text: #4c0519; --meta: #be123c; --border: #fecdd3; --success: #e11d48; }
+        body.theme-sable     { --bg: #fafaf9; --card: #ffffff; --accent: #d97706; --text: #44403c; --meta: #78716c; --border: #e7e5e4; --success: #b45309; }
+        body.theme-azur      { --bg: #f0f9ff; --card: #ffffff; --accent: #0ea5e9; --text: #0c4a6e; --meta: #0369a1; --border: #bae6fd; --success: #0ea5e9; }
+        body.theme-citron    { --bg: #fefce8; --card: #ffffff; --accent: #ca8a04; --text: #422006; --meta: #854d0e; --border: #fef08a; --success: #ca8a04; }
+
         body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: 0.3s; }
         header { background: rgba(0,0,0,0.05); padding: 10px; text-align: center; border-bottom: 1px solid var(--border); }
         .sticky-controls { position: sticky; top: 0; z-index: 1000; background: var(--bg); border-bottom: 2px solid var(--accent); }
@@ -32,13 +34,14 @@
         input, select, button { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.9rem; }
 
         #grid { padding: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
         .card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid var(--border); cursor: pointer; }
         .card-content { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; }
         .card-title { font-weight: bold; font-size: 1.05rem; margin-bottom: 8px; line-height: 1.3; color: var(--text); text-decoration: none; }
         
-        .read-btn { background: var(--accent); color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: auto; cursor: pointer; }
-        body.theme-light .read-btn, body.theme-journal .read-btn, body.theme-mint .read-btn, body.theme-nord-light .read-btn { color: white; }
+        .read-btn { background: var(--accent); color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: auto; cursor: pointer; }
+        /* Pour les accents clairs/jaunes, on met le texte du bouton en noir */
+        body.theme-citron .read-btn, body.theme-cyber .read-btn, body.theme-sable .read-btn { color: #000; }
 
         .save-btn { background: transparent; color: var(--meta); border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-top: 6px; cursor: pointer; }
         .save-btn.saved { background: var(--success) !important; color: white !important; border-color: var(--success); }
@@ -58,7 +61,6 @@
         .del-btn { min-width: 40px; background: #ef4444; color: white; border: none; }
 
         .rss-help { background: rgba(0,0,0,0.03); border: 1px dashed var(--accent); padding: 10px; font-size: 0.8rem; border-radius: 8px; margin-bottom: 15px; line-height: 1.4; }
-
         .spin { animation: rotation 1s infinite linear; }
         @keyframes rotation { from { transform: rotate(0deg); } to { transform: rotate(359deg); } }
     </style>
@@ -75,27 +77,31 @@
 
 <div id="sourceModal" class="full-modal">
     <div class="modal-header">
-        <span style="font-weight: bold;">Configuration</span>
+        <span style="font-weight: bold;">Réglages</span>
         <button onclick="document.getElementById('sourceModal').style.display='none'" style="background:var(--accent); color:white; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;">✕ RETOUR</button>
     </div>
     <div class="modal-container">
         <div class="option-box">
-            <h3>🎨 Palette de Thèmes</h3>
+            <h3>🎨 Palette</h3>
             <select id="themeSelect" onchange="changeTheme(this.value)" style="width: 100%;">
-                <optgroup label="Thèmes Clairs (Fond Blanc / Texte Noir)">
-                    <option value="light">Clair Standard</option>
-                    <option value="journal">Journal (Crème)</option>
-                    <option value="mint">Menthe Fraîche</option>
-                    <option value="lavender">Lavande</option>
-                    <option value="rose">Rose Pastel</option>
-                    <option value="nord-light">Gris Nordique</option>
+                <optgroup label="Thèmes Clairs">
+                    <option value="clair">Clair Pur</option>
+                    <option value="papier">Papier Blanc</option>
+                    <option value="journal">Journal Ancien</option>
+                    <option value="nordic">Nordique</option>
+                    <option value="menthe">Menthe</option>
+                    <option value="lavande">Lavande</option>
+                    <option value="rose">Rose</option>
+                    <option value="sable">Sable</option>
+                    <option value="azur">Azur</option>
+                    <option value="citron">Citron</option>
                 </optgroup>
-                <optgroup label="Thèmes Sombres (Fond Noir / Texte Blanc)">
-                    <option value="cyber">Cyber (V30)</option>
-                    <option value="night">Nuit (V30)</option>
-                    <option value="matrix">Matrix (V30)</option>
-                    <option value="dracula">Dracula (V30)</option>
-                    <option value="ocean">Océan (V30)</option>
+                <optgroup label="Thèmes Sombres">
+                    <option value="cyber">Cyber</option>
+                    <option value="night">Nuit</option>
+                    <option value="matrix">Matrix</option>
+                    <option value="dracula">Dracula</option>
+                    <option value="ocean">Océan</option>
                 </optgroup>
             </select>
         </div>
@@ -103,8 +109,7 @@
         <div class="option-box">
             <h3>➕ Ajouter une source</h3>
             <div class="rss-help">
-                <strong>Comment trouver un flux ?</strong><br>
-                Sur Google, tapez "NomDuSite flux RSS". Copiez le lien se terminant par .xml ou .rss et collez-le ci-dessous.
+                Cherchez "Flux RSS [Site]" sur Google. Copiez le lien .xml.
             </div>
             <input type="text" id="newName" placeholder="Nom" style="width:95%; margin-bottom:5px;">
             <input type="text" id="newUrl" placeholder="URL RSS" style="width:95%; margin-bottom:5px;">
@@ -124,13 +129,13 @@
 <div class="sticky-controls">
     <div class="controls">
         <div class="row">
-            <input type="text" id="search" style="flex-grow:1" placeholder="🔍 Rechercher...">
+            <input type="text" id="search" style="flex-grow:1" placeholder="🔍 Chercher...">
             <button id="refreshBtn" onclick="fetchAll()">🔄</button>
             <button onclick="document.getElementById('sourceModal').style.display='block'">⚙️</button>
         </div>
         <div id="catBar" class="row"></div>
         <div class="row">
-            <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Toutes les sources</option></select>
+            <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Sources</option></select>
             <button id="vaultBtn" onclick="toggleVault()" style="background:var(--card); min-width: 80px;">💾 Coffre</button>
         </div>
     </div>
