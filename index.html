@@ -2,27 +2,23 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>News Sans CNews</title>
     <style>
         :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; }
-        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 20px; }
-        
-        header { sticky: top; background: #1a1a1a; padding: 15px; text-align: center; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100; }
-        h1 { margin: 0; font-size: 1.4rem; color: #fff; }
-
-        .filters { padding: 10px; display: flex; gap: 8px; overflow-x: auto; white-space: nowrap; background: #1a1a1a; }
-        select, input { background: #252525; color: white; border: 1px solid #333; padding: 8px; border-radius: 8px; font-size: 0.9rem; }
-
-        #grid { padding: 12px; display: flex; flex-direction: column; gap: 15px; }
-
-        .card { background: var(--card); border-radius: 12px; overflow: hidden; text-decoration: none; color: inherit; border: 1px solid #222; display: flex; flex-direction: column; }
-        .card img { width: 100%; height: 200px; object-fit: cover; background: #222; }
+        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 20px; }
+        header { background: #1a1a1a; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #333; }
+        .filters { padding: 10px; display: flex; flex-direction: column; gap: 10px; background: #1a1a1a; }
+        .scroll-menu { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
+        input, select, .btn-cat { background: #252525; color: white; border: 1px solid #444; padding: 10px; border-radius: 8px; }
+        .btn-cat.active { background: var(--accent); color: #000; font-weight: bold; }
+        #grid { padding: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+        .card { background: var(--card); border-radius: 12px; overflow: hidden; text-decoration: none; color: inherit; border: 1px solid #222; transition: 0.2s; }
+        .card img { width: 100%; height: 180px; object-fit: cover; background: #222; }
         .card-content { padding: 12px; }
-        .card-title { font-weight: bold; font-size: 1.1rem; line-height: 1.3; margin-bottom: 8px; }
-        .card-meta { font-size: 0.8rem; color: #888; display: flex; justify-content: space-between; border-top: 1px solid #222; padding-top: 8px; }
-
-        .loader { text-align: center; padding: 50px; color: var(--accent); font-weight: bold; }
+        .card-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .card-meta { font-size: 0.8rem; color: #888; display: flex; justify-content: space-between; }
+        .loader { text-align: center; padding: 50px; color: var(--accent); }
     </style>
 </head>
 <body>
@@ -32,76 +28,89 @@
 </header>
 
 <div class="filters">
-    <input type="text" id="search" placeholder="🔍 Rechercher...">
-    <select id="sourceFilter"><option value="">Toutes les sources</option></select>
+    <input type="text" id="search" placeholder="🔍 Rechercher un article...">
+    <div class="scroll-menu" id="catMenu">
+        <button class="btn-cat active" onclick="filterCat('Tous')">Tous</button>
+        <button class="btn-cat" onclick="filterCat('Info')">Info</button>
+        <button class="btn-cat" onclick="filterCat('Tech')">Tech/Espace</button>
+        <button class="btn-cat" onclick="filterCat('Sport')">Sport</button>
+    </div>
 </div>
 
-<div id="grid"><div class="loader">Chargement des news...</div></div>
+<div id="grid"><div class="loader">Chargement des actualités...</div></div>
 
 <script>
-// --- CONFIGURATION DES SOURCES ---
+// --- TES SOURCES ICI ---
 const SOURCES = [
-    { name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml" },
-    { name: "NASA", url: "https://www.nasa.gov/rss/dyn/breaking_news.rss" },
-    { name: "L'Équipe", url: "https://lequipe.fr/rss/actu_rss.xml" },
-    { name: "Libération", url: "https://www.liberation.fr/arc/outboundfeeds/rss-all/all/" }
+    { name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml", cat: "Info" },
+    { name: "Libération", url: "https://www.liberation.fr/arc/outboundfeeds/rss-all/all/", cat: "Info" },
+    { name: "L'Équipe", url: "https://lequipe.fr/rss/actu_rss.xml", cat: "Sport" },
+    { name: "NASA", url: "https://www.nasa.gov/rss/dyn/breaking_news.rss", cat: "Tech" },
+    { name: "Numerama", url: "https://www.numerama.com/feed/", cat: "Tech" }
 ];
 
 let allArticles = [];
+let currentCat = "Tous";
 
 async function fetchNews() {
+    allArticles = [];
     const grid = document.getElementById('grid');
-    const sourceSelect = document.getElementById('sourceFilter');
     
-    // On utilise l'API rss2json pour contourner le blocage CORS
     const promises = SOURCES.map(source => 
-        fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}&api_key=00000000000000000000000000000000`) // Clé vide = limitée mais fonctionnelle
+        fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}`)
         .then(res => res.json())
         .then(data => {
             if (data.status === 'ok') {
-                return data.items.map(item => ({
-                    title: item.title,
-                    link: item.link,
-                    image: item.enclosure.link || item.thumbnail || '',
-                    source: source.name,
-                    date: new Date(item.pubDate)
-                }));
+                data.items.forEach(item => {
+                    allArticles.push({
+                        title: item.title,
+                        link: item.link,
+                        image: item.enclosure.link || item.thumbnail || '',
+                        source: source.name,
+                        category: source.cat,
+                        date: new Date(item.pubDate)
+                    });
+                });
             }
-            return [];
-        })
+        }).catch(err => console.log("Erreur sur " + source.name))
     );
 
-    const results = await Promise.all(promises);
-    allArticles = results.flat().sort((a, b) => b.date - a.date);
-    
-    // Remplir le filtre de sources
-    SOURCES.forEach(s => {
-        const opt = document.createElement('option');
-        opt.value = s.name; opt.textContent = s.name;
-        sourceSelect.appendChild(opt);
-    });
+    await Promise.all(promises);
+    allArticles.sort((a, b) => b.date - a.date);
+    render();
+}
 
+function filterCat(cat) {
+    currentCat = cat;
+    document.querySelectorAll('.btn-cat').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent === cat);
+    });
     render();
 }
 
 function render() {
     const grid = document.getElementById('grid');
-    const searchTerm = document.getElementById('search').value.toLowerCase();
-    const sourceTerm = document.getElementById('sourceFilter').value;
-
+    const search = document.getElementById('search').value.toLowerCase();
+    
     const filtered = allArticles.filter(a => {
-        return (a.title.toLowerCase().includes(searchTerm)) && 
-               (sourceTerm === "" || a.source === sourceTerm);
+        const matchSearch = a.title.toLowerCase().includes(search);
+        const matchCat = (currentCat === "Tous" || a.category === currentCat);
+        return matchSearch && matchCat;
     });
+
+    if (filtered.length === 0) {
+        grid.innerHTML = "<div class='loader'>Aucun article trouvé.</div>";
+        return;
+    }
 
     grid.innerHTML = filtered.map(a => `
         <a href="${a.link}" target="_blank" class="card">
-            ${a.image ? `<img src="${a.image}" loading="lazy">` : ''}
+            ${a.image ? `<img src="${a.image}">` : ''}
             <div class="card-content">
                 <div class="card-title">${a.title}</div>
                 <div class="card-meta">
                     <span><b>${a.source}</b></span>
-                    <span>${a.date.toLocaleDateString('fr-FR', {day:'numeric', month:'short'})}</span>
+                    <span>${a.date.toLocaleDateString('fr-FR')}</span>
                 </div>
             </div>
         </a>
@@ -109,11 +118,7 @@ function render() {
 }
 
 document.getElementById('search').addEventListener('input', render);
-document.getElementById('sourceFilter').addEventListener('change', render);
-
 fetchNews();
 </script>
-
 </body>
-                                </html>
-  
+</html>
