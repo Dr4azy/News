@@ -3,53 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Sans CNews v22</title>
+    <title>News Sans CNews v23</title>
     <style>
-        :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; }
-        body.theme-journal { --bg: #f4ecd8; --card: #efe6cf; --accent: #2c3e50; --text: #2c3e50; --meta: #5d6d7e; }
-        body.theme-night { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; }
-        body.theme-light { --bg: #ffffff; --card: #f0f0f0; --accent: #2980b9; --text: #222; --meta: #777; }
+        :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; }
+        body.theme-journal { --bg: #f4ecd8; --card: #efe6cf; --accent: #2c3e50; --text: #2c3e50; --meta: #5d6d7e; --border: #dcd0b9; }
+        body.theme-night { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; }
+        body.theme-light { --bg: #ffffff; --card: #f9f9f9; --accent: #2980b9; --text: #222; --meta: #777; --border: #ddd; }
 
-        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: background 0.3s; }
+        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: background 0.3s; }
+        header { background: rgba(0,0,0,0.1); padding: 10px; text-align: center; border-bottom: 1px solid var(--border); }
+        header h1 { font-size: 1.1rem; margin: 0; letter-spacing: 1px; text-transform: lowercase; }
         
-        /* Header & Controls */
-        header { background: rgba(0,0,0,0.2); padding: 10px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .sticky-controls { position: sticky; top: 0; z-index: 1000; background: var(--bg); border-bottom: 2px solid var(--accent); padding-bottom: 5px; }
+        .sticky-controls { position: sticky; top: 0; z-index: 1000; background: var(--bg); border-bottom: 2px solid var(--accent); }
         .controls { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
         .row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; align-items: center; }
-        input, select, button { background: rgba(125,125,125,0.1); color: var(--text); border: 1px solid rgba(125,125,125,0.3); padding: 10px; border-radius: 8px; font-size: 0.9rem; }
+        input, select, button { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.9rem; }
         
         .btn-cat { white-space: nowrap; cursor: pointer; padding: 6px 12px; }
-        .btn-cat.active { background: var(--accent) !important; color: white !important; font-weight: bold; }
+        .btn-cat.active { background: var(--accent) !important; color: white !important; font-weight: bold; border-color: var(--accent); }
         body:not(.theme-journal):not(.theme-light) .btn-cat.active { color: #000 !important; }
 
-        /* Grid & Cards */
+        /* Tuiles délimitées comme avant */
         #grid { padding: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid rgba(125,125,125,0.1); display: flex; flex-direction: column; }
-        .card img { width: 100%; height: 180px; object-fit: cover; background: rgba(0,0,0,0.1); cursor: pointer; }
-        .card-content { padding: 12px; flex-grow: 1; }
-        .card-title { font-weight: bold; font-size: 1rem; margin-bottom: 8px; line-height: 1.3; color: var(--text); text-decoration: none; display: block; }
+        .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .card img { width: 100%; height: 190px; object-fit: cover; background: rgba(0,0,0,0.2); cursor: pointer; border-bottom: 1px solid var(--border); }
+        .card-content { padding: 12px; display: flex; flex-direction: column; flex-grow: 1; }
+        .card-title { font-weight: bold; font-size: 1.05rem; margin-bottom: 8px; line-height: 1.3; color: var(--text); text-decoration: none; }
         
-        .read-btn { background: var(--accent); color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: 10px; width: 100%; cursor: pointer; }
+        .read-btn { background: var(--accent); color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: auto; width: 100%; cursor: pointer; }
         body:not(.theme-journal):not(.theme-light) .read-btn { color: #000; }
-        .save-btn { background: transparent; color: var(--meta); border: 1px solid var(--meta); padding: 8px; border-radius: 6px; margin-top: 5px; width: 100%; cursor: pointer; font-size: 0.8rem; }
+        .save-btn { background: transparent; color: var(--meta); border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-top: 6px; width: 100%; cursor: pointer; font-size: 0.8rem; }
 
-        /* Modal Mode Lecture AMÉLIORÉ */
-        #readerModal { display: none; position: fixed; inset: 0; z-index: 4000; overflow-y: auto; padding: 0; }
-        body.theme-journal #readerModal, body.theme-light #readerModal { background: #fbfbfb; color: #2c3e50; }
-        body:not(.theme-journal):not(.theme-light) #readerModal { background: #121212; color: #eee; }
-        
-        .reader-container { max-width: 800px; margin: 0 auto; padding: 20px; position: relative; }
-        .reader-header { position: sticky; top: 0; display: flex; justify-content: space-between; padding: 15px 0; background: inherit; border-bottom: 1px solid rgba(125,125,125,0.2); margin-bottom: 20px; z-index: 10; }
+        /* Mode Lecture */
+        #readerModal { display: none; position: fixed; inset: 0; z-index: 4000; overflow-y: auto; padding: 0; background: var(--bg); }
+        .reader-container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .reader-header { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--bg); border-bottom: 1px solid var(--border); z-index: 10; }
         .reader-close { background: var(--accent); color: #000; border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; }
-        
-        .reader-body { line-height: 1.8; font-size: 1.25rem; font-family: 'Georgia', serif; }
-        .reader-body h1 { font-family: sans-serif; font-size: 1.8rem; line-height: 1.2; margin-top: 0; }
-        .reader-body img { max-width: 100%; height: auto; border-radius: 8px; margin: 20px 0; display: block; }
-        .reader-body p { margin-bottom: 1.5rem; }
-        .reader-body a { color: var(--accent); text-decoration: underline; }
+        .reader-body { line-height: 1.8; font-size: 1.2rem; font-family: 'Georgia', serif; padding-top: 20px; }
+        .reader-body h1 { font-family: sans-serif; margin-top: 0; font-size: 1.8rem; }
+        .reader-body img { max-width: 100%; height: auto; border-radius: 8px; margin: 20px 0; }
 
-        #sourceModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; padding: 20px; overflow-y: auto; }
+        /* Modal Options */
+        #sourceModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; padding: 20px; overflow-y: auto; }
+        .option-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; }
+        
         .spin { animation: rotation 1s infinite linear; }
         @keyframes rotation { from { transform: rotate(0deg); } to { transform: rotate(359deg); } }
     </style>
@@ -57,11 +54,11 @@
 <body id="bodyTag">
 
 <div id="readerModal">
+    <div class="reader-header">
+        <span id="readerSource" style="font-weight: bold;">Article</span>
+        <button class="reader-close" onclick="closeReader()">FERMER ✕</button>
+    </div>
     <div class="reader-container">
-        <div class="reader-header">
-            <span id="readerSource" style="font-weight: bold; opacity: 0.7;">Source</span>
-            <button class="reader-close" onclick="closeReader()">FERMER ✕</button>
-        </div>
         <div id="readerView" class="reader-body"></div>
     </div>
 </div>
@@ -72,19 +69,13 @@
     <div class="controls">
         <div class="row">
             <input type="text" id="search" style="flex-grow:1" placeholder="🔍 Chercher...">
-            <select id="themeSelect" onchange="changeTheme(this.value)" style="width: 100px;">
-                <option value="cyber">Cyber</option>
-                <option value="journal">Journal</option>
-                <option value="night">Nuit</option>
-                <option value="light">Clair</option>
-            </select>
             <button id="refreshBtn" onclick="fetchAll()">🔄</button>
             <button onclick="document.getElementById('sourceModal').style.display='block'">⚙️</button>
         </div>
         <div id="catBar" class="row"></div>
         <div class="row">
             <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Sources</option></select>
-            <button id="vaultBtn" onclick="toggleVault()" style="background:#333; min-width: 80px;">💾 Coffre</button>
+            <button id="vaultBtn" onclick="toggleVault()" style="background:var(--card); min-width: 80px;">💾 Coffre</button>
         </div>
     </div>
 </div>
@@ -92,9 +83,23 @@
 <div id="grid"></div>
 
 <div id="sourceModal">
-    <h3>⚙️ Configuration des sources</h3>
-    <div id="sourceList"></div>
-    <button onclick="document.getElementById('sourceModal').style.display='none'" style="width:100%; margin-top:20px; padding:15px; background:var(--accent); color:black; font-weight:bold; border:none; border-radius:8px;">RETOUR</button>
+    <div class="option-box">
+        <h3>🎨 Apparence</h3>
+        <label>Thème de l'application : </label>
+        <select id="themeSelect" onchange="changeTheme(this.value)" style="width: 100%; margin-top: 10px;">
+            <option value="cyber">Cyber (Noir/Jaune)</option>
+            <option value="journal">Journal (Papier/Bleu)</option>
+            <option value="night">Nuit (Noir Pur/OLED)</option>
+            <option value="light">Clair (Blanc/Bleu)</option>
+        </select>
+    </div>
+
+    <div class="option-box">
+        <h3>📡 Mes Sources</h3>
+        <div id="sourceList"></div>
+    </div>
+    
+    <button onclick="document.getElementById('sourceModal').style.display='none'" style="width:100%; padding:15px; background:var(--accent); color:black; font-weight:bold; border:none; border-radius:8px;">ENREGISTRER & QUITTER</button>
 </div>
 
 <script>
@@ -139,7 +144,7 @@ async function fetchAll() {
                     return {
                         id: item.guid || item.link, title: item.title, link: item.link,
                         img: img, source: s.name, category: s.cat,
-                        date: item.pubDate, fullContent: item.content || item.description
+                        date: item.pubDate, content: item.content || item.description
                     };
                 });
             }
@@ -177,7 +182,7 @@ function render() {
             <a href="${a.link}" target="_blank"><img src="${a.img || 'https://via.placeholder.com/400x200/222/555?text='+a.source}"></a>
             <div class="card-content">
                 <a href="${a.link}" target="_blank" class="card-title">${a.title}</a>
-                <div style="font-size:0.75rem; color:var(--meta); margin-bottom:10px;">${a.source} • ${new Date(a.date).toLocaleDateString()}</div>
+                <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">${a.source} • ${new Date(a.date).toLocaleDateString()}</div>
                 <button class="read-btn" onclick="openReader('${a.id}')">LIRE L'ARTICLE</button>
                 <button class="save-btn" onclick="toggleSave('${a.id}')">
                     ${inVault ? '💾 SAUVEGARDÉ' : '💾 SAUVEGARDER'}
@@ -191,15 +196,12 @@ function openReader(id) {
     const art = [...allArticles, ...vault].find(a => a.id === id);
     if(!art) return;
     document.getElementById('readerSource').innerText = art.source;
-    const reader = document.getElementById('readerView');
-    reader.innerHTML = `
+    document.getElementById('readerView').innerHTML = `
         <h1>${art.title}</h1>
-        <div style="font-style: italic; opacity: 0.6; margin-bottom: 25px;">Publié le ${new Date(art.date).toLocaleString()}</div>
-        <div class="article-content-clean">${art.fullContent}</div>
-        <hr style="border:0; border-top:1px solid rgba(125,125,125,0.2); margin:40px 0;">
-        <p style="text-align:center;">
-            <a href="${art.link}" target="_blank" style="font-family:sans-serif; font-weight:bold;">Lire la suite sur le site d'origine</a>
-        </p>
+        <div style="font-style: italic; opacity: 0.6; margin-bottom: 20px;">${new Date(art.date).toLocaleString()}</div>
+        <div class="full-text">${art.content}</div>
+        <hr style="border:0; border-top:1px solid var(--border); margin:30px 0;">
+        <p style="text-align:center"><a href="${art.link}" target="_blank" style="color:var(--accent)">Consulter sur le site d'origine</a></p>
     `;
     document.getElementById('readerModal').style.display = 'block';
     document.body.style.overflow = 'hidden';
@@ -232,9 +234,9 @@ function updateUI() {
     sources.forEach(s => sel.innerHTML += `<option value="${s.name}">${s.name}</option>`);
 
     document.getElementById('sourceList').innerHTML = sources.map((s, i) => `
-        <div style="background:rgba(125,125,125,0.1); padding:10px; margin-bottom:5px; border-radius:8px; display:flex; justify-content:space-between;">
-            <span>${s.name} (${s.cat})</span>
-            <button onclick="sources.splice(${i},1); localStorage.setItem('nsc_sources', JSON.stringify(sources)); fetchAll();" style="background:red; color:white; border:none; padding:4px 8px; border-radius:4px;">Supprimer</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border);">
+            <span>${s.name}</span>
+            <button onclick="sources.splice(${i},1); localStorage.setItem('nsc_sources', JSON.stringify(sources)); fetchAll();" style="background:#cc0000; color:white; border:none; padding:5px 10px; border-radius:5px; font-size:0.7rem;">Supprimer</button>
         </div>
     `).join('');
 }
@@ -242,8 +244,7 @@ function updateUI() {
 function setCat(c) { currentCat = c; updateUI(); render(); }
 function toggleVault() {
     isVaultView = !isVaultView;
-    const btn = document.getElementById('vaultBtn');
-    btn.innerHTML = isVaultView ? "🌐 FLUX" : "💾 COFFRE";
+    document.getElementById('vaultBtn').innerHTML = isVaultView ? "🌐 FLUX" : "💾 COFFRE";
     render();
 }
 
@@ -252,4 +253,5 @@ document.getElementById('sourceSelect').addEventListener('change', render);
 fetchAll();
 </script>
 </body>
-</html>
+    </html>
+    
