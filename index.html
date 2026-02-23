@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Les News sans Cnews</title>
+    <title>News</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <style>
-        :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --success: #2e7d32; --read-bg: var(--accent); --read-txt: #000; }
+        :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --read-bg: var(--accent); --read-txt: #000; }
         body.theme-night   { --bg: #000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; --read-bg: #8e44ad; --read-txt: #fff; }
         body.theme-matrix  { --bg: #000; --card: #001100; --accent: #00ff41; --text: #00ff41; --meta: #008f11; --border: #003b00; --read-bg: #00ff41; --read-txt: #000; }
         body.theme-dracula { --bg: #282a36; --card: #44475a; --accent: #bd93f9; --text: #f8f8f2; --meta: #6272a4; --border: #44475a; --read-bg: #bd93f9; --read-txt: #000; }
@@ -20,10 +20,8 @@
         body.theme-neon    { --bg: #000; --card: #111; --accent: #ff00ff; --text: #00ffff; --meta: #777; --border: #333; --read-bg: #ff00ff; --read-txt: #000; }
         body.theme-coffee  { --bg: #1c1917; --card: #292524; --accent: #d6d3d1; --text: #fafaf9; --meta: #a8a29e; --border: #44403c; --read-bg: #d6d3d1; --read-txt: #000; }
         body.theme-copper  { --bg: #1a120b; --card: #2d1e12; --accent: #d97706; --text: #fef3c7; --meta: #92400e; --border: #452e1a; --read-bg: #d97706; --read-txt: #fff; }
-        body.theme-cyber2  { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --read-bg: #444; --read-txt: #fff; }
 
         body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: 0.3s; }
-        body.modal-open { overflow: hidden; }
         header { background: rgba(0,0,0,0.2); padding: 10px; text-align: center; border-bottom: 1px solid var(--border); padding-top: env(safe-area-inset-top); }
         .sticky-controls { position: sticky; top: 0; z-index: 1000; background: var(--bg); border-bottom: 2px solid var(--accent); }
         .controls { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
@@ -39,20 +37,20 @@
         .read-btn { background: var(--read-bg); color: var(--read-txt); border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: auto; cursor: pointer; }
         .save-btn { background: transparent; color: var(--meta); border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-top: 8px; cursor: pointer; }
         .save-btn.saved { background: #2e7d32 !important; color: white !important; border-color: #2e7d32; }
+        
         .full-modal { display: none; position: fixed; inset: 0; z-index: 4000; overflow-y: auto; background: var(--bg); }
         .modal-header { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--bg); border-bottom: 1px solid var(--border); z-index: 10; padding-top: calc(15px + env(safe-area-inset-top)); }
         .modal-container { max-width: 800px; margin: 0 auto; padding: 20px; }
-        #readerView img { max-width: 100%; height: auto !important; border-radius: 8px; margin: 15px 0; display: block; }
         .option-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
         .source-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
         
-        /* LA SEULE MODIFICATION REELLE : flex-wrap et ajustement des inputs */
+        /* Correction de la section modification des sources */
         .source-grid { display: flex; gap: 5px; align-items: center; margin-bottom: 5px; flex-wrap: wrap; }
-        .source-grid input { flex: 1; min-width: 120px; padding: 8px; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; font-size: 0.8rem; }
+        .source-grid input { flex: 1; min-width: 110px; padding: 8px; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; font-size: 0.8rem; }
         
-        .pin-btn { min-width: 40px; background: var(--border); color: var(--text); border: none; cursor: pointer; height: 35px; }
+        .pin-btn { min-width: 40px; height: 36px; background: var(--border); color: var(--text); border: none; cursor: pointer; border-radius: 6px; }
         .pin-btn.pinned { background: var(--accent); color: #000; }
-        .del-btn { min-width: 40px; background: #ef4444; color: white; border: none; cursor: pointer; height: 35px; }
+        .del-btn { min-width: 40px; height: 36px; background: #ef4444; color: white; border: none; cursor: pointer; border-radius: 6px; }
         .spin { animation: rotation 1s infinite linear; }
         @keyframes rotation { from { transform: rotate(0deg); } to { transform: rotate(359deg); } }
     </style>
@@ -76,20 +74,17 @@
         <div class="option-box">
             <h3>🎨 Thème</h3>
             <select id="themeSelect" onchange="changeTheme(this.value)" style="width: 100%;">
-                <option value="cyber">Cyber</option><option value="cyber2">Cyber 2</option>
-                <option value="night">Nuit</option><option value="matrix">Matrix</option>
-                <option value="dracula">Dracula</option><option value="ocean">Océan</option>
-                <option value="blood">Blood</option><option value="forest">Forest</option>
-                <option value="gold">Gold</option><option value="vapor">Vaporwave</option>
-                <option value="neon">Neon</option><option value="coffee">Coffee</option>
-                <option value="copper">Copper</option>
+                <option value="cyber">Cyber</option><option value="night">Nuit</option><option value="matrix">Matrix</option>
+                <option value="dracula">Dracula</option><option value="ocean">Océan</option><option value="blood">Blood</option>
+                <option value="forest">Forest</option><option value="gold">Gold</option><option value="vapor">Vaporwave</option>
+                <option value="neon">Neon</option><option value="coffee">Coffee</option><option value="copper">Copper</option>
             </select>
         </div>
         <div class="option-box">
             <h3>➕ Ajouter une source RSS</h3>
-            <input type="text" id="newName" placeholder="Nom" style="width:94%; margin-bottom:5px;">
-            <input type="text" id="newUrl" placeholder="URL RSS" style="width:94%; margin-bottom:5px;">
-            <input type="text" id="newCat" placeholder="Catégorie" style="width:94%; margin-bottom:10px;">
+            <input type="text" id="newName" placeholder="Nom" style="width:95%; margin-bottom:5px;">
+            <input type="text" id="newUrl" placeholder="URL RSS" style="width:95%; margin-bottom:5px;">
+            <input type="text" id="newCat" placeholder="Catégorie" style="width:95%; margin-bottom:10px;">
             <button onclick="addSource()" style="width:100%; background:var(--accent); color:#000; font-weight:bold;">AJOUTER SOURCE</button>
         </div>
         <div class="option-box">
@@ -125,19 +120,9 @@ let allArticles = [];
 let isVaultView = false;
 let currentCat = "Tous";
 
-function openModal(id) { document.getElementById(id).style.display = 'block'; document.body.classList.add('modal-open'); }
-function closeModal(id) { document.getElementById(id).style.display = 'none'; document.body.classList.remove('modal-open'); }
+function openModal(id) { document.getElementById(id).style.display = 'block'; }
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 function changeTheme(theme) { document.getElementById('bodyTag').className = (theme === 'cyber') ? "" : "theme-" + theme; localStorage.setItem('nsc_theme', theme); }
-
-function timeSince(date) {
-    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-    let interval = seconds / 3600;
-    if (interval > 24) return Math.floor(interval / 24) + "j";
-    if (interval >= 1) return Math.floor(interval) + "h";
-    interval = seconds / 60;
-    if (interval >= 1) return Math.floor(interval) + "m";
-    return Math.floor(seconds) + "s";
-}
 
 async function fetchAll() {
     if(isVaultView) return;
@@ -181,12 +166,11 @@ function render() {
     grid.innerHTML = list.filter(a => a.title.toLowerCase().includes(search) && (currentCat === "Tous" || a.category === currentCat) && (sourceF === "Tous" || a.source === sourceF)
     ).map(a => {
         const inVault = vault.some(v => v.id === a.id);
-        const d = new Date(a.date);
         return `<div class="card" style="${a.isTop ? 'border: 2px solid var(--accent)' : ''}">
             <img src="${a.img || 'https://via.placeholder.com/400x200/222/555?text='+a.source}" onclick="openReader('${a.id}')">
             <div class="card-content">
                 <a href="${a.link}" target="_blank" class="card-title">${a.isTop ? '📌 ':''}${a.title}</a>
-                <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">${a.source} • ${timeSince(a.date)}</div>
+                <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">${a.source}</div>
                 <button class="read-btn" onclick="openReader('${a.id}')">LIRE</button>
                 <button class="save-btn ${inVault?'saved':''}" onclick="toggleSave('${a.id}')">${inVault ? 'SAUVÉ' : 'SAUVER'}</button>
             </div>
@@ -240,4 +224,5 @@ document.getElementById('sourceSelect').addEventListener('change', render);
 fetchAll();
 </script>
 </body>
-</html>
+    </html>
+                                                              
