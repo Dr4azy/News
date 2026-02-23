@@ -3,22 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Sans CNews</title>
+    <title>News Sans CNews v3</title>
     <style>
-        :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; }
-        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 20px; }
-        header { background: #1a1a1a; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #333; }
-        .filters { padding: 10px; display: flex; flex-direction: column; gap: 10px; background: #1a1a1a; }
-        .scroll-menu { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
-        input, select, .btn-cat { background: #252525; color: white; border: 1px solid #444; padding: 10px; border-radius: 8px; }
-        .btn-cat.active { background: var(--accent); color: #000; font-weight: bold; }
-        #grid { padding: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border-radius: 12px; overflow: hidden; text-decoration: none; color: inherit; border: 1px solid #222; transition: 0.2s; }
-        .card img { width: 100%; height: 180px; object-fit: cover; background: #222; }
+        :root { --bg: #0f0f0f; --card: #1a1a1a; --accent: #ffd700; --text: #f0f0f0; }
+        body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 60px; }
+        
+        header { background: #1a1a1a; padding: 15px; text-align: center; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 1000; }
+        
+        .controls { padding: 10px; display: flex; flex-direction: column; gap: 8px; background: #1a1a1a; }
+        .row { display: flex; gap: 5px; overflow-x: auto; }
+        input, select, button { background: #2a2a2a; color: white; border: 1px solid #444; padding: 12px; border-radius: 8px; flex-grow: 1; }
+        .btn-icon { flex-grow: 0; min-width: 45px; cursor: pointer; }
+        .active-cat { background: var(--accent); color: black; }
+
+        #grid { padding: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
+        .card { background: var(--card); border-radius: 12px; overflow: hidden; position: relative; border: 1px solid #222; }
+        .card img { width: 100%; height: 180px; object-fit: cover; background: #222; display: block; }
         .card-content { padding: 12px; }
-        .card-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .card-meta { font-size: 0.8rem; color: #888; display: flex; justify-content: space-between; }
-        .loader { text-align: center; padding: 50px; color: var(--accent); }
+        .card-title { font-weight: bold; margin-bottom: 8px; line-height: 1.3; }
+        .card-footer { display: flex; justify-content: space-between; font-size: 0.8rem; color: #888; align-items: center; }
+        
+        .fav-btn { color: #555; font-size: 1.5rem; cursor: pointer; transition: 0.2s; }
+        .fav-btn.active { color: var(--accent); }
+
+        /* Modal pour gérer les sources */
+        #sourceModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; padding: 20px; }
+        .source-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #333; }
     </style>
 </head>
 <body>
@@ -27,98 +37,165 @@
     <h1>les news sans cnews</h1>
 </header>
 
-<div class="filters">
-    <input type="text" id="search" placeholder="🔍 Rechercher un article...">
-    <div class="scroll-menu" id="catMenu">
-        <button class="btn-cat active" onclick="filterCat('Tous')">Tous</button>
-        <button class="btn-cat" onclick="filterCat('Info')">Info</button>
-        <button class="btn-cat" onclick="filterCat('Tech')">Tech/Espace</button>
-        <button class="btn-cat" onclick="filterCat('Sport')">Sport</button>
+<div class="controls">
+    <div class="row">
+        <input type="text" id="searchInput" placeholder="🔍 Rechercher...">
+        <button onclick="document.getElementById('sourceModal').style.display='block'" class="btn-icon">⚙️</button>
+    </div>
+    <div class="row">
+        <select id="sourceSelect"><option value="Tous">Toutes les sources</option></select>
+        <button id="favToggle" onclick="toggleShowFavs()" class="btn-icon">⭐</button>
     </div>
 </div>
 
-<div id="grid"><div class="loader">Chargement des actualités...</div></div>
+<div id="grid"></div>
+
+<div id="sourceModal">
+    <h3>Gérer mes flux RSS</h3>
+    <input type="text" id="newSourceName" placeholder="Nom (ex: NASA)">
+    <input type="text" id="newSourceUrl" placeholder="Lien RSS (XML)">
+    <button onclick="addSource()" style="background: green; margin-top: 5px;">Ajouter</button>
+    <div id="sourceList" style="margin-top: 20px; max-height: 300px; overflow-y: auto;"></div>
+    <button onclick="document.getElementById('sourceModal').style.display='none'" style="margin-top: 20px;">Fermer</button>
+</div>
 
 <script>
-// --- TES SOURCES ICI ---
-const SOURCES = [
-    { name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml", cat: "Info" },
-    { name: "Libération", url: "https://www.liberation.fr/arc/outboundfeeds/rss-all/all/", cat: "Info" },
-    { name: "L'Équipe", url: "https://lequipe.fr/rss/actu_rss.xml", cat: "Sport" },
-    { name: "NASA", url: "https://www.nasa.gov/rss/dyn/breaking_news.rss", cat: "Tech" },
-    { name: "Numerama", url: "https://www.numerama.com/feed/", cat: "Tech" }
+// --- INITIALISATION ---
+let defaultSources = [
+    { name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml" },
+    { name: "NASA", url: "https://www.nasa.gov/rss/dyn/breaking_news.rss" }
 ];
 
+let sources = JSON.parse(localStorage.getItem('news_sources')) || defaultSources;
+let favorites = JSON.parse(localStorage.getItem('news_favs')) || [];
 let allArticles = [];
-let currentCat = "Tous";
+let showOnlyFavs = false;
 
-async function fetchNews() {
+// --- MOTEUR DE REQUÊTE ---
+async function fetchAll() {
     allArticles = [];
-    const grid = document.getElementById('grid');
+    document.getElementById('grid').innerHTML = "Chargement...";
     
-    const promises = SOURCES.map(source => 
-        fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}`)
-        .then(res => res.json())
+    const promises = sources.map(s => 
+        fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(s.url)}`)
+        .then(r => r.json())
         .then(data => {
-            if (data.status === 'ok') {
+            if(data.status === 'ok') {
                 data.items.forEach(item => {
                     allArticles.push({
+                        id: item.guid || item.link,
                         title: item.title,
                         link: item.link,
-                        image: item.enclosure.link || item.thumbnail || '',
-                        source: source.name,
-                        category: source.cat,
+                        img: item.enclosure.link || item.thumbnail || '',
+                        source: s.name,
                         date: new Date(item.pubDate)
                     });
                 });
             }
-        }).catch(err => console.log("Erreur sur " + source.name))
+        }).catch(e => console.log(e))
     );
 
     await Promise.all(promises);
-    allArticles.sort((a, b) => b.date - a.date);
+    allArticles.sort((a,b) => b.date - a.date);
+    updateSourceSelect();
     render();
 }
 
-function filterCat(cat) {
-    currentCat = cat;
-    document.querySelectorAll('.btn-cat').forEach(btn => {
-        btn.classList.toggle('active', btn.textContent === cat);
-    });
-    render();
-}
-
+// --- AFFICHAGE ---
 function render() {
     const grid = document.getElementById('grid');
-    const search = document.getElementById('search').value.toLowerCase();
-    
-    const filtered = allArticles.filter(a => {
-        const matchSearch = a.title.toLowerCase().includes(search);
-        const matchCat = (currentCat === "Tous" || a.category === currentCat);
-        return matchSearch && matchCat;
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const sourceFilter = document.getElementById('sourceSelect').value;
+
+    let filtered = allArticles.filter(a => {
+        const mSearch = a.title.toLowerCase().includes(search);
+        const mSource = (sourceFilter === "Tous" || a.source === sourceFilter);
+        const mFav = showOnlyFavs ? favorites.some(f => f.id === a.id) : true;
+        return mSearch && mSource && mFav;
     });
 
-    if (filtered.length === 0) {
-        grid.innerHTML = "<div class='loader'>Aucun article trouvé.</div>";
-        return;
-    }
+    // Si on affiche les favoris et qu'on n'est pas en train de chercher dans les news fraiches
+    if(showOnlyFavs) filtered = favorites;
 
     grid.innerHTML = filtered.map(a => `
-        <a href="${a.link}" target="_blank" class="card">
-            ${a.image ? `<img src="${a.image}">` : ''}
+        <div class="card">
+            <a href="${a.link}" target="_blank" style="text-decoration:none; color:inherit;">
+                <img src="${a.img}" onerror="this.src='https://via.placeholder.com/400x200/222/ffd700?text=${a.source}'">
+                <div class="card-content">
+                    <div class="card-title">${a.title}</div>
+                </div>
+            </a>
             <div class="card-content">
-                <div class="card-title">${a.title}</div>
-                <div class="card-meta">
-                    <span><b>${a.source}</b></span>
-                    <span>${a.date.toLocaleDateString('fr-FR')}</span>
+                <div class="card-footer">
+                    <span>${a.source}</span>
+                    <span class="fav-btn ${favorites.some(f => f.id === a.id) ? 'active' : ''}" onclick="toggleFav('${a.id.replace(/'/g, "\\'")}')">★</span>
                 </div>
             </div>
-        </a>
+        </div>
     `).join('');
 }
 
-document.getElementById('search').addEventListener('input', render);
-fetchNews();
+// --- LOGIQUE DES SOURCES ---
+function updateSourceSelect() {
+    const sel = document.getElementById('sourceSelect');
+    const val = sel.value;
+    sel.innerHTML = '<option value="Tous">Toutes les sources</option>';
+    sources.forEach(s => {
+        sel.innerHTML += `<option value="${s.name}">${s.name}</option>`;
+    });
+    sel.value = val;
+    
+    // Update List in Modal
+    document.getElementById('sourceList').innerHTML = sources.map((s, i) => `
+        <div class="source-item">
+            <span>${s.name}</span>
+            <button onclick="removeSource(${i})" style="padding:2px 8px; background:red;">X</button>
+        </div>
+    `).join('');
+}
+
+function addSource() {
+    const name = document.getElementById('newSourceName').value;
+    const url = document.getElementById('newSourceUrl').value;
+    if(name && url) {
+        sources.push({name, url});
+        localStorage.setItem('news_sources', JSON.stringify(sources));
+        fetchAll();
+        document.getElementById('newSourceName').value = '';
+        document.getElementById('newSourceUrl').value = '';
+    }
+}
+
+function removeSource(i) {
+    sources.splice(i, 1);
+    localStorage.setItem('news_sources', JSON.stringify(sources));
+    fetchAll();
+}
+
+// --- FAVORIS ---
+function toggleFav(id) {
+    const index = favorites.findIndex(f => f.id === id);
+    if(index > -1) {
+        favorites.splice(index, 1);
+    } else {
+        const art = allArticles.find(a => a.id === id);
+        if(art) favorites.push(art);
+    }
+    localStorage.setItem('news_favs', JSON.stringify(favorites));
+    render();
+}
+
+function toggleShowFavs() {
+    showOnlyFavs = !showOnlyFavs;
+    document.getElementById('favToggle').classList.toggle('active-cat', showOnlyFavs);
+    render();
+}
+
+// --- EVENTS ---
+document.getElementById('searchInput').addEventListener('input', render);
+document.getElementById('sourceSelect').addEventListener('change', render);
+
+fetchAll();
 </script>
 </body>
 </html>
