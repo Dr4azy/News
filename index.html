@@ -11,11 +11,10 @@
     <meta name="apple-mobile-web-app-title" content="NewsNSC">
     <meta name="theme-color" content="#121212">
 
-    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAAADezj9AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH6AMXDA0SHe96VAAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAF3SURBVHja7Z1NSsNAFIW/mY9aqS7EhS7ci0vXvYLeRNC78CK6ce0VvIDuXHsFvYp0Ie7EhbpxI6K0SUnSThpS86Yp8H0QXpI08/JySToJmDlz5swZAIvF4vL+9N6vN9uALqI3m06p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A/w88A8+P958zM6fOnDnzD+8E3o9fU89UAAAAAElFTkSuQmCC">
-    <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAAADezj9AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH6AMXDA0SHe96VAAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAF3SURBVHja7Z1NSsNAFIW/mY9aqS7EhS7ci0vXvYLeRNC78CK6ce0VvIDuXHsFvYp0Ie7EhbpxI6K0SUnSThpS86Yp8H0QXpI08/JySToJmDlz5swZAIvF4vL+9N6vN9uALqI3m06p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A9M6p888A/w88A8+P958zM6fOnDnzD+8E3o9fU89UAAAAAElFTkSuQmCC">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22black%22/><text y=%22.9em%22 font-size=%2280%22 x=%2210%22 fill=%22white%22 font-family=%22sans-serif%22 font-weight=%22bold%22>N</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22black%22/><text y=%22.9em%22 font-size=%2280%22 x=%2210%22 fill=%22white%22 font-family=%22sans-serif%22 font-weight=%22bold%22>N</text></svg>">
 
     <style>
-        /* --- SYSTÈME DE THÈMES --- */
         :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --success: #2e7d32; --read-bg: var(--accent); --read-txt: #000; }
         
         body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; --read-bg: #8e44ad; --read-txt: #fff; }
@@ -54,7 +53,6 @@
         .modal-container { max-width: 800px; margin: 0 auto; padding: 20px; }
         #readerView img { max-width: 100%; height: auto !important; border-radius: 8px; margin: 15px 0; display: block; }
         .option-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
-        .rss-help { background: rgba(0,0,0,0.2); border: 1px dashed var(--accent); padding: 10px; font-size: 0.8rem; border-radius: 8px; margin-bottom: 15px; color: var(--meta); line-height: 1.4; }
         
         .source-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
         .source-grid { display: grid; grid-template-columns: 1fr 1fr 40px 40px; gap: 5px; align-items: center; margin-bottom: 5px; }
@@ -97,7 +95,6 @@
         </div>
         <div class="option-box">
             <h3>➕ Ajouter une source</h3>
-            <div class="rss-help">Pour ajouter un média, cherchez "Flux RSS [Nom du site]" sur Google.</div>
             <input type="text" id="newName" placeholder="Nom" style="width:94%; margin-bottom:5px;">
             <input type="text" id="newUrl" placeholder="URL RSS" style="width:94%; margin-bottom:5px;">
             <input type="text" id="newCat" placeholder="Catégorie" style="width:94%; margin-bottom:10px;">
