@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Sans CNews</title>
+    <title>News Sans CNews v35</title>
     <style>
-        /* --- SYSTÈME DE THÈMES (SOMBRES UNIQUEMENT) --- */
+        /* --- SYSTÈME DE THÈMES SOMBRES --- */
         :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --success: #2e7d32; }
         
         body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; --success: #1b5e20; }
@@ -13,15 +13,23 @@
         body.theme-dracula { --bg: #282a36; --card: #44475a; --accent: #bd93f9; --text: #f8f8f2; --meta: #6272a4; --border: #44475a; --success: #50fa7b; }
         body.theme-ocean   { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f1f5f9; --meta: #94a3b8; --border: #334155; --success: #10b981; }
 
+        /* Verrouillage du scroll arrière-plan */
+        body.modal-open { overflow: hidden; }
+
         body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: 0.3s; }
         header { background: rgba(0,0,0,0.2); padding: 10px; text-align: center; border-bottom: 1px solid var(--border); }
         .sticky-controls { position: sticky; top: 0; z-index: 1000; background: var(--bg); border-bottom: 2px solid var(--accent); }
         .controls { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
         .row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; align-items: center; }
+        
         input, select, button { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.9rem; }
 
+        /* Correction Boutons Catégories (Jaunes par défaut) */
+        .btn-cat { background: var(--card); color: var(--text); border: 1px solid var(--border); white-space: nowrap; cursor: pointer; }
+        .btn-cat.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: bold; }
+
         #grid { padding: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+        .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; }
         .card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid var(--border); cursor: pointer; }
         .card-content { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; }
         .card-title { font-weight: bold; font-size: 1.05rem; margin-bottom: 8px; line-height: 1.3; color: var(--text); text-decoration: none; }
@@ -29,21 +37,29 @@
         .read-btn { background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: auto; cursor: pointer; }
         body.theme-night .read-btn, body.theme-ocean .read-btn, body.theme-dracula .read-btn { color: #fff; }
 
-        .save-btn { background: transparent; color: var(--meta); border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-top: 6px; cursor: pointer; }
-        .save-btn.saved { background: var(--success) !important; color: white !important; border-color: var(--success); }
-
+        /* --- MODE LECTURE OPTIMISÉ --- */
         .full-modal { display: none; position: fixed; inset: 0; z-index: 4000; overflow-y: auto; background: var(--bg); }
         .modal-header { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--bg); border-bottom: 1px solid var(--border); z-index: 10; }
         .modal-container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        
+        /* Ajustement des images dans le lecteur */
+        #readerView img { 
+            max-width: 100%; 
+            height: auto !important; 
+            border-radius: 8px; 
+            margin: 15px 0;
+            display: block;
+        }
+        #readerView iframe { max-width: 100%; border: none; }
 
         .option-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
-        .source-item { padding: 15px 0; border-bottom: 1px solid var(--border); }
-        .source-grid { display: flex; gap: 5px; margin-bottom: 5px; align-items: center; }
-        .source-grid input { flex: 1; min-width: 0; padding: 5px; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; }
+        .source-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
+        .source-grid { display: flex; gap: 5px; align-items: center; }
+        .source-grid input { flex: 1; padding: 5px; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; }
         
-        .pin-btn { min-width: 40px; background: var(--border); color: var(--text); border: none; }
+        .pin-btn { min-width: 40px; background: var(--border); color: var(--text); border: none; cursor: pointer; }
         .pin-btn.pinned { background: var(--accent); color: #000; }
-        .del-btn { min-width: 40px; background: #ef4444; color: white; border: none; }
+        .del-btn { min-width: 40px; background: #ef4444; color: white; border: none; cursor: pointer; }
 
         .spin { animation: rotation 1s infinite linear; }
         @keyframes rotation { from { transform: rotate(0deg); } to { transform: rotate(359deg); } }
@@ -54,7 +70,7 @@
 <div id="readerModal" class="full-modal">
     <div class="modal-header">
         <span id="readerSource" style="font-weight: bold;">Article</span>
-        <button onclick="closeReader()" style="background:var(--accent); color:#000; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;">✕ FERMER</button>
+        <button onclick="closeModal('readerModal')" style="background:var(--accent); color:#000; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;">✕ FERMER</button>
     </div>
     <div class="modal-container" id="readerView"></div>
 </div>
@@ -62,11 +78,11 @@
 <div id="sourceModal" class="full-modal">
     <div class="modal-header">
         <span style="font-weight: bold;">Réglages</span>
-        <button onclick="document.getElementById('sourceModal').style.display='none'" style="background:var(--accent); color:#000; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;">✕ RETOUR</button>
+        <button onclick="closeModal('sourceModal')" style="background:var(--accent); color:#000; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;">✕ RETOUR</button>
     </div>
     <div class="modal-container">
         <div class="option-box">
-            <h3>🎨 Choisir un thème</h3>
+            <h3>🎨 Thème</h3>
             <select id="themeSelect" onchange="changeTheme(this.value)" style="width: 100%;">
                 <option value="cyber">Cyber (Jaune/Noir)</option>
                 <option value="night">Nuit (Violet/Noir)</option>
@@ -75,17 +91,15 @@
                 <option value="ocean">Océan (Bleu nuit)</option>
             </select>
         </div>
-
         <div class="option-box">
-            <h3>➕ Ajouter une source</h3>
-            <input type="text" id="newName" placeholder="Nom du média" style="width:95%; margin-bottom:5px;">
-            <input type="text" id="newUrl" placeholder="URL RSS" style="width:95%; margin-bottom:5px;">
-            <input type="text" id="newCat" placeholder="Catégorie (ex: Sport)" style="width:95%; margin-bottom:10px;">
-            <button onclick="addSource()" style="width:100%; background:var(--accent); color:#000; font-weight:bold;">AJOUTER</button>
+            <h3>➕ Source RSS</h3>
+            <input type="text" id="newName" placeholder="Nom" style="width:94%; margin-bottom:5px;">
+            <input type="text" id="newUrl" placeholder="URL .xml" style="width:94%; margin-bottom:5px;">
+            <input type="text" id="newCat" placeholder="Dossier" style="width:94%; margin-bottom:10px;">
+            <button onclick="addSource()" style="width:100%; background:var(--accent); color:#000; font-weight:bold;">AJOUTER SOURCE</button>
         </div>
-
         <div class="option-box">
-            <h3>📡 Mes sources</h3>
+            <h3>📡 Gestion</h3>
             <div id="sourceList"></div>
         </div>
     </div>
@@ -96,14 +110,14 @@
 <div class="sticky-controls">
     <div class="controls">
         <div class="row">
-            <input type="text" id="search" style="flex-grow:1" placeholder="🔍 Rechercher...">
+            <input type="text" id="search" style="flex-grow:1" placeholder="Rechercher...">
             <button id="refreshBtn" onclick="fetchAll()">🔄</button>
-            <button onclick="document.getElementById('sourceModal').style.display='block'">⚙️</button>
+            <button onclick="openModal('sourceModal')">⚙️</button>
         </div>
         <div id="catBar" class="row"></div>
         <div class="row">
-            <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Toutes les sources</option></select>
-            <button id="vaultBtn" onclick="toggleVault()" style="background:var(--card); min-width: 80px;">💾 Coffre</button>
+            <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Sources</option></select>
+            <button id="vaultBtn" onclick="toggleVault()" style="min-width: 80px;">💾 Coffre</button>
         </div>
     </div>
 </div>
@@ -112,13 +126,22 @@
 
 <script>
 let sources = JSON.parse(localStorage.getItem('nsc_sources')) || [
-    { name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml", cat: "Info", pinned: true },
-    { name: "NASA", url: "https://www.nasa.gov/rss/dyn/breaking_news.rss", cat: "Espace", pinned: false }
+    { name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml", cat: "Info", pinned: true }
 ];
 let vault = JSON.parse(localStorage.getItem('nsc_vault')) || [];
 let allArticles = [];
 let isVaultView = false;
 let currentCat = "Tous";
+
+function openModal(id) {
+    document.getElementById(id).style.display = 'block';
+    document.body.classList.add('modal-open');
+}
+
+function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+    document.body.classList.remove('modal-open');
+}
 
 function changeTheme(theme) {
     document.getElementById('bodyTag').className = (theme === 'cyber') ? "" : "theme-" + theme;
@@ -135,14 +158,11 @@ async function fetchAll() {
             const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(s.url)}&t=${Date.now()}`);
             const data = await res.json();
             if(data.status === 'ok') {
-                sourceBundles[s.name] = data.items.map(item => {
-                    let img = item.enclosure?.link || item.thumbnail || "";
-                    if (!img && (item.content || item.description)) {
-                        const m = (item.content || item.description).match(/<img[^>]+src="([^">]+)"/);
-                        if(m) img = m[1];
-                    }
-                    return { id: item.guid || item.link, title: item.title, link: item.link, img: img, source: s.name, category: s.cat, date: item.pubDate, content: item.content || item.description };
-                });
+                sourceBundles[s.name] = data.items.map(item => ({
+                    id: item.guid || item.link, title: item.title, link: item.link,
+                    img: item.enclosure?.link || item.thumbnail || "",
+                    source: s.name, category: s.cat, date: item.pubDate, content: item.content || item.description
+                }));
             }
         } catch(e) {}
     }));
@@ -156,9 +176,7 @@ async function fetchAll() {
         if (pinnedNames.includes(name) && bundle.length > 0) {
             topPinned.push({...bundle[0], isTop: true});
             restOfNews.push(...bundle.slice(1));
-        } else {
-            restOfNews.push(...bundle);
-        }
+        } else { restOfNews.push(...bundle); }
     });
 
     restOfNews.sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -178,13 +196,13 @@ function render() {
     ).map(a => {
         const inVault = vault.some(v => v.id === a.id);
         return `
-        <div class="card" style="${a.isTop ? 'border: 2px solid var(--accent)' : ''}">
-            <img src="${a.img || 'https://via.placeholder.com/400x200/222/555?text='+a.source}" onclick="window.open('${a.link}')">
+        <div class="card" style="${a.isTop ? 'border: 1px solid var(--accent)' : ''}">
+            <img src="${a.img || 'https://via.placeholder.com/400x200/222/555?text='+a.source}" onclick="openReader('${a.id}')">
             <div class="card-content">
                 <a href="${a.link}" target="_blank" class="card-title">${a.isTop ? '📌 ':''}${a.title}</a>
                 <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">${a.source}</div>
-                <button class="read-btn" onclick="openReader('${a.id}')">LIRE L'ARTICLE</button>
-                <button class="save-btn ${inVault?'saved':''}" onclick="toggleSave('${a.id}')">${inVault?'💾 SAUVEGARDÉ':'💾 SAUVEGARDER'}</button>
+                <button class="read-btn" onclick="openReader('${a.id}')">LIRE</button>
+                <button class="save-btn ${inVault?'saved':''}" style="margin-top:8px; font-size:0.8rem; border:1px solid var(--border); background:none; color:var(--meta); border-radius:5px; padding:5px;" onclick="toggleSave('${a.id}')">${inVault?'SAUVÉ':'SAUVER'}</button>
             </div>
         </div>`
     }).join('');
@@ -194,19 +212,14 @@ function openReader(id) {
     const art = [...allArticles, ...vault].find(a => a.id === id);
     if(!art) return;
     document.getElementById('readerSource').innerText = art.source;
-    document.getElementById('readerView').innerHTML = `<h1 style="margin-top:0;">${art.title}</h1><div style="line-height:1.7; font-size:1.1rem;">${art.content}</div>`;
-    document.getElementById('readerModal').style.display = 'block';
+    document.getElementById('readerView').innerHTML = `<h2 style="margin-top:0;">${art.title}</h2><div style="line-height:1.7; font-size:1.1rem;">${art.content}</div><br><center><a href="${art.link}" target="_blank" style="color:var(--accent)">Lire l'original</a></center>`;
+    openModal('readerModal');
 }
-
-function closeReader() { document.getElementById('readerModal').style.display = 'none'; }
 
 function toggleSave(id) {
     const idx = vault.findIndex(v => v.id === id);
     if(idx > -1) vault.splice(idx, 1);
-    else {
-        const art = allArticles.find(a => a.id === id);
-        if(art) vault.push({...art});
-    }
+    else { vault.push({...allArticles.find(a => a.id === id)}); }
     localStorage.setItem('nsc_vault', JSON.stringify(vault));
     render();
 }
@@ -216,16 +229,19 @@ function addSource() {
     if(n && u) {
         sources.push({name:n, url:u, cat:c||"Info", pinned: false});
         localStorage.setItem('nsc_sources', JSON.stringify(sources));
-        document.getElementById('newName').value = ""; document.getElementById('newUrl').value = "";
         updateUI(); fetchAll();
     }
 }
 
 function updateUI() {
     const cats = ["Tous", ...new Set(sources.map(s => s.cat))];
-    document.getElementById('catBar').innerHTML = cats.map(c => `<button class="btn-cat ${currentCat===c?'active':''}" onclick="currentCat='${c}'; updateUI(); render();">${c}</button>`).join('');
+    document.getElementById('catBar').innerHTML = cats.map(c => 
+        `<button class="btn-cat ${currentCat===c?'active':''}" onclick="currentCat='${c}'; updateUI(); render();">${c}</button>`
+    ).join('');
+    
     const sel = document.getElementById('sourceSelect');
     sel.innerHTML = '<option value="Tous">Toutes les sources</option>' + sources.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
+    
     document.getElementById('sourceList').innerHTML = sources.map((s, i) => `
         <div class="source-item">
             <div class="source-grid">
@@ -236,7 +252,7 @@ function updateUI() {
         </div>`).join('');
 }
 
-function toggleVault() { isVaultView = !isVaultView; document.getElementById('vaultBtn').innerText = isVaultView ? "🌐 FLUX" : "💾 COFFRE"; render(); }
+function toggleVault() { isVaultView = !isVaultView; document.getElementById('vaultBtn').innerText = isVaultView ? "FLUX" : "COFFRE"; render(); }
 
 const savedT = localStorage.getItem('nsc_theme');
 if(savedT) { document.getElementById('themeSelect').value = savedT; changeTheme(savedT); }
@@ -245,4 +261,5 @@ document.getElementById('sourceSelect').addEventListener('change', render);
 fetchAll();
 </script>
 </body>
-</html>
+    </html>
+    
