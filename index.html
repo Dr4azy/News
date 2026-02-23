@@ -154,14 +154,17 @@ async function fetchAll() {
             const data = await res.json();
             if(data.status === 'ok') {
                 sourceBundles[s.name] = data.items.map(item => {
-                    let foundImg = item.enclosure?.link || item.thumbnail || "";
-                    if (!foundImg && item.description) {
-                        const m = item.description.match(/<img[^>]+src="([^">]+)"/);
-                        if (m) foundImg = m[1];
+                    // RÉTABLISSEMENT DU SCAN D'IMAGE (TYPE V17)
+                    let imgUrl = item.enclosure?.link || item.thumbnail || "";
+                    if (!imgUrl) {
+                        const content = item.content || item.description || "";
+                        const match = content.match(/<img[^>]+src="([^">]+)"/);
+                        if (match) imgUrl = match[1];
                     }
                     return {
                         id: item.guid || item.link, title: item.title, link: item.link,
-                        img: foundImg, source: s.name, category: s.cat, date: item.pubDate, content: item.content || item.description
+                        img: imgUrl, source: s.name, category: s.cat, date: item.pubDate, 
+                        content: item.content || item.description
                     }
                 });
             }
@@ -261,5 +264,4 @@ document.getElementById('sourceSelect').addEventListener('change', render);
 fetchAll();
 </script>
 </body>
-    </html>
-    
+</html>
