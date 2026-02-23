@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="fr" style="background: #000000;">
+<html lang="fr" style="background-color: #000000;">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>News</title>
 
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="News">
     <meta name="theme-color" content="#000000">
 
@@ -15,6 +15,15 @@
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23000000%22/><text y=%2250%%22 x=%2250%%22 font-size=%2270%22 text-anchor=%22middle%22 dy=%22.35em%22 fill=%22white%22 font-family=%22Arial, sans-serif%22 font-weight=%22bold%22>N</text></svg>">
 
     <style>
+        /* CSS CRITIQUE : EXÉCUTÉ IMMÉDIATEMENT */
+        html, body { 
+            background-color: #000000 !important; 
+            margin: 0; 
+            padding: 0; 
+            height: 100%;
+            overflow-x: hidden;
+        }
+
         #splash-screen {
             position: fixed;
             inset: 0;
@@ -23,14 +32,11 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 9999;
-            opacity: 1;
-            visibility: visible;
+            z-index: 10000;
             transition: opacity 0.4s ease-out;
         }
         #splash-screen svg { width: 120px; height: 120px; margin-bottom: 20px; }
         #splash-screen h1 { color: white; font-family: sans-serif; font-size: 1.5rem; letter-spacing: 2px; margin: 0; }
-        body { background: #000000; margin: 0; }
     </style>
 
     <style>
@@ -161,8 +167,8 @@ let allArticles = [];
 let isVaultView = false;
 let currentCat = "Tous";
 
-// MASQUER LE SPLASH SCREEN APRÈS LE CHARGEMENT
-window.addEventListener('load', () => {
+// MASQUAGE DU SPLASH AVEC PROTECTION ANTI-FLASH
+window.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         const splash = document.getElementById('splash-screen');
         splash.style.opacity = '0';
