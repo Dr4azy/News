@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Sans CNews v26</title>
+    <title>News Sans CNews v27</title>
     <style>
         /* --- SYSTÈME DE THÈMES --- */
         :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --success: #2e7d32; }
-        
         body.theme-journal { --bg: #f4ecd8; --card: #efe6cf; --accent: #2c3e50; --text: #2c3e50; --meta: #5d6d7e; --border: #dcd0b9; --success: #27ae60; }
         body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; --success: #1b5e20; }
         body.theme-light   { --bg: #ffffff; --card: #f9f9f9; --accent: #2980b9; --text: #222; --meta: #777; --border: #ddd; --success: #2ecc71; }
@@ -17,26 +16,25 @@
         body.theme-mars    { --bg: #2b1111; --card: #3d1a1a; --accent: #ff4d4d; --text: #ffcccc; --meta: #a35a5a; --border: #5a2a2a; --success: #ff4d4d; }
         body.theme-ocean   { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f1f5f9; --meta: #94a3b8; --border: #334155; --success: #10b981; }
         body.theme-forest  { --bg: #061b12; --card: #0a291c; --accent: #4ade80; --text: #dcfce7; --meta: #4ade80; --border: #14532d; --success: #22c55e; }
-        body.theme-retro   { --bg: #ff7eb9; --card: #ff99cc; --accent: #2ee1ff; --text: #ffffff; --meta: #ffffff; --border: #ff5eaa; --success: #2ee1ff; }
 
-        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: all 0.3s ease; }
-        header { background: rgba(0,0,0,0.1); padding: 10px; text-align: center; border-bottom: 1px solid var(--border); }
-        header h1 { font-size: 1.1rem; margin: 0; letter-spacing: 1px; text-transform: lowercase; }
+        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: 0.3s; }
         
+        /* Layout & Header */
+        header { background: rgba(0,0,0,0.1); padding: 10px; text-align: center; border-bottom: 1px solid var(--border); }
         .sticky-controls { position: sticky; top: 0; z-index: 1000; background: var(--bg); border-bottom: 2px solid var(--accent); }
         .controls { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
         .row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; align-items: center; }
-        input, select, button { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.9rem; outline: none; }
-        
-        /* Tuiles */
+        input, select, button { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.9rem; }
+
+        /* Grid */
         #grid { padding: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
         .card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid var(--border); }
-        .card-content { padding: 12px; display: flex; flex-direction: column; flex-grow: 1; }
+        .card-content { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; }
         .card-title { font-weight: bold; font-size: 1.05rem; margin-bottom: 8px; line-height: 1.3; color: var(--text); text-decoration: none; }
         
-        .read-btn { background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: auto; width: 100%; cursor: pointer; }
-        .save-btn { background: transparent; color: var(--meta); border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-top: 6px; width: 100%; cursor: pointer; }
+        .read-btn { background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: auto; cursor: pointer; }
+        .save-btn { background: transparent; color: var(--meta); border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-top: 6px; cursor: pointer; transition: 0.2s; }
         .save-btn.saved { background: var(--success) !important; color: white !important; border-color: var(--success); }
 
         /* Modales */
@@ -44,11 +42,16 @@
         .modal-header { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--bg); border-bottom: 1px solid var(--border); z-index: 10; }
         .modal-container { max-width: 800px; margin: 0 auto; padding: 20px; }
 
-        /* Options & Sources */
+        /* Gestion des sources optimisée */
         .option-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
-        .source-item { padding: 12px 0; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
-        .source-row { display: flex; gap: 5px; }
-        .source-url { font-size: 0.75rem; opacity: 0.6; width: 95%; background: transparent; border: none; color: var(--text); border-bottom: 1px dashed #555; }
+        .source-item { padding: 15px 0; border-bottom: 1px solid var(--border); }
+        .source-grid { display: grid; grid-template-columns: 1fr 1fr 40px 40px; gap: 5px; margin-bottom: 5px; }
+        .source-url-input { width: 100%; font-size: 0.75rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 5px; color: var(--meta); border-radius: 4px; box-sizing: border-box; }
+        .pin-btn { background: #333; color: #fff; cursor: pointer; }
+        .pin-btn.pinned { background: var(--accent); color: #000; }
+
+        /* Aide RSS V17 */
+        .rss-help { background: rgba(255,255,255,0.05); border: 1px dashed var(--accent); padding: 10px; font-size: 0.8rem; border-radius: 8px; margin-bottom: 15px; line-height: 1.4; }
 
         .spin { animation: rotation 1s infinite linear; }
         @keyframes rotation { from { transform: rotate(0deg); } to { transform: rotate(359deg); } }
@@ -61,7 +64,7 @@
         <span id="readerSource" style="font-weight: bold;">Article</span>
         <button onclick="closeReader()" style="background:var(--accent); color:black; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;">✕ FERMER</button>
     </div>
-    <div class="modal-container" id="readerView" style="font-family: 'Georgia', serif; font-size: 1.2rem; line-height: 1.8;"></div>
+    <div class="modal-container" id="readerView"></div>
 </div>
 
 <div id="sourceModal" class="full-modal">
@@ -72,35 +75,30 @@
     <div class="modal-container">
         
         <div class="option-box">
-            <h3>🎨 Thèmes disponibles (10)</h3>
+            <h3>🎨 Thème</h3>
             <select id="themeSelect" onchange="changeTheme(this.value)" style="width: 100%;">
-                <option value="cyber">Cyber (Noir/Jaune)</option>
-                <option value="journal">Journal (Papier/Bleu)</option>
-                <option value="night">Nuit (OLED/Violet)</option>
-                <option value="light">Clair (Blanc/Bleu)</option>
-                <option value="matrix">Matrix (Digital/Vert)</option>
-                <option value="nord">Nord (Glacial/Gris-Bleu)</option>
-                <option value="dracula">Dracula (Sombre/Gothique)</option>
-                <option value="ocean">Ocean (Bleu Profond)</option>
-                <option value="forest">Forest (Émeraude/Nature)</option>
-                <option value="mars">Mars (Rouge Terreux)</option>
-                <option value="retro">Retro (Rose/Pop)</option>
+                <option value="cyber">Cyber</option><option value="journal">Journal</option>
+                <option value="night">Nuit</option><option value="light">Clair</option>
+                <option value="matrix">Matrix</option><option value="nord">Nord</option>
+                <option value="dracula">Dracula</option><option value="ocean">Ocean</option>
+                <option value="forest">Forest</option><option value="mars">Mars</option>
             </select>
         </div>
 
         <div class="option-box">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h3>➕ Ajouter une source</h3>
-                <button onclick="alert('Google : Nom du site + RSS. Copiez l\'URL du flux et collez ici.')" style="background:none; border:1px solid var(--accent); color:var(--accent); border-radius:50%; width:25px; height:25px; cursor:pointer;">?</button>
+            <h3>➕ Ajouter une source</h3>
+            <div class="rss-help">
+                <strong>Comment trouver un flux ?</strong><br>
+                Sur Google, tapez "NomDuSite flux RSS". Copiez le lien se terminant par .xml ou .rss et collez-le ci-dessous.
             </div>
-            <input type="text" id="newName" placeholder="Nom du média" style="width:95%; margin: 5px 0;">
-            <input type="text" id="newUrl" placeholder="Lien RSS (XML)" style="width:95%; margin: 5px 0;">
-            <input type="text" id="newCat" placeholder="Catégorie" style="width:95%; margin: 5px 0;">
-            <button onclick="addSource()" style="width:100%; background:var(--accent); color:black; font-weight:bold; margin-top:10px; cursor:pointer;">VALIDER L'AJOUT</button>
+            <input type="text" id="newName" placeholder="Nom" style="width:95%; margin-bottom:5px;">
+            <input type="text" id="newUrl" placeholder="URL RSS" style="width:95%; margin-bottom:5px;">
+            <input type="text" id="newCat" placeholder="Catégorie" style="width:95%; margin-bottom:10px;">
+            <button onclick="addSource()" style="width:100%; background:var(--accent); color:black; font-weight:bold;">AJOUTER</button>
         </div>
 
         <div class="option-box">
-            <h3>📡 Gérer mes sources</h3>
+            <h3>📡 Gérer les sources</h3>
             <div id="sourceList"></div>
         </div>
     </div>
@@ -117,7 +115,7 @@
         </div>
         <div id="catBar" class="row"></div>
         <div class="row">
-            <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Sources</option></select>
+            <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Toutes les sources</option></select>
             <button id="vaultBtn" onclick="toggleVault()" style="background:var(--card); min-width: 80px;">💾 Coffre</button>
         </div>
     </div>
@@ -127,9 +125,8 @@
 
 <script>
 let sources = JSON.parse(localStorage.getItem('nsc_sources')) || [
-    { name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml", cat: "Info" },
-    { name: "NASA", url: "https://www.nasa.gov/rss/dyn/breaking_news.rss", cat: "Espace" },
-    { name: "NY Times", url: "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml", cat: "International" }
+    { name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml", cat: "Info", pinned: true },
+    { name: "NASA", url: "https://www.nasa.gov/rss/dyn/breaking_news.rss", cat: "Espace", pinned: false }
 ];
 let vault = JSON.parse(localStorage.getItem('nsc_vault')) || [];
 let allArticles = [];
@@ -137,9 +134,7 @@ let isVaultView = false;
 let currentCat = "Tous";
 
 function changeTheme(theme) {
-    const b = document.getElementById('bodyTag');
-    b.className = "";
-    if(theme !== 'cyber') b.classList.add('theme-' + theme);
+    document.getElementById('bodyTag').className = (theme === 'cyber') ? "" : "theme-" + theme;
     localStorage.setItem('nsc_theme', theme);
 }
 
@@ -148,7 +143,10 @@ async function fetchAll() {
     document.getElementById('refreshBtn').classList.add('spin');
     let sourceBundles = {};
     
-    await Promise.all(sources.map(async s => {
+    // Trier les sources pour que les épinglées soient traitées en premier
+    const sortedSources = [...sources].sort((a,b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
+
+    await Promise.all(sortedSources.map(async s => {
         try {
             const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(s.url)}&t=${Date.now()}`);
             const data = await res.json();
@@ -161,7 +159,7 @@ async function fetchAll() {
                     }
                     return {
                         id: item.guid || item.link, title: item.title, link: item.link,
-                        img: img, source: s.name, category: s.cat,
+                        img: img, source: s.name, category: s.cat, pinned: s.pinned,
                         date: item.pubDate, content: item.content || item.description
                     };
                 });
@@ -175,7 +173,8 @@ async function fetchAll() {
     for (let i = 0; i < max; i++) {
         pools.forEach(p => { if(p[i]) alternating.push(p[i]); });
     }
-    allArticles = alternating;
+    // On remonte les épinglés en haut du flux final
+    allArticles = alternating.sort((a,b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
     document.getElementById('refreshBtn').classList.remove('spin');
     updateUI(); render();
 }
@@ -195,10 +194,10 @@ function render() {
     grid.innerHTML = filtered.map(a => {
         const inVault = vault.some(v => v.id === a.id);
         return `
-        <div class="card">
+        <div class="card" style="${!isVaultView && a.pinned ? 'border: 1px solid var(--accent)' : ''}">
             <a href="${a.link}" target="_blank"><img src="${a.img || 'https://via.placeholder.com/400x200/222/555?text='+a.source}"></a>
             <div class="card-content">
-                <a href="${a.link}" target="_blank" class="card-title">${a.title}</a>
+                <a href="${a.link}" target="_blank" class="card-title">${a.pinned && !isVaultView ? '📌 ':''}${a.title}</a>
                 <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">${a.source} • ${new Date(a.date).toLocaleDateString()}</div>
                 <button class="read-btn" onclick="openReader('${a.id}')">LIRE L'ARTICLE</button>
                 <button class="save-btn ${inVault?'saved':''}" onclick="toggleSave('${a.id}')">
@@ -215,8 +214,8 @@ function openReader(id) {
     document.getElementById('readerSource').innerText = art.source;
     document.getElementById('readerView').innerHTML = `
         <h1 style="font-family:sans-serif; margin-top:0;">${art.title}</h1>
-        <div style="opacity:0.6; margin-bottom:20px;">${new Date(art.date).toLocaleString()}</div>
-        <div class="full-content">${art.content}</div>
+        <div style="opacity:0.6; margin-bottom:20px; font-size:0.9rem;">${new Date(art.date).toLocaleString()}</div>
+        <div style="line-height:1.8; font-family:serif; font-size:1.2rem;">${art.content}</div>
         <hr style="border:0; border-top:1px solid var(--border); margin:30px 0;">
         <center><a href="${art.link}" target="_blank" style="color:var(--accent); font-weight:bold;">VOIR L'ORIGINAL</a></center>
     `;
@@ -224,10 +223,7 @@ function openReader(id) {
     document.body.style.overflow = 'hidden';
 }
 
-function closeReader() {
-    document.getElementById('readerModal').style.display = 'none';
-    document.body.style.overflow = 'auto';
-}
+function closeReader() { document.getElementById('readerModal').style.display = 'none'; document.body.style.overflow = 'auto'; }
 
 function toggleSave(id) {
     const idx = vault.findIndex(v => v.id === id);
@@ -243,53 +239,6 @@ function toggleSave(id) {
 function addSource() {
     const n = document.getElementById('newName').value, u = document.getElementById('newUrl').value, c = document.getElementById('newCat').value;
     if(n && u) {
-        sources.push({name:n, url:u, cat:c||"Info"});
-        localStorage.setItem('nsc_sources', JSON.stringify(sources));
-        document.getElementById('newName').value = ""; document.getElementById('newUrl').value = "";
-        updateUI(); fetchAll();
-    }
-}
-
-function updateUI() {
-    const cats = ["Tous", ...new Set(sources.map(s => s.cat))];
-    document.getElementById('catBar').innerHTML = cats.map(c => 
-        `<button class="btn-cat ${currentCat === c ? 'active' : ''}" onclick="setCat('${c}')">${c}</button>`
-    ).join('');
-    
-    const sel = document.getElementById('sourceSelect');
-    sel.innerHTML = '<option value="Tous">Sources</option>';
-    sources.forEach(s => sel.innerHTML += `<option value="${s.name}">${s.name}</option>`);
-
-    document.getElementById('sourceList').innerHTML = sources.map((s, i) => `
-        <div class="source-item">
-            <div class="source-row">
-                <input type="text" value="${s.name}" onchange="sources[${i}].name=this.value; saveS();" style="flex:2; font-weight:bold; padding:5px;">
-                <input type="text" value="${s.cat}" onchange="sources[${i}].cat=this.value; saveS();" style="flex:1; padding:5px;">
-                <button onclick="sources.splice(${i},1); saveS(); updateUI(); fetchAll();" style="background:#cc0000; color:white; border:none; padding:5px 10px; cursor:pointer;">X</button>
-            </div>
-            <input type="text" value="${s.url}" onchange="sources[${i}].url=this.value; saveS();" class="source-url">
-        </div>
-    `).join('');
-}
-
-function saveS() { localStorage.setItem('nsc_sources', JSON.stringify(sources)); }
-function setCat(c) { currentCat = c; updateUI(); render(); }
-function toggleVault() {
-    isVaultView = !isVaultView;
-    document.getElementById('vaultBtn').innerHTML = isVaultView ? "🌐 FLUX" : "💾 COFFRE";
-    render();
-}
-
-if(localStorage.getItem('nsc_theme')) {
-    const t = localStorage.getItem('nsc_theme');
-    document.getElementById('themeSelect').value = t;
-    changeTheme(t);
-}
-
-document.getElementById('search').addEventListener('input', render);
-document.getElementById('sourceSelect').addEventListener('change', render);
-fetchAll();
-</script>
-</body>
-    </html>
+        sources.push({name:n, url:u, cat:c||"Info", pinned: false});
+        saveS(); document.getElementById('newName
     
