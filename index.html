@@ -33,15 +33,14 @@
         #splash-screen svg { width: 120px; height: 120px; margin-bottom: 20px; }
         #splash-screen h1 { color: white; font-family: sans-serif; font-size: 1.5rem; letter-spacing: 2px; margin: 0; }
         
-        body { background: #000000; margin: 0; opacity: 0; transition: opacity 0.5s ease-in; }
-        body.ready { opacity: 1; }
+        /* On cache l'appli au début pour ne pas la voir derrière le splash */
+        body { background: #000000; margin: 0; }
+        header, .sticky-controls, #grid { opacity: 0; transition: opacity 0.8s ease-in; }
+        body.ready header, body.ready .sticky-controls, body.ready #grid { opacity: 1; }
     </style>
 
     <style>
-        /* --- SYSTÈME DE THÈMES --- */
-        /* Bordures assombries (--border) pour tous les thèmes */
         :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #1a1a1a; --read-bg: var(--accent); --read-txt: #000; }
-        
         body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #111; --read-bg: #8e44ad; --read-txt: #fff; }
         body.theme-matrix  { --bg: #000000; --card: #001100; --accent: #00ff41; --text: #00ff41; --meta: #008f11; --border: #002200; --read-bg: #00ff41; --read-txt: #000; }
         body.theme-dracula { --bg: #282a36; --card: #44475a; --accent: #bd93f9; --text: #f8f8f2; --meta: #6272a4; --border: #21222c; --read-bg: #bd93f9; --read-txt: #000; }
@@ -130,7 +129,7 @@
         <div class="option-box">
             <h3>➕ Ajouter une source</h3>
             <div class="rss-help">
-                Pour ajouter un média, cherchez "Flux RSS [Nom du site]" sur Google. Copiez l'adresse du lien (souvent un fichier .xml) et collez-la ci-dessus.
+                Cherchez "Flux RSS [Nom du site]" sur Google. Copiez l'adresse du lien et collez-la ci-dessus.
             </div>
             <input type="text" id="newName" placeholder="Nom" style="width:94%; margin-bottom:5px;">
             <input type="text" id="newUrl" placeholder="URL RSS" style="width:94%; margin-bottom:5px;">
@@ -174,13 +173,14 @@ window.addEventListener('DOMContentLoaded', () => {
     const splash = document.getElementById('splash-screen');
     setTimeout(() => {
         splash.style.opacity = '1';
-        document.body.classList.add('ready');
         document.getElementById('theme-meta').setAttribute('content', '#000000');
     }, 50);
 
     window.addEventListener('load', () => {
         setTimeout(() => {
             splash.style.opacity = '0';
+            // On affiche le menu seulement quand le splash commence à disparaître
+            document.body.classList.add('ready');
             setTimeout(() => splash.style.display = 'none', 600);
         }, 1200);
     });
@@ -248,11 +248,17 @@ function render() {
     const grid = document.getElementById('grid');
     const search = document.getElementById('search').value.toLowerCase();
     const sourceF = document.getElementById('sourceSelect').value;
+    
+    // Correction de la logique Coffre / Flux
     let list = isVaultView ? vault : allArticles;
 
-    grid.innerHTML = list.filter(a => 
-        a.title.toLowerCase().includes(search) && (currentCat === "Tous" || a.category === currentCat) && (sourceF === "Tous" || a.source === sourceF)
-    ).map(a => {
+    grid.innerHTML = list.filter(a => {
+        const matchesSearch = a.title.toLowerCase().includes(search);
+        // En mode coffre, on ne filtre pas par catégorie/source sauf si l'utilisateur le demande explicitement
+        const matchesCat = (currentCat === "Tous" || a.category === currentCat);
+        const matchesSource = (sourceF === "Tous" || a.source === sourceF);
+        return matchesSearch && matchesCat && matchesSource;
+    }).map(a => {
         const inVault = vault.some(v => v.id === a.id);
         const d = new Date(a.date);
         const timeStr = d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
@@ -304,6 +310,15 @@ function addSource() {
     }
 }
 
+function deleteSource(i) {
+    if(confirm("Voulez-vous vraiment supprimer cette source ?")) {
+        sources.splice(i,1); 
+        localStorage.setItem('nsc_sources', JSON.stringify(sources)); 
+        updateUI(); 
+        fetchAll();
+    }
+}
+
 function updateUI() {
     const cats = ["Tous", ...new Set(sources.map(s => s.cat))];
     document.getElementById('catBar').innerHTML = cats.map(c => `<button class="btn-cat ${currentCat===c?'active':''}" onclick="currentCat='${c}'; updateUI(); render();">${c}</button>`).join('');
@@ -315,19 +330,5 @@ function updateUI() {
                 <input type="text" value="${s.name}" onchange="sources[${i}].name=this.value; localStorage.setItem('nsc_sources', JSON.stringify(sources));">
                 <input type="text" value="${s.cat}" onchange="sources[${i}].cat=this.value; localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI();">
                 <button class="pin-btn ${s.pinned?'pinned':''}" onclick="sources[${i}].pinned=!sources[${i}].pinned; localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll();">${s.pinned?'📌':'📍'}</button>
-                <button class="del-btn" onclick="sources.splice(${i},1); localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll();">X</button>
-            </div>
-        </div>`).join('');
-}
-
-function toggleVault() { isVaultView = !isVaultView; document.getElementById('vaultBtn').innerText = isVaultView ? "FLUX" : "COFFRE"; render(); }
-
-const savedT = localStorage.getItem('nsc_theme');
-if(savedT) { document.getElementById('themeSelect').value = savedT; changeTheme(savedT); }
-document.getElementById('search').addEventListener('input', render);
-document.getElementById('sourceSelect').addEventListener('change', render);
-fetchAll();
-</script>
-</body>
-                    </html>
-                
+                <button class="del-btn" onclick="deleteSource(${i})">X</button>
+        
