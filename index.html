@@ -4,8 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Les News sans Cnews</title>
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/initials/svg?seed=News&backgroundColor=000000&fontSize=32&fontWeight=700">
+    <link rel="icon" type="image/svg+xml" href="https://api.dicebear.com/7.x/initials/svg?seed=News&backgroundColor=000000&fontSize=32&fontWeight=700">
 
     <style>
         :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --success: #2e7d32; --read-bg: var(--accent); --read-txt: #000; }
@@ -22,13 +27,13 @@
         body.theme-copper  { --bg: #1a120b; --card: #2d1e12; --accent: #d97706; --text: #fef3c7; --meta: #92400e; --border: #452e1a; --read-bg: #d97706; --read-txt: #fff; }
         body.theme-cyber2  { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --read-bg: #444; --read-txt: #fff; }
 
-        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: 0.3s; }
+        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: 0.3s; width: 100%; overflow-x: hidden; }
         body.modal-open { overflow: hidden; }
         header { background: rgba(0,0,0,0.2); padding: 10px; text-align: center; border-bottom: 1px solid var(--border); padding-top: env(safe-area-inset-top); }
         .sticky-controls { position: sticky; top: 0; z-index: 1000; background: var(--bg); border-bottom: 2px solid var(--accent); }
         .controls { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
         .row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; align-items: center; }
-        input, select, button { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.9rem; }
+        input, select, button { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box; }
         .btn-cat { background: var(--card); color: var(--text); border: 1px solid var(--border); white-space: nowrap; cursor: pointer; }
         .btn-cat.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: bold; }
         #grid { padding: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
@@ -39,17 +44,23 @@
         .read-btn { background: var(--read-bg); color: var(--read-txt); border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: auto; cursor: pointer; }
         .save-btn { background: transparent; color: var(--meta); border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-top: 8px; cursor: pointer; }
         .save-btn.saved { background: #2e7d32 !important; color: white !important; border-color: #2e7d32; }
+        
+        /* CORRECTIF MODALES & GESTION SOURCES */
         .full-modal { display: none; position: fixed; inset: 0; z-index: 4000; overflow-y: auto; background: var(--bg); }
         .modal-header { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--bg); border-bottom: 1px solid var(--border); z-index: 10; padding-top: calc(15px + env(safe-area-inset-top)); }
-        .modal-container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .modal-container { max-width: 800px; margin: 0 auto; padding: 15px; box-sizing: border-box; width: 100%; }
         #readerView img { max-width: 100%; height: auto !important; border-radius: 8px; margin: 15px 0; display: block; }
         .option-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
-        .source-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
-        .source-grid { display: flex; gap: 5px; align-items: center; margin-bottom: 5px; }
-        .source-grid input { flex: 1; padding: 5px; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; font-size: 0.8rem; }
-        .pin-btn { min-width: 40px; background: var(--border); color: var(--text); border: none; cursor: pointer; }
+        
+        /* Correction Source List : évite le dépassement horizontal */
+        .source-item { padding: 10px 0; border-bottom: 1px solid var(--border); width: 100%; }
+        .source-grid { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; width: 100%; }
+        .source-grid input { flex: 1 1 100px; min-width: 80px; padding: 6px; font-size: 0.8rem; }
+        .source-btns { display: flex; gap: 4px; }
+        .pin-btn, .del-btn { min-width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; padding: 0; }
         .pin-btn.pinned { background: var(--accent); color: #000; }
-        .del-btn { min-width: 40px; background: #ef4444; color: white; border: none; cursor: pointer; }
+        .del-btn { background: #ef4444; color: white; border: none; }
+
         .spin { animation: rotation 1s infinite linear; }
         @keyframes rotation { from { transform: rotate(0deg); } to { transform: rotate(359deg); } }
     </style>
@@ -59,7 +70,7 @@
 <div id="readerModal" class="full-modal">
     <div class="modal-header">
         <span id="readerSource" style="font-weight: bold;">Article</span>
-        <button onclick="closeModal('readerModal')" style="background:var(--accent); color:#000; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;">✕ FERMER</button>
+        <button onclick="closeModal('readerModal')" style="background:var(--accent); color:#000; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;">✕</button>
     </div>
     <div class="modal-container" id="readerView"></div>
 </div>
@@ -67,7 +78,7 @@
 <div id="sourceModal" class="full-modal">
     <div class="modal-header">
         <span style="font-weight: bold;">Réglages</span>
-        <button onclick="closeModal('sourceModal')" style="background:var(--accent); color:#000; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;">✕ RETOUR</button>
+        <button onclick="closeModal('sourceModal')" style="background:var(--accent); color:#000; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;">✕</button>
     </div>
     <div class="modal-container">
         <div class="option-box">
@@ -84,9 +95,9 @@
         </div>
         <div class="option-box">
             <h3>➕ Ajouter une source RSS</h3>
-            <input type="text" id="newName" placeholder="Nom" style="width:94%; margin-bottom:5px;">
-            <input type="text" id="newUrl" placeholder="URL RSS" style="width:94%; margin-bottom:5px;">
-            <input type="text" id="newCat" placeholder="Catégorie" style="width:94%; margin-bottom:10px;">
+            <input type="text" id="newName" placeholder="Nom" style="width:100%; margin-bottom:8px;">
+            <input type="text" id="newUrl" placeholder="URL RSS" style="width:100%; margin-bottom:8px;">
+            <input type="text" id="newCat" placeholder="Catégorie" style="width:100%; margin-bottom:12px;">
             <button onclick="addSource()" style="width:100%; background:var(--accent); color:#000; font-weight:bold;">AJOUTER SOURCE</button>
         </div>
         <div class="option-box">
@@ -209,7 +220,12 @@ function toggleSave(id) {
 
 function addSource() {
     const n = document.getElementById('newName').value, u = document.getElementById('newUrl').value, c = document.getElementById('newCat').value;
-    if(n && u) { sources.push({name:n, url:u, cat:c||"Actu", pinned: false}); localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll(); }
+    if(n && u) { 
+        sources.push({name:n, url:u, cat:c||"Actu", pinned: false}); 
+        localStorage.setItem('nsc_sources', JSON.stringify(sources)); 
+        document.getElementById('newName').value = ""; document.getElementById('newUrl').value = "";
+        updateUI(); fetchAll(); 
+    }
 }
 
 function updateUI() {
@@ -222,8 +238,10 @@ function updateUI() {
             <div class="source-grid">
                 <input type="text" value="${s.name}" onchange="sources[${i}].name=this.value; localStorage.setItem('nsc_sources', JSON.stringify(sources));">
                 <input type="text" value="${s.cat}" onchange="sources[${i}].cat=this.value; localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI();">
-                <button class="pin-btn ${s.pinned?'pinned':''}" onclick="sources[${i}].pinned=!sources[${i}].pinned; localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll();">${s.pinned?'📌':'📍'}</button>
-                <button class="del-btn" onclick="sources.splice(${i},1); localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll();">X</button>
+                <div class="source-btns">
+                    <button class="pin-btn ${s.pinned?'pinned':''}" onclick="sources[${i}].pinned=!sources[${i}].pinned; localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll();">${s.pinned?'📌':'📍'}</button>
+                    <button class="del-btn" onclick="sources.splice(${i},1); localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll();">X</button>
+                </div>
             </div>
         </div>`).join('');
 }
@@ -237,5 +255,4 @@ document.getElementById('sourceSelect').addEventListener('change', render);
 fetchAll();
 </script>
 </body>
-                </html>
-    
+</html>
