@@ -5,27 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Les News sans Cnews</title>
     <style>
-        /* --- SYSTÈME DE THÈMES ÉTENDU --- */
+        /* --- SYSTÈME DE THÈMES --- */
         :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --success: #2e7d32; --read-bg: var(--accent); --read-txt: #000; }
         
-        body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; --read-txt: #fff; }
-        body.theme-matrix  { --bg: #000000; --card: #001100; --accent: #00ff41; --text: #00ff41; --meta: #008f11; --border: #003b00; --read-txt: #000; }
-        body.theme-dracula { --bg: #282a36; --card: #44475a; --accent: #bd93f9; --text: #f8f8f2; --meta: #6272a4; --border: #44475a; --read-txt: #000; }
-        body.theme-ocean   { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f1f5f9; --meta: #94a3b8; --border: #334155; --read-txt: #000; }
-        body.theme-blood   { --bg: #1a0505; --card: #2d0a0a; --accent: #ff4d4d; --text: #ffcccc; --meta: #a35a5a; --border: #4d1414; --read-txt: #fff; }
-        body.theme-forest  { --bg: #051a10; --card: #0a2d1d; --accent: #4ade80; --text: #ccffeb; --meta: #5a7a6a; --border: #144d32; --read-txt: #000; }
-        body.theme-gold    { --bg: #1a1605; --card: #2d260a; --accent: #fbbf24; --text: #fef3c7; --meta: #78350f; --border: #4d4414; --read-txt: #000; }
-        body.theme-vapor   { --bg: #1a1a2e; --card: #16213e; --accent: #e94560; --text: #ffffff; --meta: #95a5a6; --border: #0f3460; --read-txt: #fff; }
-        body.theme-neon    { --bg: #000; --card: #111; --accent: #ff00ff; --text: #00ffff; --meta: #777; --border: #333; --read-txt: #000; }
-        body.theme-coffee  { --bg: #1c1917; --card: #292524; --accent: #d6d3d1; --text: #fafaf9; --meta: #a8a29e; --border: #44403c; --read-txt: #000; }
-        body.theme-copper  { --bg: #1a120b; --card: #2d1e12; --accent: #d97706; --text: #fef3c7; --meta: #92400e; --border: #452e1a; --read-txt: #fff; }
+        body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; --read-bg: #8e44ad; --read-txt: #fff; }
+        body.theme-matrix  { --bg: #000000; --card: #001100; --accent: #00ff41; --text: #00ff41; --meta: #008f11; --border: #003b00; --read-bg: #00ff41; --read-txt: #000; }
+        body.theme-dracula { --bg: #282a36; --card: #44475a; --accent: #bd93f9; --text: #f8f8f2; --meta: #6272a4; --border: #44475a; --read-bg: #bd93f9; --read-txt: #000; }
+        body.theme-ocean   { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f1f5f9; --meta: #94a3b8; --border: #334155; --read-bg: #38bdf8; --read-txt: #000; }
+        body.theme-blood   { --bg: #1a0505; --card: #2d0a0a; --accent: #ff4d4d; --text: #ffcccc; --meta: #a35a5a; --border: #4d1414; --read-bg: #ff4d4d; --read-txt: #fff; }
+        body.theme-forest  { --bg: #051a10; --card: #0a2d1d; --accent: #4ade80; --text: #ccffeb; --meta: #5a7a6a; --border: #144d32; --read-bg: #4ade80; --read-txt: #000; }
+        body.theme-gold    { --bg: #1a1605; --card: #2d260a; --accent: #fbbf24; --text: #fef3c7; --meta: #78350f; --border: #4d4414; --read-bg: #fbbf24; --read-txt: #000; }
+        body.theme-vapor   { --bg: #1a1a2e; --card: #16213e; --accent: #e94560; --text: #ffffff; --meta: #95a5a6; --border: #0f3460; --read-bg: #e94560; --read-txt: #fff; }
+        body.theme-neon    { --bg: #000; --card: #111; --accent: #ff00ff; --text: #00ffff; --meta: #777; --border: #333; --read-bg: #ff00ff; --read-txt: #000; }
+        body.theme-coffee  { --bg: #1c1917; --card: #292524; --accent: #d6d3d1; --text: #fafaf9; --meta: #a8a29e; --border: #44403c; --read-bg: #d6d3d1; --read-txt: #000; }
+        body.theme-copper  { --bg: #1a120b; --card: #2d1e12; --accent: #d97706; --text: #fef3c7; --meta: #92400e; --border: #452e1a; --read-bg: #d97706; --read-txt: #fff; }
         
-        /* Cyber 2 : Bouton gris */
+        /* Cyber 2 : On ne touche pas au bouton gris imposé */
         body.theme-cyber2  { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --read-bg: #444; --read-txt: #fff; }
 
         body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: 0.3s; }
         body.modal-open { overflow: hidden; }
         header { background: rgba(0,0,0,0.2); padding: 10px; text-align: center; border-bottom: 1px solid var(--border); }
+        
         .sticky-controls { position: sticky; top: 0; z-index: 1000; background: var(--bg); border-bottom: 2px solid var(--accent); }
         .controls { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
         .row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; align-items: center; }
@@ -40,9 +41,9 @@
         .card-content { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; }
         .card-title { font-weight: bold; font-size: 1.05rem; margin-bottom: 8px; line-height: 1.3; color: var(--text); text-decoration: none; }
         
-        .read-btn { background: var(--read-bg); color: var(--read-txt); border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: auto; cursor: pointer; }
+        .read-btn { background: var(--read-bg); color: var(--read-txt); border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: auto; cursor: pointer; transition: 0.2s; }
+        .read-btn:hover { opacity: 0.8; }
 
-        /* Bouton Sauvegarder Vert Sans Emoji */
         .save-btn { background: transparent; color: var(--meta); border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-top: 8px; cursor: pointer; }
         .save-btn.saved { background: #2e7d32 !important; color: white !important; border-color: #2e7d32; }
 
@@ -52,9 +53,11 @@
         #readerView img { max-width: 100%; height: auto !important; border-radius: 8px; margin: 15px 0; display: block; }
 
         .option-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
+        .rss-help { background: rgba(0,0,0,0.2); border: 1px dashed var(--accent); padding: 10px; font-size: 0.8rem; border-radius: 8px; margin-bottom: 15px; color: var(--meta); line-height: 1.4; }
+        
         .source-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
-        .source-grid { display: flex; gap: 5px; align-items: center; }
-        .source-grid input { flex: 1; padding: 5px; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; }
+        .source-grid { display: flex; gap: 5px; align-items: center; margin-bottom: 5px; }
+        .source-grid input { flex: 1; padding: 5px; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; font-size: 0.8rem; }
         
         .pin-btn { min-width: 40px; background: var(--border); color: var(--text); border: none; cursor: pointer; }
         .pin-btn.pinned { background: var(--accent); color: #000; }
@@ -82,10 +85,10 @@
         <div class="option-box">
             <h3>🎨 Thème</h3>
             <select id="themeSelect" onchange="changeTheme(this.value)" style="width: 100%;">
-                <option value="cyber">Cyber (Jaune)</option>
-                <option value="cyber2">Cyber 2 (Bouton Gris)</option>
-                <option value="night">Nuit (Violet)</option>
-                <option value="matrix">Matrix (Vert)</option>
+                <option value="cyber">Cyber</option>
+                <option value="cyber2">Cyber 2</option>
+                <option value="night">Nuit</option>
+                <option value="matrix">Matrix</option>
                 <option value="dracula">Dracula</option>
                 <option value="ocean">Océan</option>
                 <option value="blood">Blood</option>
@@ -99,10 +102,14 @@
         </div>
         <div class="option-box">
             <h3>➕ Ajouter une source</h3>
-            <input type="text" id="newName" placeholder="Nom" style="width:94%; margin-bottom:5px;">
-            <input type="text" id="newUrl" placeholder="URL RSS" style="width:94%; margin-bottom:5px;">
-            <input type="text" id="newCat" placeholder="Catégorie" style="width:94%; margin-bottom:10px;">
-            <button onclick="addSource()" style="width:100%; background:var(--accent); color:#000; font-weight:bold;">AJOUTER SOURCE</button>
+            <div class="rss-help">
+                Cherchez "Flux RSS [Site]" sur Google (ex: "Flux RSS Le Monde"). <br>
+                Copiez le lien de la page (souvent finit par .xml) et collez-le ci-dessous.
+            </div>
+            <input type="text" id="newName" placeholder="Nom du média" style="width:94%; margin-bottom:5px;">
+            <input type="text" id="newUrl" placeholder="URL du Flux RSS" style="width:94%; margin-bottom:5px;">
+            <input type="text" id="newCat" placeholder="Catégorie (ex: Actu, Sport...)" style="width:94%; margin-bottom:10px;">
+            <button onclick="addSource()" style="width:100%; background:var(--accent); color:#000; font-weight:bold;">AJOUTER LA SOURCE</button>
         </div>
         <div class="option-box">
             <h3>📡 Mes sources</h3>
@@ -116,13 +123,13 @@
 <div class="sticky-controls">
     <div class="controls">
         <div class="row">
-            <input type="text" id="search" style="flex-grow:1" placeholder="Rechercher...">
+            <input type="text" id="search" style="flex-grow:1" placeholder="Chercher un article...">
             <button id="refreshBtn" onclick="fetchAll()">🔄</button>
             <button onclick="openModal('sourceModal')">⚙️</button>
         </div>
         <div id="catBar" class="row"></div>
         <div class="row">
-            <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Sources</option></select>
+            <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Toutes les sources</option></select>
             <button id="vaultBtn" onclick="toggleVault()" style="min-width: 80px;">💾 Coffre</button>
         </div>
     </div>
@@ -131,7 +138,7 @@
 <div id="grid"></div>
 
 <script>
-let sources = JSON.parse(localStorage.getItem('nsc_sources')) || [{ name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml", cat: "Info", pinned: true }];
+let sources = JSON.parse(localStorage.getItem('nsc_sources')) || [{ name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml", cat: "Actu", pinned: true }];
 let vault = JSON.parse(localStorage.getItem('nsc_vault')) || [];
 let allArticles = [];
 let isVaultView = false;
@@ -172,10 +179,21 @@ async function fetchAll() {
             }
         } catch(e) {}
     }));
+
+    let topPinned = [];
     let restOfNews = [];
-    Object.keys(sourceBundles).forEach(name => restOfNews.push(...sourceBundles[name]));
+    let pinnedNames = sources.filter(s => s.pinned).map(s => s.name);
+
+    Object.keys(sourceBundles).forEach(name => {
+        let bundle = sourceBundles[name];
+        if (pinnedNames.includes(name) && bundle.length > 0) {
+            topPinned.push({...bundle[0], isTop: true});
+            restOfNews.push(...bundle.slice(1));
+        } else { restOfNews.push(...bundle); }
+    });
+
     restOfNews.sort((a,b) => new Date(b.date) - new Date(a.date));
-    allArticles = restOfNews;
+    allArticles = [...topPinned, ...restOfNews];
     document.getElementById('refreshBtn').classList.remove('spin');
     updateUI(); render();
 }
@@ -192,10 +210,10 @@ function render() {
         const inVault = vault.some(v => v.id === a.id);
         const timeStr = timeSince(a.date);
         return `
-        <div class="card">
+        <div class="card" style="${a.isTop ? 'border: 1px solid var(--accent)' : ''}">
             <img src="${a.img || 'https://via.placeholder.com/400x200/222/555?text='+a.source}" onclick="openReader('${a.id}')">
             <div class="card-content">
-                <a href="${a.link}" target="_blank" class="card-title">${a.title}</a>
+                <a href="${a.link}" target="_blank" class="card-title">${a.isTop ? '📌 ':''}${a.title}</a>
                 <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">
                     ${a.source} • (${timeStr})
                 </div>
@@ -227,7 +245,7 @@ function toggleSave(id) {
 function addSource() {
     const n = document.getElementById('newName').value, u = document.getElementById('newUrl').value, c = document.getElementById('newCat').value;
     if(n && u) {
-        sources.push({name:n, url:u, cat:c||"Info", pinned: false});
+        sources.push({name:n, url:u, cat:c||"Actu", pinned: false});
         localStorage.setItem('nsc_sources', JSON.stringify(sources));
         updateUI(); fetchAll();
     }
@@ -242,7 +260,8 @@ function updateUI() {
         <div class="source-item">
             <div class="source-grid">
                 <input type="text" value="${s.name}" onchange="sources[${i}].name=this.value; localStorage.setItem('nsc_sources', JSON.stringify(sources));">
-                <button class="pin-btn ${s.pinned?'pinned':''}" onclick="sources[${i}].pinned=!sources[i].pinned; localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll();">${s.pinned?'📌':'📍'}</button>
+                <input type="text" value="${s.cat}" placeholder="Catégorie" onchange="sources[${i}].cat=this.value; localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI();">
+                <button class="pin-btn ${s.pinned?'pinned':''}" onclick="sources[${i}].pinned=!sources[${i}].pinned; localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll();">${s.pinned?'📌':'📍'}</button>
                 <button class="del-btn" onclick="sources.splice(${i},1); localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll();">X</button>
             </div>
         </div>`).join('');
