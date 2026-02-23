@@ -8,16 +8,14 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#121212">
 
     <link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/initials/svg?seed=News&backgroundColor=000000&fontSize=35&fontWeight=700">
     <link rel="icon" type="image/svg+xml" href="https://api.dicebear.com/7.x/initials/svg?seed=News&backgroundColor=000000&fontSize=35&fontWeight=700">
 
     <style>
-        /* --- SYSTÈME DE THÈMES (Identique V45) --- */
         :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --success: #2e7d32; --read-bg: var(--accent); --read-txt: #000; }
-        body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; --read-bg: #8e44ad; --read-txt: #fff; }
-        body.theme-matrix  { --bg: #000000; --card: #001100; --accent: #00ff41; --text: #00ff41; --meta: #008f11; --border: #003b00; --read-bg: #00ff41; --read-txt: #000; }
+        body.theme-night   { --bg: #000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; --read-bg: #8e44ad; --read-txt: #fff; }
+        body.theme-matrix  { --bg: #000; --card: #001100; --accent: #00ff41; --text: #00ff41; --meta: #008f11; --border: #003b00; --read-bg: #00ff41; --read-txt: #000; }
         body.theme-dracula { --bg: #282a36; --card: #44475a; --accent: #bd93f9; --text: #f8f8f2; --meta: #6272a4; --border: #44475a; --read-bg: #bd93f9; --read-txt: #000; }
         body.theme-ocean   { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f1f5f9; --meta: #94a3b8; --border: #334155; --read-bg: #38bdf8; --read-txt: #000; }
         body.theme-blood   { --bg: #1a0505; --card: #2d0a0a; --accent: #ff4d4d; --text: #ffcccc; --meta: #a35a5a; --border: #4d1414; --read-bg: #ff4d4d; --read-txt: #fff; }
@@ -29,16 +27,16 @@
         body.theme-copper  { --bg: #1a120b; --card: #2d1e12; --accent: #d97706; --text: #fef3c7; --meta: #92400e; --border: #452e1a; --read-bg: #d97706; --read-txt: #fff; }
         body.theme-cyber2  { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --read-bg: #444; --read-txt: #fff; }
 
-        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: 0.3s; }
+        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: 0.3s; width: 100vw; overflow-x: hidden; }
         body.modal-open { overflow: hidden; }
         header { background: rgba(0,0,0,0.2); padding: 15px 10px; text-align: center; border-bottom: 1px solid var(--border); padding-top: env(safe-area-inset-top); }
         .sticky-controls { position: sticky; top: 0; z-index: 1000; background: var(--bg); border-bottom: 2px solid var(--accent); }
         .controls { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
         .row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; align-items: center; }
-        input, select, button { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.9rem; }
+        input, select, button { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.9rem; max-width: 100%; box-sizing: border-box; }
         .btn-cat { background: var(--card); color: var(--text); border: 1px solid var(--border); white-space: nowrap; cursor: pointer; }
         .btn-cat.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: bold; }
-        #grid { padding: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+        #grid { padding: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
         .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; }
         .card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid var(--border); cursor: pointer; }
         .card-content { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; }
@@ -46,17 +44,21 @@
         .read-btn { background: var(--read-bg); color: var(--read-txt); border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: auto; cursor: pointer; }
         .save-btn { background: transparent; color: var(--meta); border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-top: 8px; cursor: pointer; }
         .save-btn.saved { background: #2e7d32 !important; color: white !important; border-color: #2e7d32; }
-        .full-modal { display: none; position: fixed; inset: 0; z-index: 4000; overflow-y: auto; background: var(--bg); }
+        
+        /* MODAL ET SOURCES FIX */
+        .full-modal { display: none; position: fixed; inset: 0; z-index: 4000; overflow-y: auto; background: var(--bg); width: 100%; height: 100%; }
         .modal-header { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--bg); border-bottom: 1px solid var(--border); z-index: 10; padding-top: calc(15px + env(safe-area-inset-top)); }
-        .modal-container { max-width: 800px; margin: 0 auto; padding: 20px; }
-        #readerView img { max-width: 100%; height: auto !important; border-radius: 8px; margin: 15px 0; display: block; }
-        .option-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
-        .source-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
-        .source-grid { display: flex; gap: 5px; align-items: center; margin-bottom: 5px; }
-        .source-grid input { flex: 1; padding: 5px; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; font-size: 0.8rem; }
-        .pin-btn { min-width: 40px; background: var(--border); color: var(--text); border: none; cursor: pointer; }
+        .modal-container { width: 100%; max-width: 800px; margin: 0 auto; padding: 15px; box-sizing: border-box; }
+        .option-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; overflow: hidden; }
+        
+        .source-item { padding: 12px 0; border-bottom: 1px solid var(--border); }
+        .source-grid { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; width: 100%; }
+        .source-grid input { flex: 1; min-width: 120px; padding: 8px; background: var(--bg); font-size: 0.85rem; }
+        .source-btns { display: flex; gap: 5px; }
+        .pin-btn, .del-btn { min-width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; padding: 0; border-radius: 6px; }
         .pin-btn.pinned { background: var(--accent); color: #000; }
-        .del-btn { min-width: 40px; background: #ef4444; color: white; border: none; cursor: pointer; }
+        .del-btn { background: #ef4444; color: white; border: none; }
+        
         .spin { animation: rotation 1s infinite linear; }
         @keyframes rotation { from { transform: rotate(0deg); } to { transform: rotate(359deg); } }
     </style>
@@ -66,7 +68,7 @@
 <div id="readerModal" class="full-modal">
     <div class="modal-header">
         <span id="readerSource" style="font-weight: bold;">Article</span>
-        <button onclick="closeModal('readerModal')" style="background:var(--accent); color:#000; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;">✕ FERMER</button>
+        <button onclick="closeModal('readerModal')" style="background:var(--accent); color:#000; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;">✕</button>
     </div>
     <div class="modal-container" id="readerView"></div>
 </div>
@@ -74,11 +76,11 @@
 <div id="sourceModal" class="full-modal">
     <div class="modal-header">
         <span style="font-weight: bold;">Réglages</span>
-        <button onclick="closeModal('sourceModal')" style="background:var(--accent); color:#000; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;">✕ RETOUR</button>
+        <button onclick="closeModal('sourceModal')" style="background:var(--accent); color:#000; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;">✕</button>
     </div>
     <div class="modal-container">
         <div class="option-box">
-            <h3>🎨 Thème</h3>
+            <h3 style="margin-top:0">🎨 Thème</h3>
             <select id="themeSelect" onchange="changeTheme(this.value)" style="width: 100%;">
                 <option value="cyber">Cyber</option><option value="cyber2">Cyber 2</option>
                 <option value="night">Nuit</option><option value="matrix">Matrix</option>
@@ -90,14 +92,14 @@
             </select>
         </div>
         <div class="option-box">
-            <h3>➕ Ajouter une source RSS</h3>
-            <input type="text" id="newName" placeholder="Nom" style="width:94%; margin-bottom:5px;">
-            <input type="text" id="newUrl" placeholder="URL RSS" style="width:94%; margin-bottom:5px;">
-            <input type="text" id="newCat" placeholder="Catégorie" style="width:94%; margin-bottom:10px;">
-            <button onclick="addSource()" style="width:100%; background:var(--accent); color:#000; font-weight:bold;">AJOUTER SOURCE</button>
+            <h3 style="margin-top:0">➕ Ajouter une source RSS</h3>
+            <input type="text" id="newName" placeholder="Nom du média" style="width:100%; margin-bottom:8px;">
+            <input type="text" id="newUrl" placeholder="URL du Flux RSS" style="width:100%; margin-bottom:8px;">
+            <input type="text" id="newCat" placeholder="Catégorie (ex: Actu, Sport)" style="width:100%; margin-bottom:12px;">
+            <button onclick="addSource()" style="width:100%; background:var(--accent); color:#000; font-weight:bold;">AJOUTER LA SOURCE</button>
         </div>
         <div class="option-box">
-            <h3>📡 Mes sources</h3>
+            <h3 style="margin-top:0">📡 Mes sources</h3>
             <div id="sourceList"></div>
         </div>
     </div>
@@ -216,7 +218,12 @@ function toggleSave(id) {
 
 function addSource() {
     const n = document.getElementById('newName').value, u = document.getElementById('newUrl').value, c = document.getElementById('newCat').value;
-    if(n && u) { sources.push({name:n, url:u, cat:c||"Actu", pinned: false}); localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll(); }
+    if(n && u) { 
+        sources.push({name:n, url:u, cat:c||"Actu", pinned: false}); 
+        localStorage.setItem('nsc_sources', JSON.stringify(sources)); 
+        document.getElementById('newName').value = ""; document.getElementById('newUrl').value = "";
+        updateUI(); fetchAll(); 
+    }
 }
 
 function updateUI() {
@@ -227,22 +234,6 @@ function updateUI() {
     document.getElementById('sourceList').innerHTML = sources.map((s, i) => `
         <div class="source-item">
             <div class="source-grid">
-                <input type="text" value="${s.name}" onchange="sources[${i}].name=this.value; localStorage.setItem('nsc_sources', JSON.stringify(sources));">
-                <input type="text" value="${s.cat}" onchange="sources[${i}].cat=this.value; localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI();">
-                <button class="pin-btn ${s.pinned?'pinned':''}" onclick="sources[${i}].pinned=!sources[${i}].pinned; localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll();">${s.pinned?'📌':'📍'}</button>
-                <button class="del-btn" onclick="sources.splice(${i},1); localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll();">X</button>
-            </div>
-        </div>`).join('');
-}
-
-function toggleVault() { isVaultView = !isVaultView; document.getElementById('vaultBtn').innerText = isVaultView ? "FLUX" : "COFFRE"; render(); }
-
-const savedT = localStorage.getItem('nsc_theme');
-if(savedT) { document.getElementById('themeSelect').value = savedT; changeTheme(savedT); }
-document.getElementById('search').addEventListener('input', render);
-document.getElementById('sourceSelect').addEventListener('change', render);
-fetchAll();
-</script>
-</body>
-                </html>
-                                                                                                              
+                <input type="text" value="${s.name}" placeholder="Nom" onchange="sources[${i}].name=this.value; localStorage.setItem('nsc_sources', JSON.stringify(sources));">
+                <input type="text" value="${s.cat}" placeholder="Cat" onchange="sources[${i}].cat=this
+    
