@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Sans CNews v7</title>
+    <title>News Sans CNews v8</title>
     <style>
         :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; }
         body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; }
@@ -11,7 +11,7 @@
         .controls { padding: 10px; display: flex; flex-direction: column; gap: 10px; background: #1a1a1a; border-bottom: 1px solid #333; }
         .row { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; align-items: center; }
         input, select, button { background: #252525; color: white; border: 1px solid #444; padding: 10px; border-radius: 8px; }
-        .btn-cat { white-space: nowrap; cursor: pointer; }
+        .btn-cat { white-space: nowrap; cursor: pointer; border: 1px solid #444; }
         .btn-cat.active { background: var(--accent); color: #000; font-weight: bold; border-color: var(--accent); }
         #grid { padding: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
         .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #222; display: flex; flex-direction: column; }
@@ -21,7 +21,9 @@
         .card-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; line-height: 1.3; }
         .card-meta { font-size: 0.8rem; color: #888; border-top: 1px solid #2d2d2d; padding-top: 8px; margin-top: auto; }
         #sourceModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; padding: 20px; overflow-y: auto; }
-        .source-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #252525; margin-bottom: 8px; border-radius: 8px; }
+        .source-item { background: #252525; margin-bottom: 8px; border-radius: 8px; padding: 10px; border: 1px solid #444; }
+        .edit-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
+        .edit-row input { flex: 1; min-width: 120px; font-size: 0.8rem; padding: 5px; }
     </style>
 </head>
 <body>
@@ -42,15 +44,15 @@
 <div id="grid"></div>
 
 <div id="sourceModal">
-    <h3>⚙️ Gérer les sources</h3>
-    <div style="display:flex; flex-direction:column; gap:10px; background:#1a1a1a; padding:15px; border-radius:10px; border:1px solid #444;">
-        <input type="text" id="newName" placeholder="Nom du média">
-        <input type="text" id="newUrl" placeholder="Lien Flux RSS">
-        <input type="text" id="newCat" placeholder="Catégorie (ex: Tech, Info...)">
-        <button onclick="addSource()" style="background:var(--accent); color:black; font-weight:bold;">+ AJOUTER</button>
+    <h3>⚙️ Configuration</h3>
+    <div style="background:#1a1a1a; padding:15px; border-radius:10px; border:1px solid var(--accent); margin-bottom:20px;">
+        <input type="text" id="newName" placeholder="Nom" style="width:90%; margin-bottom:5px;">
+        <input type="text" id="newUrl" placeholder="Lien RSS" style="width:90%; margin-bottom:5px;">
+        <input type="text" id="newCat" placeholder="Catégorie" style="width:90%; margin-bottom:10px;">
+        <button onclick="addSource()" style="width:100%; background:var(--accent); color:black; font-weight:bold;">AJOUTER SOURCE</button>
     </div>
-    <div id="sourceList" style="margin-top:20px;"></div>
-    <button onclick="document.getElementById('sourceModal').style.display='none'" style="width:100%; margin-top:20px; background:#444;">FERMER</button>
+    <div id="sourceList"></div>
+    <button onclick="document.getElementById('sourceModal').style.display='none'" style="width:100%; margin-top:20px;">FERMER</button>
 </div>
 
 <script>
@@ -71,36 +73,41 @@ function timeAgo(date) {
 
 async function fetchAll() {
     let sourceBundles = {};
-    const grid = document.getElementById('grid');
-    grid.innerHTML = "<div style='text-align:center; padding:50px;'>Chargement...</div>";
+    document.getElementById('grid').innerHTML = "<div style='text-align:center; padding:50px;'>Mise à jour des flux...</div>";
     
     await Promise.all(sources.map(async s => {
         try {
-            const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(s.url)}`);
+            // Ajout d'un timestamp pour éviter le cache et récupération plus large des images
+            const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(s.url)}&t=${Date.now()}`);
             const data = await res.json();
             if(data.status === 'ok') {
-                sourceBundles[s.name] = data.items.map(item => ({
-                    id: item.guid || item.link,
-                    title: item.title, link: item.link,
-                    img: item.enclosure.link || item.thumbnail || '',
-                    source: s.name, category: s.cat, date: new Date(item.pubDate),
-                    isPinnedSource: s.pinned
-                })).filter(a => !archived.includes(a.id));
+                sourceBundles[s.name] = data.items.map(item => {
+                    // Logique spécifique NASA et autres pour trouver l'image
+                    let img = item.enclosure?.link || item.thumbnail || "";
+                    if(!img && item.description && item.description.includes('<img')) {
+                        const m = item.description.match(/src="([^"]+)"/);
+                        if(m) img = m[1];
+                    }
+                    return {
+                        id: item.guid || item.link,
+                        title: item.title, link: item.link,
+                        img: img, source: s.name, category: s.cat,
+                        date: new Date(item.pubDate), isPinnedSource: s.pinned
+                    };
+                }).filter(a => !archived.includes(a.id));
             }
-        } catch(e) { console.error(s.name, e); }
+        } catch(e) { console.error(e); }
     }));
 
-    // --- ALGORITHME DE TRI ---
     let pinnedArticles = [];
     let normalSources = [];
     Object.keys(sourceBundles).forEach(name => {
         const srcCfg = sources.find(s => s.name === name);
-        if (srcCfg && srcCfg.pinned) pinnedArticles.push(...sourceBundles[name]);
+        if (srcCfg?.pinned) pinnedArticles.push(...sourceBundles[name]);
         else normalSources.push(sourceBundles[name]);
     });
-
     pinnedArticles.sort((a,b) => b.date - a.date);
-
+    
     let alternating = [];
     let max = Math.max(...normalSources.map(s => s.length), 0);
     for (let i = 0; i < max; i++) {
@@ -126,13 +133,16 @@ function updateUI() {
 
     document.getElementById('sourceList').innerHTML = sources.map((s, i) => `
         <div class="source-item">
-            <div style="display:flex; flex-direction:column;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
                 <b>${s.name}</b>
-                <small style="color:#888;">${s.cat}</small>
+                <div style="display:flex; gap:5px;">
+                    <button onclick="togglePinSource(${i})" style="background:${s.pinned? 'var(--accent)':'#444'}; color:${s.pinned?'#000':'#fff'}">${s.pinned?'📍':'📌'}</button>
+                    <button onclick="removeSource(${i})" style="background:#cc0000;">X</button>
+                </div>
             </div>
-            <div style="display:flex; gap:5px;">
-                <button onclick="togglePinSource(${i})" style="background:${s.pinned?'#ffd700':'#444'}; color:${s.pinned?'#000':'#fff'}">${s.pinned?'📍':'📌'}</button>
-                <button onclick="removeSource(${i})" style="background:#cc0000;">X</button>
+            <div class="edit-row">
+                <input type="text" value="${s.name}" onchange="editSource(${i}, 'name', this.value)" placeholder="Nom">
+                <input type="text" value="${s.cat}" onchange="editSource(${i}, 'cat', this.value)" placeholder="Catégorie">
             </div>
         </div>
     `).join('');
@@ -157,9 +167,9 @@ function render() {
                 <div class="card-content">
                     <div class="card-title">${a.title}</div>
                     <div class="card-meta">
-                        <div><b>${a.source}</b> • ${a.category}</div>
-                        <div>🕒 ${a.date.toLocaleString('fr-FR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'})} (${timeAgo(a.date)} ago)</div>
-                        <button onclick="event.preventDefault(); archive('${a.id}')" style="margin-top:10px; width:100%; padding:5px; background:transparent; border:1px solid #444; color:#888; border-radius:5px;">📦 Archiver</button>
+                        <b>${a.source}</b> • ${a.category}<br>
+                        ${a.date.toLocaleString('fr-FR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'})} (${timeAgo(a.date)})
+                        <button onclick="event.preventDefault(); archive('${a.id}')" style="margin-top:10px; width:100%; padding:5px; background:transparent; border:1px solid #444; color:#888;">📦 Archiver</button>
                     </div>
                 </div>
             </a>
@@ -175,6 +185,13 @@ function archive(id) {
 }
 function togglePinSource(i) {
     sources[i].pinned = !sources[i].pinned;
+    saveAndRefresh();
+}
+function editSource(i, field, value) {
+    sources[i][field] = value;
+    saveAndRefresh();
+}
+function saveAndRefresh() {
     localStorage.setItem('nsc_sources', JSON.stringify(sources));
     fetchAll();
 }
@@ -184,17 +201,12 @@ function addSource() {
     const c = document.getElementById('newCat').value || "Info";
     if(n && u) {
         sources.push({name:n, url:u, cat:c, pinned:false});
-        localStorage.setItem('nsc_sources', JSON.stringify(sources));
-        fetchAll();
+        saveAndRefresh();
         document.getElementById('newName').value=''; document.getElementById('newUrl').value=''; document.getElementById('newCat').value='';
     }
 }
 function removeSource(i) {
-    if(confirm("Supprimer cette source ?")) {
-        sources.splice(i, 1);
-        localStorage.setItem('nsc_sources', JSON.stringify(sources));
-        fetchAll();
-    }
+    if(confirm("Supprimer ?")) { sources.splice(i, 1); saveAndRefresh(); }
 }
 
 document.getElementById('search').addEventListener('input', render);
