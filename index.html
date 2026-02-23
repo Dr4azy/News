@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Sans CNews v28</title>
+    <title>News Sans CNews v29</title>
     <style>
-        /* --- SYSTÈME DE THÈMES --- */
         :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --success: #2e7d32; }
         body.theme-journal { --bg: #f4ecd8; --card: #efe6cf; --accent: #2c3e50; --text: #2c3e50; --meta: #5d6d7e; --border: #dcd0b9; --success: #27ae60; }
         body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; --success: #1b5e20; }
@@ -18,15 +17,12 @@
         body.theme-mars    { --bg: #2b1111; --card: #3d1a1a; --accent: #ff4d4d; --text: #ffcccc; --meta: #a35a5a; --border: #5a2a2a; --success: #ff4d4d; }
 
         body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: 0.3s; }
-        
-        /* Layout & Header */
         header { background: rgba(0,0,0,0.1); padding: 10px; text-align: center; border-bottom: 1px solid var(--border); }
         .sticky-controls { position: sticky; top: 0; z-index: 1000; background: var(--bg); border-bottom: 2px solid var(--accent); }
         .controls { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
         .row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; align-items: center; }
         input, select, button { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.9rem; }
 
-        /* Grid */
         #grid { padding: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
         .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
         .card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid var(--border); cursor: pointer; }
@@ -37,12 +33,10 @@
         .save-btn { background: transparent; color: var(--meta); border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-top: 6px; cursor: pointer; }
         .save-btn.saved { background: var(--success) !important; color: white !important; border-color: var(--success); }
 
-        /* Modales */
         .full-modal { display: none; position: fixed; inset: 0; z-index: 4000; overflow-y: auto; background: var(--bg); }
         .modal-header { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--bg); border-bottom: 1px solid var(--border); z-index: 10; }
         .modal-container { max-width: 800px; margin: 0 auto; padding: 20px; }
 
-        /* Gestion des sources */
         .option-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
         .source-item { padding: 15px 0; border-bottom: 1px solid var(--border); }
         .source-grid { display: flex; gap: 5px; margin-bottom: 5px; align-items: center; }
@@ -53,7 +47,6 @@
         .pin-btn.pinned { background: var(--accent); color: #000; }
         .del-btn { min-width: 40px; background: #cc0000; color: white; border: none; }
 
-        /* Aide RSS V17 */
         .rss-help { background: rgba(255,255,255,0.05); border: 1px dashed var(--accent); padding: 10px; font-size: 0.8rem; border-radius: 8px; margin-bottom: 15px; line-height: 1.4; }
 
         .spin { animation: rotation 1s infinite linear; }
@@ -93,10 +86,10 @@
                 <strong>Comment trouver un flux ?</strong><br>
                 Sur Google, tapez "NomDuSite flux RSS". Copiez le lien se terminant par .xml ou .rss et collez-le ci-dessous.
             </div>
-            <input type="text" id="newName" placeholder="Nom (ex: Le Monde)" style="width:95%; margin-bottom:5px;">
-            <input type="text" id="newUrl" placeholder="URL du Flux RSS" style="width:95%; margin-bottom:5px;">
-            <input type="text" id="newCat" placeholder="Catégorie (ex: Info)" style="width:95%; margin-bottom:10px;">
-            <button onclick="addSource()" style="width:100%; background:var(--accent); color:black; font-weight:bold;">VALIDER L'AJOUT</button>
+            <input type="text" id="newName" placeholder="Nom" style="width:95%; margin-bottom:5px;">
+            <input type="text" id="newUrl" placeholder="URL RSS" style="width:95%; margin-bottom:5px;">
+            <input type="text" id="newCat" placeholder="Catégorie" style="width:95%; margin-bottom:10px;">
+            <button onclick="addSource()" style="width:100%; background:var(--accent); color:black; font-weight:bold;">VALIDER</button>
         </div>
 
         <div class="option-box">
@@ -117,7 +110,7 @@
         </div>
         <div id="catBar" class="row"></div>
         <div class="row">
-            <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Toutes les sources</option></select>
+            <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Sources</option></select>
             <button id="vaultBtn" onclick="toggleVault()" style="background:var(--card); min-width: 80px;">💾 Coffre</button>
         </div>
     </div>
@@ -126,12 +119,9 @@
 <div id="grid"></div>
 
 <script>
-// SOURCES PAR DÉFAUT SI VIDE
 const defaultSources = [
     { name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml", cat: "Info", pinned: true },
-    { name: "Libération", url: "https://www.liberation.fr/arc/outboundfeeds/rss-all/category/actualite-et-societe/?itid=hp_actu", cat: "Info", pinned: false },
-    { name: "NASA", url: "https://www.nasa.gov/rss/dyn/breaking_news.rss", cat: "Espace", pinned: false },
-    { name: "NY Times", url: "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml", cat: "International", pinned: false }
+    { name: "NASA", url: "https://www.nasa.gov/rss/dyn/breaking_news.rss", cat: "Espace", pinned: false }
 ];
 
 let sources = JSON.parse(localStorage.getItem('nsc_sources')) || defaultSources;
@@ -150,13 +140,6 @@ async function fetchAll() {
     document.getElementById('refreshBtn').classList.add('spin');
     let sourceBundles = {};
     
-    // On s'assure que les sources existent
-    if(sources.length === 0) {
-        document.getElementById('grid').innerHTML = "<p style='text-align:center; padding:20px;'>Aucune source configurée.</p>";
-        document.getElementById('refreshBtn').classList.remove('spin');
-        return;
-    }
-
     await Promise.all(sources.map(async s => {
         try {
             const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(s.url)}&t=${Date.now()}`);
@@ -178,16 +161,25 @@ async function fetchAll() {
         } catch(e) {}
     }));
 
-    let alternating = [];
-    let pools = Object.values(sourceBundles);
-    let max = Math.max(...pools.map(p => p.length), 0);
-    for (let i = 0; i < max; i++) {
-        pools.forEach(p => { if(p[i]) alternating.push(p[i]); });
-    }
-    
-    // Tri final : Épinglés en premier, puis par date
-    allArticles = alternating.sort((a,b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
-    
+    let topPinned = [];
+    let restOfNews = [];
+    let pinnedSourceNames = sources.filter(s => s.pinned).map(s => s.name);
+
+    // Séparation : Le premier de chaque source épinglée va dans topPinned
+    Object.keys(sourceBundles).forEach(sourceName => {
+        let bundle = sourceBundles[sourceName];
+        if (pinnedSourceNames.includes(sourceName) && bundle.length > 0) {
+            topPinned.push({...bundle[0], isTop: true}); // Marque comme "Une"
+            restOfNews.push(...bundle.slice(1)); // Le reste va dans le flux normal
+        } else {
+            restOfNews.push(...bundle);
+        }
+    });
+
+    // Tri par date pour le flux normal
+    restOfNews.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+    allArticles = [...topPinned, ...restOfNews];
     document.getElementById('refreshBtn').classList.remove('spin');
     updateUI(); render();
 }
@@ -204,19 +196,14 @@ function render() {
         (sourceF === "Tous" || a.source === sourceF)
     );
 
-    if (filtered.length === 0) {
-        grid.innerHTML = "<p style='text-align:center; width:100%; grid-column:1/-1; padding:40px; opacity:0.5;'>Aucun article trouvé.</p>";
-        return;
-    }
-
     grid.innerHTML = filtered.map(a => {
         const inVault = vault.some(v => v.id === a.id);
-        const isPinned = !isVaultView && a.pinned;
+        const isUne = !isVaultView && a.isTop;
         return `
-        <div class="card" style="${isPinned ? 'border: 2px solid var(--accent)' : ''}">
+        <div class="card" style="${isUne ? 'border: 2px solid var(--accent)' : ''}">
             <a href="${a.link}" target="_blank"><img src="${a.img || 'https://via.placeholder.com/400x200/222/555?text='+a.source}"></a>
             <div class="card-content">
-                <a href="${a.link}" target="_blank" class="card-title">${isPinned ? '📌 ':''}${a.title}</a>
+                <a href="${a.link}" target="_blank" class="card-title">${isUne ? '📌 ':''}${a.title}</a>
                 <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">${a.source} • ${new Date(a.date).toLocaleDateString()}</div>
                 <button class="read-btn" onclick="openReader('${a.id}')">LIRE L'ARTICLE</button>
                 <button class="save-btn ${inVault?'saved':''}" onclick="toggleSave('${a.id}')">
@@ -236,7 +223,7 @@ function openReader(id) {
         <div style="opacity:0.6; margin-bottom:20px; font-size:0.9rem;">${new Date(art.date).toLocaleString()}</div>
         <div style="line-height:1.8; font-family:serif; font-size:1.25rem;">${art.content}</div>
         <hr style="border:0; border-top:1px solid var(--border); margin:30px 0;">
-        <center><a href="${art.link}" target="_blank" style="color:var(--accent); font-weight:bold; text-decoration:none; border:1px solid var(--accent); padding:10px 20px; border-radius:30px;">LIRE SUR LE SITE D'ORIGINE</a></center>
+        <center><a href="${art.link}" target="_blank" style="color:var(--accent); font-weight:bold; text-decoration:none; border:1px solid var(--accent); padding:10px 20px; border-radius:30px;">ORIGINAL</a></center>
     `;
     document.getElementById('readerModal').style.display = 'block';
     document.body.style.overflow = 'hidden';
@@ -300,5 +287,4 @@ document.getElementById('sourceSelect').addEventListener('change', render);
 fetchAll();
 </script>
 </body>
-    </html>
-    
+</html>
