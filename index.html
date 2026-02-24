@@ -73,22 +73,23 @@
         .modal-container { max-width: 800px; margin: 0 auto; padding: 20px; }
         #readerView img { max-width: 100%; height: auto !important; border-radius: 8px; margin: 15px 0; display: block; }
         .option-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
-        
+        .rss-help { background: rgba(0,0,0,0.2); border: 1px dashed var(--accent); padding: 10px; font-size: 0.8rem; border-radius: 8px; margin-bottom: 15px; color: var(--meta); line-height: 1.4; }
+
         .source-item { background: rgba(255,255,255,0.03); border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border); overflow: hidden; }
-        .source-main { display: flex; align-items: center; padding: 10px; gap: 8px; cursor: pointer; }
-        .source-main:hover { background: rgba(255,255,255,0.05); }
+        .source-main { display: flex; align-items: center; padding: 10px; gap: 8px; }
         .source-name-input { flex-grow: 1; background: transparent; border: none; color: var(--text); font-weight: bold; font-size: 1rem; outline: none; }
         
-        .source-details { padding: 0 10px 10px 10px; display: none; border-top: 1px solid var(--border); background: rgba(0,0,0,0.1); }
+        .source-details { padding: 10px; display: none; border-top: 1px solid var(--border); background: rgba(0,0,0,0.2); }
         .source-details.open { display: block; }
         
-        .feed-row { display: grid; grid-template-columns: 100px 1fr 40px; gap: 5px; margin-top: 8px; align-items: center; }
-        .feed-row input { padding: 6px; font-size: 0.8rem; }
-        
-        .pin-btn { min-width: 40px; background: var(--border); color: var(--text); border: none; cursor: pointer; height: 35px; border-radius: 4px; }
+        .feed-row { display: flex; gap: 5px; margin-bottom: 8px; align-items: center; width: 100%; }
+        .feed-row input { flex: 1; padding: 8px; font-size: 0.85rem; min-width: 0; }
+        .feed-row .cat-input { flex: 0 0 80px; }
+
+        .pin-btn { min-width: 40px; background: var(--border); color: var(--text); border: none; cursor: pointer; height: 40px; border-radius: 8px; }
         .pin-btn.pinned { background: var(--accent); color: #000; }
-        .del-btn { min-width: 40px; background: #ef4444; color: white; border: none; cursor: pointer; height: 35px; border-radius: 4px; }
-        .add-feed-btn { width: 100%; margin-top: 10px; padding: 5px; background: var(--border); color: var(--text); border: 1px dashed var(--meta); cursor: pointer; border-radius: 4px; font-size: 0.8rem; }
+        .del-btn { min-width: 40px; background: #ef4444; color: white; border: none; cursor: pointer; height: 40px; border-radius: 8px; }
+        .add-feed-btn { width: 100%; margin-top: 10px; padding: 8px; background: var(--border); color: var(--text); border: 1px dashed var(--meta); cursor: pointer; border-radius: 8px; font-size: 0.8rem; font-weight: bold;}
 
         .spin { animation: rotation 1s infinite linear; }
         @keyframes rotation { from { transform: rotate(0deg); } to { transform: rotate(359deg); } }
@@ -130,8 +131,13 @@
                 <option value="copper">Copper</option>
             </select>
         </div>
-        
+
         <div class="option-box">
+            <h3>➕ Aide RSS</h3>
+            <div class="rss-help">
+                Cherchez "Flux RSS [Nom du site]" sur Google. Copiez l'adresse du lien et collez-la dans les réglages d'une source.<br>
+                <b>Note :</b> Cliquez sur le nom d'une source pour gérer ses flux internes.
+            </div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h3 style="margin:0;">📡 Mes sources</h3>
                 <button onclick="addNewEmptySource()" style="background:var(--accent); color:#000; border:none; padding:5px 12px; border-radius:6px; font-weight:bold;">+ SOURCE</button>
@@ -160,18 +166,17 @@
 <div id="grid"></div>
 
 <script>
-// Structure : sources = [{ name: "Source", feeds: [{cat: "Cat", url: "URL"}], pinned: bool }]
 let sources = JSON.parse(localStorage.getItem('nsc_sources_v2'));
 
-// Migration si ancien format détecté
+// Migration initiale
 if(!sources) {
     let old = JSON.parse(localStorage.getItem('nsc_sources')) || [{ name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml|Actu", pinned: true }];
     sources = old.map(s => {
-        let feeds = s.url.split(',').map(e => {
+        let feeds = (s.url || "").split(',').map(e => {
             let [u, c] = e.split('|');
-            return { url: u.trim(), cat: (c||"Actu").trim() };
+            return { url: (u||"").trim(), cat: (c||"Actu").trim() };
         });
-        return { name: s.name, feeds: feeds, pinned: s.pinned };
+        return { name: s.name, feeds: feeds, pinned: !!s.pinned };
     });
 }
 
@@ -191,7 +196,7 @@ function openModal(id) { document.getElementById(id).style.display = 'block'; do
 function closeModal(id) { 
     document.getElementById(id).style.display = 'none'; 
     document.body.classList.remove('modal-open');
-    save(); fetchAll(); // Refresh total à la fermeture des réglages
+    save(); fetchAll(); 
 }
 
 function save() { localStorage.setItem('nsc_sources_v2', JSON.stringify(sources)); }
@@ -271,13 +276,16 @@ function render() {
         return matchesSearch && matchesCat && matchesSource;
     }).map(a => {
         const d = new Date(a.date);
+        const timeStr = d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+        const dateStr = d.toLocaleDateString('fr-FR', {day:'2-digit', month:'2-digit', year:'numeric'});
+
         return `
         <div class="card" style="${a.isTop ? 'border: 2px solid var(--accent)' : ''}">
             <a href="${a.link}" target="_blank"><img src="${a.img || 'https://via.placeholder.com/400x200/000/fff?text='+a.source}"></a>
             <div class="card-content">
                 <a href="${a.link}" target="_blank" class="card-title">${a.isTop ? '📌 ':''}${a.title}</a>
                 <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">
-                    <b>${a.source}</b> <span style="color:var(--accent)">[${a.category}]</span> • ${timeSince(a.date)}
+                    <b>${a.source}</b> <span style="color:var(--accent)">[${a.category}]</span> • ${dateStr} à ${timeStr} (${timeSince(a.date)})
                 </div>
                 <button class="read-btn" onclick="openReader('${encodeURIComponent(a.id)}')">LIRE L'ARTICLE</button>
             </div>
@@ -301,7 +309,9 @@ function addNewEmptySource() {
 
 function toggleDetails(idx) {
     const el = document.getElementById(`details-${idx}`);
-    el.classList.toggle('open');
+    const arrow = document.getElementById(`arrow-${idx}`);
+    const isOpen = el.classList.toggle('open');
+    arrow.innerText = isOpen ? '▲' : '▼';
 }
 
 function updateUI() {
@@ -314,17 +324,17 @@ function updateUI() {
     document.getElementById('sourceList').innerHTML = sources.map((s, i) => `
         <div class="source-item">
             <div class="source-main">
-                <span onclick="toggleDetails(${i})" style="font-size: 0.7rem; color: var(--meta); margin-right:5px;">▼</span>
-                <input type="text" class="source-name-input" value="${s.name}" onchange="sources[${i}].name=this.value; save();" onclick="event.stopPropagation()">
+                <button onclick="toggleDetails(${i})" style="background:none; border:none; color:var(--meta); cursor:pointer; padding:5px;" id="arrow-${i}">▼</button>
+                <input type="text" class="source-name-input" value="${s.name}" onchange="sources[${i}].name=this.value; save();">
                 <button class="pin-btn ${s.pinned?'pinned':''}" onclick="sources[${i}].pinned=!sources[${i}].pinned; save(); updateUI();">${s.pinned?'📌':'📍'}</button>
-                <button class="del-btn" onclick="if(confirm('Supprimer cette source ?')){sources.splice(${i},1); save(); updateUI();}">X</button>
+                <button class="del-btn" onclick="if(confirm('Supprimer définitivement la source \\'${s.name}\\' et tous ses flux ?')){sources.splice(${i},1); save(); updateUI();}">X</button>
             </div>
             <div id="details-${i}" class="source-details">
                 ${s.feeds.map((f, fi) => `
                     <div class="feed-row">
-                        <input type="text" value="${f.cat}" placeholder="Catégorie" onchange="sources[${i}].feeds[${fi}].cat=this.value; save();">
+                        <input type="text" class="cat-input" value="${f.cat}" placeholder="Cat" onchange="sources[${i}].feeds[${fi}].cat=this.value; save();">
                         <input type="text" value="${f.url}" placeholder="URL du flux RSS" onchange="sources[${i}].feeds[${fi}].url=this.value; save();">
-                        <button class="del-btn" style="height:30px; min-width:30px;" onclick="sources[${i}].feeds.splice(${fi},1); save(); updateUI();">×</button>
+                        <button class="del-btn" style="height:35px; min-width:35px; font-size:12px;" onclick="if(confirm('Supprimer ce flux ?')){sources[${i}].feeds.splice(${fi},1); save(); updateUI();}">×</button>
                     </div>
                 `).join('')}
                 <button class="add-feed-btn" onclick="sources[${i}].feeds.push({cat:'', url:''}); updateUI();">+ AJOUTER UN FLUX</button>
