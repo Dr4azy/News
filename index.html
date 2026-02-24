@@ -1,356 +1,209 @@
 <!DOCTYPE html>
-<html lang="fr" style="background: #ffffff;">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News</title>
-
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="News">
-    
-    <meta name="theme-color" id="theme-meta" content="#ffffff">
-    <meta name="background-color" content="#ffffff">
-
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23000000%22/><text y=%2250%%22 x=%2250%%22 font-size=%2270%22 text-anchor=%22middle%22 dy=%22.35em%22 fill=%22white%22 font-family=%22Arial, sans-serif%22 font-weight=%22bold%22>N</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23000000%22/><text y=%2250%%22 x=%2250%%22 font-size=%2270%22 text-anchor=%22middle%22 dy=%22.35em%22 fill=%22white%22 font-family=%22Arial, sans-serif%22 font-weight=%22bold%22>N</text></svg>">
-
+    <title>News Pro</title>
     <style>
-        #splash-screen {
-            position: fixed;
-            inset: 0;
-            background: #000000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            opacity: 1;
-            transition: opacity 0.6s ease-in-out;
-        }
-        #splash-screen svg { width: 120px; height: 120px; margin-bottom: 20px; }
-        #splash-screen h1 { color: white; font-family: sans-serif; font-size: 1.5rem; letter-spacing: 2px; margin: 0; }
+        :root { --bg: #000; --card: #111; --accent: #ffd700; --text: #fff; --border: #333; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; }
         
-        body { background: #000000; margin: 0; }
-        header, .sticky-controls, #grid { opacity: 0; }
-        body.ready header, body.ready .sticky-controls, body.ready #grid { opacity: 1; transition: opacity 0.5s ease-in; }
-    </style>
-
-    <style>
-        :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --read-bg: var(--accent); --read-txt: #000; }
-        body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; --read-bg: #8e44ad; --read-txt: #fff; }
-        body.theme-matrix  { --bg: #000000; --card: #001100; --accent: #00ff41; --text: #00ff41; --meta: #008f11; --border: #003b00; --read-bg: #00ff41; --read-txt: #000; }
-        body.theme-dracula { --bg: #282a36; --card: #44475a; --accent: #bd93f9; --text: #f8f8f2; --meta: #6272a4; --border: #44475a; --read-bg: #bd93f9; --read-txt: #000; }
-        body.theme-ocean   { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f1f5f9; --meta: #94a3b8; --border: #334155; --read-bg: #38bdf8; --read-txt: #000; }
-        body.theme-blood   { --bg: #1a0505; --card: #2d0a0a; --accent: #ff4d4d; --text: #ffcccc; --meta: #a35a5a; --border: #4d1414; --read-bg: #ff4d4d; --read-txt: #fff; }
-        body.theme-forest  { --bg: #051a10; --card: #0a2d1d; --accent: #4ade80; --text: #ccffeb; --meta: #5a7a6a; --border: #144d32; --read-bg: #4ade80; --read-txt: #000; }
-        body.theme-gold    { --bg: #1a1605; --card: #2d260a; --accent: #fbbf24; --text: #fef3c7; --meta: #78350f; --border: #4d4414; --read-bg: #fbbf24; --read-txt: #000; }
-        body.theme-vapor   { --bg: #1a1a2e; --card: #16213e; --accent: #e94560; --text: #ffffff; --meta: #95a5a6; --border: #0f3460; --read-bg: #e94560; --read-txt: #fff; }
-        body.theme-neon    { --bg: #000; --card: #111; --accent: #ff00ff; --text: #00ffff; --meta: #777; --border: #333; --read-bg: #ff00ff; --read-txt: #000; }
-        body.theme-coffee  { --bg: #1c1917; --card: #292524; --accent: #d6d3d1; --text: #fafaf9; --meta: #a8a29e; --border: #44403c; --read-bg: #d6d3d1; --read-txt: #000; }
-        body.theme-copper  { --bg: #1a120b; --card: #2d1e12; --accent: #d97706; --text: #fef3c7; --meta: #92400e; --border: #452e1a; --read-bg: #d97706; --read-txt: #fff; }
-        body.theme-cyber2  { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --read-bg: #444; --read-txt: #fff; }
-
-        body { font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 30px; transition: background 0.3s; }
-        body.modal-open { overflow: hidden; }
-        header { background: rgba(0,0,0,0.2); padding: 10px; text-align: center; border-bottom: 1px solid var(--border); }
-        .sticky-controls { position: sticky; top: 0; z-index: 1000; background: var(--bg); border-bottom: 2px solid var(--accent); }
-        .controls { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
-        .row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; align-items: center; }
-        input, select, button { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.9rem; }
-        .btn-cat { background: var(--card); color: var(--text); border: 1px solid var(--border); white-space: nowrap; cursor: pointer; }
-        .btn-cat.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: bold; }
-        #grid { padding: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; position: relative; }
-        .card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid var(--border); cursor: pointer; }
-        .card-content { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; }
-        .card-title { font-weight: bold; font-size: 1.05rem; margin-bottom: 8px; line-height: 1.3; color: var(--text); text-decoration: none; cursor: pointer; display: block; }
-        .read-btn { background: var(--read-bg); color: var(--read-txt); border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: auto; cursor: pointer; }
-        .save-btn { background: transparent; color: var(--meta); border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-top: 8px; cursor: pointer; }
-        .save-btn.saved { background: #2e7d32 !important; color: white !important; border-color: #2e7d32; }
+        /* Header & Nav */
+        header { padding: 20px; text-align: center; border-bottom: 1px solid var(--border); }
+        .nav-bar { position: sticky; top: 0; z-index: 100; background: var(--bg); padding: 10px; border-bottom: 2px solid var(--accent); display: flex; flex-direction: column; gap: 10px; }
+        .row { display: flex; gap: 10px; overflow-x: auto; padding: 5px; }
         
-        .full-modal { display: none; position: fixed; inset: 0; z-index: 4000; overflow-y: auto; background: var(--bg); }
-        .modal-header { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--bg); border-bottom: 1px solid var(--border); z-index: 10; }
-        .modal-container { max-width: 800px; margin: 0 auto; padding: 20px; }
-        #readerView img { max-width: 100%; height: auto !important; border-radius: 8px; margin: 15px 0; display: block; }
-        .option-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
-        .rss-help { background: rgba(0,0,0,0.2); border: 1px dashed var(--accent); padding: 10px; font-size: 0.8rem; border-radius: 8px; margin-bottom: 15px; color: var(--meta); line-height: 1.4; }
-        
-        .source-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
-        .source-grid { display: grid; grid-template-columns: 1fr 1fr 40px 40px; gap: 5px; align-items: center; margin-bottom: 5px; }
-        .source-grid input { width: 100%; box-sizing: border-box; padding: 8px; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; font-size: 0.8rem; }
-        .pin-btn { min-width: 40px; background: var(--border); color: var(--text); border: none; cursor: pointer; height: 35px; border-radius: 4px; }
-        .pin-btn.pinned { background: var(--accent); color: #000; }
-        .del-btn { min-width: 40px; background: #ef4444; color: white; border: none; cursor: pointer; height: 35px; border-radius: 4px; }
+        /* Boutons */
+        button { padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); cursor: pointer; font-weight: bold; white-space: nowrap; }
+        .btn-active { background: var(--accent) !important; color: #000 !important; }
+        #archive-toggle-btn { background: #222; border-color: var(--accent); flex-grow: 1; }
 
-        .spin { animation: rotation 1s infinite linear; }
-        @keyframes rotation { from { transform: rotate(0deg); } to { transform: rotate(359deg); } }
+        /* Grille d'articles */
+        #grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 20px; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; overflow: hidden; display: flex; flex-direction: column; }
+        .card img { width: 100%; height: 180px; object-fit: cover; }
+        .card-body { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
+        .card-title { font-size: 1.1rem; margin: 0 0 10px 0; line-height: 1.4; color: var(--accent); text-decoration: none; }
+        .meta { font-size: 0.8rem; color: #888; margin-bottom: 15px; }
+        
+        .actions { margin-top: auto; display: flex; gap: 10px; }
+        .btn-read { flex-grow: 2; background: var(--accent); color: #000; }
+        .btn-save { flex-grow: 1; }
+        .btn-save.saved { background: #ff4444; color: white; border-color: #ff4444; }
+
+        /* Lecteur Modal */
+        #modal { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 1000; overflow-y: auto; padding: 20px; }
+        .modal-content { max-width: 800px; margin: 0 auto; line-height: 1.6; }
+        .close-modal { position: sticky; top: 0; float: right; background: var(--accent); color: #000; padding: 10px 20px; border-radius: 20px; }
     </style>
 </head>
-<body id="bodyTag">
+<body>
 
-<div id="splash-screen">
-    <svg viewBox="0 0 100 100">
-        <rect width="100" height="100" fill="black"/>
-        <text y="50%" x="50%" font-size="70" text-anchor="middle" dy=".35em" fill="white" font-family="Arial, sans-serif" font-weight="bold">N</text>
-    </svg>
-    <h1>News</h1>
-</div>
+<header><h1>Journal Personnel</h1></header>
 
-<div id="readerModal" class="full-modal">
-    <div class="modal-header">
-        <span id="readerSource" style="font-weight: bold;">Article</span>
-        <button onclick="closeModal('readerModal')" style="background:var(--accent); color:#000; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;">✕ FERMER</button>
+<div class="nav-bar">
+    <div class="row">
+        <input type="text" id="searchInput" placeholder="Rechercher..." style="flex-grow:1; padding: 10px; border-radius: 8px; background: #222; border: 1px solid #444; color: white;">
+        <button onclick="location.reload()">🔄 Actualiser</button>
     </div>
-    <div class="modal-container" id="readerView"></div>
-</div>
-
-<div id="sourceModal" class="full-modal">
-    <div class="modal-header">
-        <span style="font-weight: bold;">Réglages</span>
-        <button onclick="closeModal('sourceModal')" style="background:var(--accent); color:#000; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;">✕ RETOUR</button>
-    </div>
-    <div class="modal-container">
-        <div class="option-box">
-            <h3>🎨 Thème</h3>
-            <select id="themeSelect" onchange="changeTheme(this.value)" style="width: 100%;">
-                <option value="cyber">Cyber</option><option value="cyber2">Cyber 2</option>
-                <option value="night">Nuit</option><option value="matrix">Matrix</option>
-                <option value="dracula">Dracula</option><option value="ocean">Océan</option>
-                <option value="blood">Blood</option><option value="forest">Forest</option>
-                <option value="gold">Gold</option><option value="vapor">Vaporwave</option>
-                <option value="neon">Neon</option><option value="coffee">Coffee</option>
-                <option value="copper">Copper</option>
-            </select>
-        </div>
-        <div class="option-box">
-            <h3>➕ Ajouter une source</h3>
-            <div class="rss-help">
-                Cherchez "Flux RSS [Nom du site]" sur Google. Copiez l'adresse du lien et collez-la ci-dessus.
-            </div>
-            <input type="text" id="newName" placeholder="Nom" style="width:94%; margin-bottom:5px;">
-            <input type="text" id="newUrl" placeholder="URL RSS" style="width:94%; margin-bottom:5px;">
-            <input type="text" id="newCat" placeholder="Catégorie" style="width:94%; margin-bottom:10px;">
-            <button onclick="addSource()" style="width:100%; background:var(--accent); color:#000; font-weight:bold;">AJOUTER SOURCE</button>
-        </div>
-        <div class="option-box">
-            <h3>📡 Mes sources</h3>
-            <div id="sourceList"></div>
-        </div>
-    </div>
-</div>
-
-<header><h1>Les News sans Cnews</h1></header>
-
-<div class="sticky-controls">
-    <div class="controls">
-        <div class="row">
-            <input type="text" id="search" style="flex-grow:1" placeholder="Chercher...">
-            <button id="refreshBtn" onclick="fetchAll()">🔄</button>
-            <button onclick="openModal('sourceModal')">⚙️</button>
-        </div>
-        <div id="catBar" class="row"></div>
-        <div class="row">
-            <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Toutes les sources</option></select>
-            <button id="archiveBtn" onclick="toggleArchives()" style="flex-grow:1; font-weight:bold; background:var(--card); border: 2px solid var(--accent);">📂 ARCHIVES PERSONNELLES</button>
-        </div>
+    <div class="row">
+        <button id="archive-toggle-btn" onclick="toggleView()">📂 VOIR MES ARTICLES ENREGISTRÉS</button>
     </div>
 </div>
 
 <div id="grid"></div>
 
+<div id="modal">
+    <button class="close-modal" onclick="closeArticle()">FERMER</button>
+    <div id="modal-body" class="modal-content"></div>
+</div>
+
 <script>
-let sources = JSON.parse(localStorage.getItem('nsc_sources')) || [{ name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml", cat: "Actu", pinned: true }];
-let vault = JSON.parse(localStorage.getItem('nsc_vault')) || [];
-let allArticles = [];
-let isArchiveView = false;
-let currentCat = "Tous";
+    // Configuration et État
+    const sources = [
+        { name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml" },
+        { name: "Libération", url: "https://www.liberation.fr/arc/outboundfeeds/rss-all/feed/?" },
+        { name: "France Info", url: "https://www.francetvinfo.fr/titres.rss" }
+    ];
 
-window.addEventListener('load', () => {
-    const splash = document.getElementById('splash-screen');
-    setTimeout(() => {
-        splash.style.opacity = '0';
-        document.body.classList.add('ready');
-        setTimeout(() => splash.style.display = 'none', 600);
-    }, 1500);
-});
+    let allArticles = []; // Stocke le flux actuel
+    let archives = JSON.parse(localStorage.getItem('news_archives')) || []; // Stocke les archives
+    let isShowingArchives = false;
 
-function openModal(id) { document.getElementById(id).style.display = 'block'; document.body.classList.add('modal-open'); }
-function closeModal(id) { document.getElementById(id).style.display = 'none'; document.body.classList.remove('modal-open'); }
+    // 1. Chargement des données
+    async function fetchNews() {
+        const grid = document.getElementById('grid');
+        grid.innerHTML = "<p>Chargement des actualités...</p>";
 
-function changeTheme(theme) {
-    document.getElementById('bodyTag').className = (theme === 'cyber') ? "ready" : "ready theme-" + theme;
-    localStorage.setItem('nsc_theme', theme);
-}
-
-function timeSince(date) {
-    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-    let interval = seconds / 3600;
-    if (interval > 24) return Math.floor(interval / 24) + "j";
-    if (interval >= 1) return Math.floor(interval) + "h";
-    interval = seconds / 60;
-    if (interval >= 1) return Math.floor(interval) + "m";
-    return Math.floor(seconds) + "s";
-}
-
-async function fetchAll() {
-    if(isArchiveView) return;
-    document.getElementById('refreshBtn').classList.add('spin');
-    let sourceBundles = {};
-    
-    await Promise.all(sources.map(async s => {
         try {
-            const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(s.url)}&t=${Date.now()}`);
-            const data = await res.json();
-            if(data.status === 'ok') {
-                sourceBundles[s.name] = data.items.map(item => {
-                    let imgUrl = item.enclosure?.link || item.thumbnail || "";
-                    if (!imgUrl) {
-                        const match = (item.content || item.description || "").match(/<img[^>]+src="([^">]+)"/);
-                        if (match) imgUrl = match[1];
-                    }
-                    return {
-                        id: item.guid || item.link, 
-                        title: item.title, link: item.link,
-                        img: imgUrl, source: s.name, category: s.cat, date: item.pubDate, 
-                        content: item.content || item.description
-                    }
+            const results = await Promise.all(sources.map(s => 
+                fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(s.url)}`)
+                .then(r => r.json())
+                .then(data => data.items.map(item => ({
+                    id: item.guid || item.link,
+                    title: item.title,
+                    link: item.link,
+                    img: item.enclosure?.link || item.thumbnail || 'https://via.placeholder.com/400x200?text=News',
+                    source: s.name,
+                    date: item.pubDate,
+                    content: item.content || item.description
+                })))
+            ));
+
+            // Mélange des sources (Entrelacement)
+            allArticles = [];
+            const maxLength = Math.max(...results.map(r => r.length));
+            for(let i=0; i<maxLength; i++) {
+                results.forEach(sourceList => {
+                    if(sourceList[i]) allArticles.push(sourceList[i]);
                 });
             }
-        } catch(e) {}
-    }));
 
-    let topPinned = [];
-    let bundlesForMixing = [];
-    let pinnedNames = sources.filter(s => s.pinned).map(s => s.name);
-    
-    Object.keys(sourceBundles).forEach(name => {
-        let bundle = sourceBundles[name];
-        if (bundle.length > 0) {
-            if (pinnedNames.includes(name)) {
-                topPinned.push({...bundle[0], isTop: true});
-                bundlesForMixing.push(bundle.slice(1));
-            } else {
-                bundlesForMixing.push(bundle);
-            }
+            render();
+        } catch (e) {
+            grid.innerHTML = "<p>Erreur de connexion.</p>";
         }
-    });
-
-    let mixedNews = [];
-    let maxItems = Math.max(...bundlesForMixing.map(b => b.length), 0);
-    for (let i = 0; i < maxItems; i++) {
-        bundlesForMixing.forEach(bundle => {
-            if (bundle[i]) mixedNews.push(bundle[i]);
-        });
     }
 
-    allArticles = [...topPinned, ...mixedNews];
-    document.getElementById('refreshBtn').classList.remove('spin');
-    updateUI(); render();
-}
+    // 2. Affichage
+    function render() {
+        const grid = document.getElementById('grid');
+        const listToDisplay = isShowingArchives ? archives : allArticles;
+        
+        if (listToDisplay.length === 0 && isShowingArchives) {
+            grid.innerHTML = "<p style='text-align:center; padding:50px;'>Aucun article dans vos archives pour le moment.</p>";
+            return;
+        }
 
-function render() {
-    const grid = document.getElementById('grid');
-    const search = document.getElementById('search').value.toLowerCase();
-    const sourceF = document.getElementById('sourceSelect').value;
-    
-    let list = isArchiveView ? vault : allArticles;
-
-    grid.innerHTML = list.filter(a => {
-        const matchesSearch = a.title.toLowerCase().includes(search);
-        const matchesCat = (currentCat === "Tous" || a.category === currentCat);
-        const matchesSource = (sourceF === "Tous" || a.source === sourceF);
-        return matchesSearch && matchesCat && matchesSource;
-    }).map(a => {
-        const inVault = vault.some(v => v.id === a.id);
-        const d = new Date(a.date);
-        const timeStr = d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
-        const dateStr = d.toLocaleDateString('fr-FR', {day:'2-digit', month:'2-digit', year:'numeric'});
-
-        return `
-        <div class="card" style="${a.isTop && !isArchiveView ? 'border: 2px solid var(--accent)' : ''}">
-            <a href="${a.link}" target="_blank"><img src="${a.img || 'https://via.placeholder.com/400x200/000/fff?text='+a.source}"></a>
-            <div class="card-content">
-                <a href="${a.link}" target="_blank" class="card-title">${(a.isTop && !isArchiveView) ? '📌 ':''}${a.title}</a>
-                <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">
-                    <b>${a.source}</b> • ${dateStr} à ${timeStr} (${timeSince(a.date)})
+        grid.innerHTML = listToDisplay.map(art => {
+            const isSaved = archives.some(a => a.id === art.id);
+            return `
+                <div class="card">
+                    <img src="${art.img}" alt="">
+                    <div class="card-body">
+                        <div class="meta">${art.source} • ${new Date(art.date).toLocaleDateString('fr-FR', {day:'2-digit', month:'2-digit', year:'numeric'})}</div>
+                        <a href="#" class="card-title" onclick="openArticle('${encodeURIComponent(art.id)}')">${art.title}</a>
+                        <div class="actions">
+                            <button class="btn-read" onclick="openArticle('${encodeURIComponent(art.id)}')">LIRE</button>
+                            <button class="btn-save ${isSaved ? 'saved' : ''}" onclick="toggleArchive('${encodeURIComponent(art.id)}')">
+                                ${isSaved ? 'SUPPRIMER' : 'ARCHIVER'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <button class="read-btn" onclick="openReader('${encodeURIComponent(a.id)}')">LIRE L'ARTICLE</button>
-                <button class="save-btn ${inVault?'saved':''}" onclick="toggleSave('${encodeURIComponent(a.id)}')">
-                    ${inVault ? '✅ ARCHIVÉ' : '📥 ARCHIVER'}
-                </button>
-            </div>
-        </div>`
-    }).join('');
-}
+            `;
+        }).join('');
+    }
 
-function openReader(encodedId) {
-    const id = decodeURIComponent(encodedId);
-    const art = [...allArticles, ...vault].find(a => a.id === id);
-    if(!art) return;
-    document.getElementById('readerSource').innerText = art.source;
-    document.getElementById('readerView').innerHTML = `<h2>${art.title}</h2><div style="line-height:1.7;">${art.content}</div>`;
-    openModal('readerModal');
-}
+    // 3. Logique d'archivage
+    function toggleArchive(encodedId) {
+        const id = decodeURIComponent(encodedId);
+        const archiveIndex = archives.findIndex(a => a.id === id);
 
-// SYSTEME DE SAUVEGARDE FIABILISÉ
-function toggleSave(encodedId) {
-    const id = decodeURIComponent(encodedId);
-    const idx = vault.findIndex(v => v.id === id);
-    
-    if(idx > -1) {
-        vault.splice(idx, 1);
-    } else {
-        const art = allArticles.find(a => a.id === id);
-        if(art) {
-            // On clone l'objet pour éviter les références circulaires
-            vault.push({...art, isTop: false});
+        if (archiveIndex > -1) {
+            // Supprimer des archives
+            archives.splice(archiveIndex, 1);
+        } else {
+            // Ajouter aux archives
+            const article = allArticles.find(a => a.id === id);
+            if (article) archives.push(article);
         }
+
+        // Sauvegarde permanente
+        localStorage.setItem('news_archives', JSON.stringify(archives));
+        render(); // Rafraîchir l'affichage
     }
-    localStorage.setItem('nsc_vault', JSON.stringify(vault));
-    render();
-}
 
-function addSource() {
-    const n = document.getElementById('newName').value, u = document.getElementById('newUrl').value, c = document.getElementById('newCat').value;
-    if(n && u) {
-        sources.push({name:n, url:u, cat:c||"Actu", pinned: false});
-        localStorage.setItem('nsc_sources', JSON.stringify(sources));
-        updateUI(); fetchAll();
+    // 4. Basculer la vue
+    function toggleView() {
+        isShowingArchives = !isShowingArchives;
+        const btn = document.getElementById('archive-toggle-btn');
+        
+        if (isShowingArchives) {
+            btn.innerHTML = "🗞️ RETOUR AU FLUX D'ACTUALITÉS";
+            btn.classList.add('btn-active');
+        } else {
+            btn.innerHTML = "📂 VOIR MES ARTICLES ENREGISTRÉS";
+            btn.classList.remove('btn-active');
+        }
+        render();
     }
-}
 
-function updateUI() {
-    const cats = ["Tous", ...new Set(sources.map(s => s.cat))];
-    document.getElementById('catBar').innerHTML = cats.map(c => `<button class="btn-cat ${currentCat===c?'active':''}" onclick="currentCat='${c}'; updateUI(); render();">${c}</button>`).join('');
-    const sel = document.getElementById('sourceSelect');
-    sel.innerHTML = '<option value="Tous">Toutes les sources</option>' + sources.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
-    document.getElementById('sourceList').innerHTML = sources.map((s, i) => `
-        <div class="source-item">
-            <div class="source-grid">
-                <input type="text" value="${s.name}" onchange="sources[${i}].name=this.value; localStorage.setItem('nsc_sources', JSON.stringify(sources));">
-                <input type="text" value="${s.cat}" onchange="sources[${i}].cat=this.value; localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI();">
-                <button class="pin-btn ${s.pinned?'pinned':''}" onclick="sources[${i}].pinned=!sources[${i}].pinned; localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll();">${s.pinned?'📌':'📍'}</button>
-                <button class="del-btn" onclick="if(confirm('Supprimer cette source ?')){sources.splice(${i},1); localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll();}">X</button>
-            </div>
-        </div>`).join('');
-}
+    // 5. Lecteur d'article
+    function openArticle(encodedId) {
+        const id = decodeURIComponent(encodedId);
+        const art = (isShowingArchives ? archives : allArticles).find(a => a.id === id);
+        if (!art) return;
 
-// NOUVELLE FONCTION ARCHIVE
-function toggleArchives() { 
-    isArchiveView = !isArchiveView; 
-    const btn = document.getElementById('archiveBtn');
-    btn.innerHTML = isArchiveView ? "🗞️ RETOUR AU FLUX" : "📂 ARCHIVES PERSONNELLES";
-    btn.style.borderColor = isArchiveView ? "var(--text)" : "var(--accent)";
-    render(); 
-}
+        document.getElementById('modal-body').innerHTML = `
+            <h1 style="color:var(--accent)">${art.title}</h1>
+            <p style="color:#888">${art.source} - ${art.date}</p>
+            <hr border="1" color="#333">
+            <div style="font-size:1.2rem">${art.content}</div>
+            <br><a href="${art.link}" target="_blank" style="color:var(--accent)">Lire l'original sur le site source ↗</a>
+        `;
+        document.getElementById('modal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
 
-const savedT = localStorage.getItem('nsc_theme');
-if(savedT) { document.getElementById('themeSelect').value = savedT; changeTheme(savedT); }
-document.getElementById('search').addEventListener('input', render);
-document.getElementById('sourceSelect').addEventListener('change', render);
-fetchAll();
+    function closeArticle() {
+        document.getElementById('modal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // Lancement
+    fetchNews();
+
+    // Recherche dynamique
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            const title = card.querySelector('.card-title').innerText.toLowerCase();
+            card.style.display = title.includes(term) ? 'flex' : 'none';
+        });
+    });
 </script>
+
 </body>
 </html>
