@@ -198,6 +198,7 @@ async function fetchAll() {
     if(isVaultView) return;
     document.getElementById('refreshBtn').classList.add('spin');
     let sourceBundles = {};
+    
     await Promise.all(sources.map(async s => {
         try {
             const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(s.url)}&t=${Date.now()}`);
@@ -210,7 +211,8 @@ async function fetchAll() {
                         if (match) imgUrl = match[1];
                     }
                     return {
-                        id: encodeURIComponent(item.guid || item.link), title: item.title, link: item.link,
+                        id: item.guid || item.link, 
+                        title: item.title, link: item.link,
                         img: imgUrl, source: s.name, category: s.cat, date: item.pubDate, 
                         content: item.content || item.description
                     }
@@ -219,17 +221,34 @@ async function fetchAll() {
         } catch(e) {}
     }));
 
-    let topPinned = []; let restOfNews = [];
+    let topPinned = [];
+    let bundlesForMixing = [];
     let pinnedNames = sources.filter(s => s.pinned).map(s => s.name);
+    
+    // 1. Extraire les épinglés et préparer les listes pour le mélange
     Object.keys(sourceBundles).forEach(name => {
         let bundle = sourceBundles[name];
-        if (pinnedNames.includes(name) && bundle.length > 0) {
-            topPinned.push({...bundle[0], isTop: true});
-            restOfNews.push(...bundle.slice(1));
-        } else { restOfNews.push(...bundle); }
+        if (bundle.length > 0) {
+            if (pinnedNames.includes(name)) {
+                topPinned.push({...bundle[0], isTop: true});
+                bundlesForMixing.push(bundle.slice(1));
+            } else {
+                bundlesForMixing.push(bundle);
+            }
+        }
     });
-    restOfNews.sort((a,b) => new Date(b.date) - new Date(a.date));
-    allArticles = [...topPinned, ...restOfNews];
+
+    // 2. Algorithme d'entrelacement (Mélange des sources)
+    let mixedNews = [];
+    let maxItems = Math.max(...bundlesForMixing.map(b => b.length), 0);
+    
+    for (let i = 0; i < maxItems; i++) {
+        bundlesForMixing.forEach(bundle => {
+            if (bundle[i]) mixedNews.push(bundle[i]);
+        });
+    }
+
+    allArticles = [...topPinned, ...mixedNews];
     document.getElementById('refreshBtn').classList.remove('spin');
     updateUI(); render();
 }
@@ -250,18 +269,18 @@ function render() {
         const inVault = vault.some(v => v.id === a.id);
         const d = new Date(a.date);
         const timeStr = d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
-        const dateStr = d.toLocaleDateString('fr-FR', {day:'2-digit', month:'2-digit'});
+        const dateStr = d.toLocaleDateString('fr-FR', {day:'2-digit', month:'2-digit', year:'numeric'});
 
         return `
         <div class="card" style="${a.isTop && !isVaultView ? 'border: 2px solid var(--accent)' : ''}">
             <a href="${a.link}" target="_blank"><img src="${a.img || 'https://via.placeholder.com/400x200/000/fff?text='+a.source}"></a>
             <div class="card-content">
-                <a href="${a.link}" target="_blank" class="card-title">${a.isTop && !isVaultView ? '📌 ':''}${a.title}</a>
+                <a href="${a.link}" target="_blank" class="card-title">${(a.isTop && !isVaultView) ? '📌 ':''}${a.title}</a>
                 <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">
                     <b>${a.source}</b> • ${dateStr} à ${timeStr} (${timeSince(a.date)})
                 </div>
-                <button class="read-btn" onclick="openReader('${a.id}')">LIRE L'ARTICLE</button>
-                <button class="save-btn ${inVault?'saved':''}" onclick="toggleSave('${a.id}')">
+                <button class="read-btn" onclick="openReader('${encodeURIComponent(a.id)}')">LIRE L'ARTICLE</button>
+                <button class="save-btn ${inVault?'saved':''}" onclick="toggleSave('${encodeURIComponent(a.id)}')">
                     ${inVault ? 'SAUVEGARDÉ' : 'SAUVEGARDER'}
                 </button>
             </div>
@@ -269,7 +288,8 @@ function render() {
     }).join('');
 }
 
-function openReader(id) {
+function openReader(encodedId) {
+    const id = decodeURIComponent(encodedId);
     const art = [...allArticles, ...vault].find(a => a.id === id);
     if(!art) return;
     document.getElementById('readerSource').innerText = art.source;
@@ -277,7 +297,8 @@ function openReader(id) {
     openModal('readerModal');
 }
 
-function toggleSave(id) {
+function toggleSave(encodedId) {
+    const id = decodeURIComponent(encodedId);
     const idx = vault.findIndex(v => v.id === id);
     if(idx > -1) {
         vault.splice(idx, 1);
@@ -317,7 +338,6 @@ function updateUI() {
 function toggleVault() { 
     isVaultView = !isVaultView; 
     const btn = document.getElementById('vaultBtn');
-    // On conserve strictement le même style de texte (Majuscules)
     btn.innerHTML = isVaultView ? "📡 FLUX" : "💾 COFFRE";
     render(); 
 }
@@ -329,5 +349,4 @@ document.getElementById('sourceSelect').addEventListener('change', render);
 fetchAll();
 </script>
 </body>
-    </html>
-    
+</html>
