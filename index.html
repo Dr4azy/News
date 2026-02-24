@@ -153,7 +153,7 @@
         <div id="catBar" class="row"></div>
         <div class="row">
             <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Toutes les sources</option></select>
-            <button id="vaultBtn" onclick="toggleVault()" style="min-width: 110px;">💾 COFFRE</button>
+            <button id="archiveBtn" onclick="toggleArchives()" style="flex-grow:1; font-weight:bold; background:var(--card); border: 2px solid var(--accent);">📂 ARCHIVES PERSONNELLES</button>
         </div>
     </div>
 </div>
@@ -164,7 +164,7 @@
 let sources = JSON.parse(localStorage.getItem('nsc_sources')) || [{ name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml", cat: "Actu", pinned: true }];
 let vault = JSON.parse(localStorage.getItem('nsc_vault')) || [];
 let allArticles = [];
-let isVaultView = false;
+let isArchiveView = false;
 let currentCat = "Tous";
 
 window.addEventListener('load', () => {
@@ -195,7 +195,7 @@ function timeSince(date) {
 }
 
 async function fetchAll() {
-    if(isVaultView) return;
+    if(isArchiveView) return;
     document.getElementById('refreshBtn').classList.add('spin');
     let sourceBundles = {};
     
@@ -225,7 +225,6 @@ async function fetchAll() {
     let bundlesForMixing = [];
     let pinnedNames = sources.filter(s => s.pinned).map(s => s.name);
     
-    // 1. Extraire les épinglés et préparer les listes pour le mélange
     Object.keys(sourceBundles).forEach(name => {
         let bundle = sourceBundles[name];
         if (bundle.length > 0) {
@@ -238,10 +237,8 @@ async function fetchAll() {
         }
     });
 
-    // 2. Algorithme d'entrelacement (Mélange des sources)
     let mixedNews = [];
     let maxItems = Math.max(...bundlesForMixing.map(b => b.length), 0);
-    
     for (let i = 0; i < maxItems; i++) {
         bundlesForMixing.forEach(bundle => {
             if (bundle[i]) mixedNews.push(bundle[i]);
@@ -258,7 +255,7 @@ function render() {
     const search = document.getElementById('search').value.toLowerCase();
     const sourceF = document.getElementById('sourceSelect').value;
     
-    let list = isVaultView ? vault : allArticles;
+    let list = isArchiveView ? vault : allArticles;
 
     grid.innerHTML = list.filter(a => {
         const matchesSearch = a.title.toLowerCase().includes(search);
@@ -272,16 +269,16 @@ function render() {
         const dateStr = d.toLocaleDateString('fr-FR', {day:'2-digit', month:'2-digit', year:'numeric'});
 
         return `
-        <div class="card" style="${a.isTop && !isVaultView ? 'border: 2px solid var(--accent)' : ''}">
+        <div class="card" style="${a.isTop && !isArchiveView ? 'border: 2px solid var(--accent)' : ''}">
             <a href="${a.link}" target="_blank"><img src="${a.img || 'https://via.placeholder.com/400x200/000/fff?text='+a.source}"></a>
             <div class="card-content">
-                <a href="${a.link}" target="_blank" class="card-title">${(a.isTop && !isVaultView) ? '📌 ':''}${a.title}</a>
+                <a href="${a.link}" target="_blank" class="card-title">${(a.isTop && !isArchiveView) ? '📌 ':''}${a.title}</a>
                 <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">
                     <b>${a.source}</b> • ${dateStr} à ${timeStr} (${timeSince(a.date)})
                 </div>
                 <button class="read-btn" onclick="openReader('${encodeURIComponent(a.id)}')">LIRE L'ARTICLE</button>
                 <button class="save-btn ${inVault?'saved':''}" onclick="toggleSave('${encodeURIComponent(a.id)}')">
-                    ${inVault ? 'SAUVEGARDÉ' : 'SAUVEGARDER'}
+                    ${inVault ? '✅ ARCHIVÉ' : '📥 ARCHIVER'}
                 </button>
             </div>
         </div>`
@@ -297,14 +294,19 @@ function openReader(encodedId) {
     openModal('readerModal');
 }
 
+// SYSTEME DE SAUVEGARDE FIABILISÉ
 function toggleSave(encodedId) {
     const id = decodeURIComponent(encodedId);
     const idx = vault.findIndex(v => v.id === id);
+    
     if(idx > -1) {
         vault.splice(idx, 1);
     } else {
         const art = allArticles.find(a => a.id === id);
-        if(art) vault.push({...art});
+        if(art) {
+            // On clone l'objet pour éviter les références circulaires
+            vault.push({...art, isTop: false});
+        }
     }
     localStorage.setItem('nsc_vault', JSON.stringify(vault));
     render();
@@ -335,10 +337,12 @@ function updateUI() {
         </div>`).join('');
 }
 
-function toggleVault() { 
-    isVaultView = !isVaultView; 
-    const btn = document.getElementById('vaultBtn');
-    btn.innerHTML = isVaultView ? "📡 FLUX" : "💾 COFFRE";
+// NOUVELLE FONCTION ARCHIVE
+function toggleArchives() { 
+    isArchiveView = !isArchiveView; 
+    const btn = document.getElementById('archiveBtn');
+    btn.innerHTML = isArchiveView ? "🗞️ RETOUR AU FLUX" : "📂 ARCHIVES PERSONNELLES";
+    btn.style.borderColor = isArchiveView ? "var(--text)" : "var(--accent)";
     render(); 
 }
 
