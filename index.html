@@ -76,7 +76,7 @@
         .rss-help { background: rgba(0,0,0,0.2); border: 1px dashed var(--accent); padding: 10px; font-size: 0.8rem; border-radius: 8px; margin-bottom: 15px; color: var(--meta); line-height: 1.4; }
         
         .source-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
-        .source-grid { display: grid; grid-template-columns: 1fr 1fr 40px 40px; gap: 5px; align-items: center; margin-bottom: 5px; }
+        .source-grid { display: grid; grid-template-columns: 1fr 40px 40px; gap: 5px; align-items: center; margin-bottom: 5px; }
         .source-grid input { width: 100%; box-sizing: border-box; padding: 8px; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; font-size: 0.8rem; }
         .pin-btn { min-width: 40px; background: var(--border); color: var(--text); border: none; cursor: pointer; height: 35px; border-radius: 4px; }
         .pin-btn.pinned { background: var(--accent); color: #000; }
@@ -125,12 +125,11 @@
         <div class="option-box">
             <h3>➕ Ajouter une source</h3>
             <div class="rss-help">
-                Séparez les flux par une virgule pour plusieurs URLs sous un même nom.<br>
-                Cherchez "Flux RSS [Nom du site]" sur Google.
+                <b>Format multi-flux :</b> URL1|Cat1, URL2|Cat2<br>
+                Exemple : <i>https://site.com/mars.xml|Espace, https://site.com/climat.xml|Terre</i>
             </div>
-            <input type="text" id="newName" placeholder="Nom" style="width:94%; margin-bottom:5px;">
-            <input type="text" id="newUrl" placeholder="URL RSS (ou URL1, URL2...)" style="width:94%; margin-bottom:5px;">
-            <input type="text" id="newCat" placeholder="Catégorie" style="width:94%; margin-bottom:10px;">
+            <input type="text" id="newName" placeholder="Nom de la source (ex: NASA)" style="width:94%; margin-bottom:5px;">
+            <input type="text" id="newUrl" placeholder="URL|Catégorie (ou URL1|Cat1, URL2|Cat2...)" style="width:94%; margin-bottom:10px;">
             <button onclick="addSource()" style="width:100%; background:var(--accent); color:#000; font-weight:bold;">AJOUTER SOURCE</button>
         </div>
         <div class="option-box">
@@ -159,8 +158,8 @@
 <div id="grid"></div>
 
 <script>
-// Initialisation : gestion si l'URL est une chaîne ou un tableau
-let sources = JSON.parse(localStorage.getItem('nsc_sources')) || [{ name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml", cat: "Actu", pinned: true }];
+// Structure attendue : { name: "...", url: "url1|cat1, url2|cat2", pinned: bool }
+let sources = JSON.parse(localStorage.getItem('nsc_sources')) || [{ name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml|Actu", pinned: true }];
 let allArticles = [];
 let currentCat = "Tous";
 
@@ -196,13 +195,16 @@ async function fetchAll() {
     let sourceBundles = {};
     
     await Promise.all(sources.map(async s => {
-        // On gère les URLs multiples séparées par des virgules ou déjà en tableau
-        const urls = Array.isArray(s.url) ? s.url : s.url.split(',').map(u => u.trim());
+        // On sépare les couples URL|Cat
+        const entries = s.url.split(',').map(e => e.trim());
         sourceBundles[s.name] = [];
 
-        for (const url of urls) {
+        for (const entry of entries) {
+            const [url, specificCat] = entry.split('|');
+            const finalCat = specificCat ? specificCat.trim() : "Infos";
+
             try {
-                const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}&t=${Date.now()}`);
+                const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url.trim())}&t=${Date.now()}`);
                 const data = await res.json();
                 if(data.status === 'ok') {
                     const items = data.items.map(item => {
@@ -214,7 +216,7 @@ async function fetchAll() {
                         return {
                             id: item.guid || item.link, 
                             title: item.title, link: item.link,
-                            img: imgUrl, source: s.name, category: s.cat, date: item.pubDate, 
+                            img: imgUrl, source: s.name, category: finalCat, date: item.pubDate, 
                             content: item.content || item.description
                         }
                     });
@@ -229,7 +231,6 @@ async function fetchAll() {
     
     Object.keys(sourceBundles).forEach(name => {
         let bundle = sourceBundles[name];
-        // Tri interne du bundle par date avant de choisir le "top"
         bundle.sort((a,b) => new Date(b.date) - new Date(a.date));
 
         let isSourcePinned = pinnedSources.some(ps => ps.name === name);
@@ -287,29 +288,30 @@ function openReader(encodedId) {
 }
 
 function addSource() {
-    const n = document.getElementById('newName').value, u = document.getElementById('newUrl').value, c = document.getElementById('newCat').value;
+    const n = document.getElementById('newName').value, u = document.getElementById('newUrl').value;
     if(n && u) {
-        // Stockage tel quel, le fetchAll s'occupera du split
-        sources.push({name:n, url:u, cat:c||"Actu", pinned: false});
+        sources.push({name:n, url:u, pinned: false});
         localStorage.setItem('nsc_sources', JSON.stringify(sources));
         updateUI(); fetchAll();
     }
 }
 
 function updateUI() {
-    const cats = ["Tous", ...new Set(sources.map(s => s.cat))];
+    // Calcul des catégories uniques à partir des articles chargés
+    const cats = ["Tous", ...new Set(allArticles.map(a => a.category))];
     document.getElementById('catBar').innerHTML = cats.map(c => `<button class="btn-cat ${currentCat===c?'active':''}" onclick="currentCat='${c}'; updateUI(); render();">${c}</button>`).join('');
+    
     const sel = document.getElementById('sourceSelect');
     sel.innerHTML = '<option value="Tous">Toutes les sources</option>' + sources.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
+    
     document.getElementById('sourceList').innerHTML = sources.map((s, i) => `
         <div class="source-item">
             <div class="source-grid">
                 <input type="text" value="${s.name}" onchange="sources[${i}].name=this.value; localStorage.setItem('nsc_sources', JSON.stringify(sources));">
-                <input type="text" value="${s.cat}" onchange="sources[${i}].cat=this.value; localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI();">
                 <button class="pin-btn ${s.pinned?'pinned':''}" onclick="sources[${i}].pinned=!sources[${i}].pinned; localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll();">${s.pinned?'📌':'📍'}</button>
                 <button class="del-btn" onclick="if(confirm('Supprimer cette source ?')){sources.splice(${i},1); localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll();}">X</button>
             </div>
-            <input type="text" value="${s.url}" style="width:100%; margin-top:5px; font-size:0.7rem;" onchange="sources[${i}].url=this.value; localStorage.setItem('nsc_sources', JSON.stringify(sources));">
+            <input type="text" value="${s.url}" style="width:100%; margin-top:5px; font-size:0.7rem;" placeholder="URL1|Cat1, URL2|Cat2" onchange="sources[${i}].url=this.value; localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI();">
         </div>`).join('');
 }
 
