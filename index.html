@@ -68,6 +68,10 @@
         .card-title { font-weight: bold; font-size: 1.05rem; margin-bottom: 8px; line-height: 1.3; color: var(--text); text-decoration: none; cursor: pointer; display: block; }
         .read-btn { background: var(--read-bg); color: var(--read-txt); border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: auto; cursor: pointer; }
         
+        /* Styles ajoutés pour l'archivage */
+        .save-btn { background: transparent; color: var(--meta); border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-top: 8px; cursor: pointer; font-weight: bold; }
+        .save-btn.saved { background: #2e7d32 !important; color: white !important; border-color: #2e7d32; }
+
         .full-modal { display: none; position: fixed; inset: 0; z-index: 4000; overflow-y: auto; background: var(--bg); }
         .modal-header { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--bg); border-bottom: 1px solid var(--border); z-index: 10; }
         .modal-container { max-width: 800px; margin: 0 auto; padding: 20px; }
@@ -151,6 +155,7 @@
         <div id="catBar" class="row"></div>
         <div class="row">
             <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Toutes les sources</option></select>
+            <button id="vaultBtn" onclick="toggleVault()" style="min-width: 110px; border: 2px solid var(--accent); font-weight:bold;">💾 COFFRE</button>
         </div>
     </div>
 </div>
@@ -159,7 +164,9 @@
 
 <script>
 let sources = JSON.parse(localStorage.getItem('nsc_sources')) || [{ name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml", cat: "Actu", pinned: true }];
+let vault = JSON.parse(localStorage.getItem('nsc_vault')) || []; // Stockage des archives
 let allArticles = [];
+let isVaultView = false; // État de la vue (Flux vs Archives)
 let currentCat = "Tous";
 
 window.addEventListener('load', () => {
@@ -190,6 +197,7 @@ function timeSince(date) {
 }
 
 async function fetchAll() {
+    if(isVaultView) return; // Ne pas rafraîchir si on est dans le coffre
     document.getElementById('refreshBtn').classList.add('spin');
     let sourceBundles = {};
     
@@ -241,25 +249,32 @@ function render() {
     const search = document.getElementById('search').value.toLowerCase();
     const sourceF = document.getElementById('sourceSelect').value;
     
-    grid.innerHTML = allArticles.filter(a => {
+    // Bascule entre la liste globale et la liste archivée
+    let list = isVaultView ? vault : allArticles;
+
+    grid.innerHTML = list.filter(a => {
         const matchesSearch = a.title.toLowerCase().includes(search);
         const matchesCat = (currentCat === "Tous" || a.category === currentCat);
         const matchesSource = (sourceF === "Tous" || a.source === sourceF);
         return matchesSearch && matchesCat && matchesSource;
     }).map(a => {
+        const inVault = vault.some(v => v.id === a.id);
         const d = new Date(a.date);
         const timeStr = d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
         const dateStr = d.toLocaleDateString('fr-FR', {day:'2-digit', month:'2-digit', year:'numeric'});
 
         return `
-        <div class="card" style="${a.isTop ? 'border: 2px solid var(--accent)' : ''}">
+        <div class="card" style="${a.isTop && !isVaultView ? 'border: 2px solid var(--accent)' : ''}">
             <a href="${a.link}" target="_blank"><img src="${a.img || 'https://via.placeholder.com/400x200/000/fff?text='+a.source}"></a>
             <div class="card-content">
-                <a href="${a.link}" target="_blank" class="card-title">${a.isTop ? '📌 ':''}${a.title}</a>
+                <a href="${a.link}" target="_blank" class="card-title">${(a.isTop && !isVaultView) ? '📌 ':''}${a.title}</a>
                 <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">
                     <b>${a.source}</b> • ${dateStr} à ${timeStr} (${timeSince(a.date)})
                 </div>
                 <button class="read-btn" onclick="openReader('${encodeURIComponent(a.id)}')">LIRE L'ARTICLE</button>
+                <button class="save-btn ${inVault?'saved':''}" onclick="toggleSave('${encodeURIComponent(a.id)}')">
+                    ${inVault ? 'SAUVEGARDÉ' : 'SAUVEGARDER'}
+                </button>
             </div>
         </div>`
     }).join('');
@@ -267,11 +282,34 @@ function render() {
 
 function openReader(encodedId) {
     const id = decodeURIComponent(encodedId);
-    const art = allArticles.find(a => a.id === id);
+    // On cherche dans les deux listes pour être sûr d'ouvrir l'article
+    const art = [...allArticles, ...vault].find(a => a.id === id);
     if(!art) return;
     document.getElementById('readerSource').innerText = art.source;
     document.getElementById('readerView').innerHTML = `<h2>${art.title}</h2><div style="line-height:1.7;">${art.content}</div>`;
     openModal('readerModal');
+}
+
+// Logique d'archivage
+function toggleSave(encodedId) {
+    const id = decodeURIComponent(encodedId);
+    const idx = vault.findIndex(v => v.id === id);
+    if(idx > -1) {
+        vault.splice(idx, 1);
+    } else {
+        const art = allArticles.find(a => a.id === id);
+        if(art) vault.push({...art});
+    }
+    localStorage.setItem('nsc_vault', JSON.stringify(vault));
+    render();
+}
+
+// Bascule de la vue
+function toggleVault() {
+    isVaultView = !isVaultView;
+    const btn = document.getElementById('vaultBtn');
+    btn.innerHTML = isVaultView ? "📡 FLUX" : "💾 COFFRE";
+    render();
 }
 
 function addSource() {
