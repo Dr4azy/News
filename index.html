@@ -18,9 +18,16 @@
 
     <style>
         #splash-screen {
-            position: fixed; inset: 0; background: #000000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 9999; opacity: 1; transition: opacity 0.6s ease-in-out;
+            position: fixed;
+            inset: 0;
+            background: #000000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.6s ease-in-out;
         }
         #splash-screen svg { width: 120px; height: 120px; margin-bottom: 20px; }
         #splash-screen h1 { color: white; font-family: sans-serif; font-size: 1.5rem; letter-spacing: 2px; margin: 0; }
@@ -28,7 +35,9 @@
         body { background: #000000; margin: 0; }
         header, .sticky-controls, #grid { opacity: 0; }
         body.ready header, body.ready .sticky-controls, body.ready #grid { opacity: 1; transition: opacity 0.5s ease-in; }
+    </style>
 
+    <style>
         :root { --bg: #121212; --card: #1e1e1e; --accent: #ffd700; --text: #eee; --meta: #aaa; --border: #333; --read-bg: var(--accent); --read-txt: #000; }
         body.theme-night   { --bg: #000000; --card: #0a0a0a; --accent: #8e44ad; --text: #bbb; --meta: #666; --border: #222; --read-bg: #8e44ad; --read-txt: #fff; }
         body.theme-matrix  { --bg: #000000; --card: #001100; --accent: #00ff41; --text: #00ff41; --meta: #008f11; --border: #003b00; --read-bg: #00ff41; --read-txt: #000; }
@@ -58,16 +67,21 @@
         .card-content { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; }
         .card-title { font-weight: bold; font-size: 1.05rem; margin-bottom: 8px; line-height: 1.3; color: var(--text); text-decoration: none; cursor: pointer; display: block; }
         .read-btn { background: var(--read-bg); color: var(--read-txt); border: none; padding: 10px; border-radius: 6px; font-weight: bold; margin-top: auto; cursor: pointer; }
-        .save-btn { background: transparent; color: var(--meta); border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-top: 8px; cursor: pointer; }
-        .save-btn.saved { background: #2e7d32 !important; color: white !important; border-color: #2e7d32; }
         
         .full-modal { display: none; position: fixed; inset: 0; z-index: 4000; overflow-y: auto; background: var(--bg); }
         .modal-header { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--bg); border-bottom: 1px solid var(--border); z-index: 10; }
         .modal-container { max-width: 800px; margin: 0 auto; padding: 20px; }
         #readerView img { max-width: 100%; height: auto !important; border-radius: 8px; margin: 15px 0; display: block; }
+        .option-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
+        .rss-help { background: rgba(0,0,0,0.2); border: 1px dashed var(--accent); padding: 10px; font-size: 0.8rem; border-radius: 8px; margin-bottom: 15px; color: var(--meta); line-height: 1.4; }
         
         .source-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
-        .source-grid { display: grid; grid-template-columns: 1fr 1fr 40px 40px; gap: 5px; align-items: center; }
+        .source-grid { display: grid; grid-template-columns: 1fr 1fr 40px 40px; gap: 5px; align-items: center; margin-bottom: 5px; }
+        .source-grid input { width: 100%; box-sizing: border-box; padding: 8px; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; font-size: 0.8rem; }
+        .pin-btn { min-width: 40px; background: var(--border); color: var(--text); border: none; cursor: pointer; height: 35px; border-radius: 4px; }
+        .pin-btn.pinned { background: var(--accent); color: #000; }
+        .del-btn { min-width: 40px; background: #ef4444; color: white; border: none; cursor: pointer; height: 35px; border-radius: 4px; }
+
         .spin { animation: rotation 1s infinite linear; }
         @keyframes rotation { from { transform: rotate(0deg); } to { transform: rotate(359deg); } }
     </style>
@@ -75,7 +89,10 @@
 <body id="bodyTag">
 
 <div id="splash-screen">
-    <svg viewBox="0 0 100 100"><rect width="100" height="100" fill="black"/><text y="50%" x="50%" font-size="70" text-anchor="middle" dy=".35em" fill="white" font-family="Arial, sans-serif" font-weight="bold">N</text></svg>
+    <svg viewBox="0 0 100 100">
+        <rect width="100" height="100" fill="black"/>
+        <text y="50%" x="50%" font-size="70" text-anchor="middle" dy=".35em" fill="white" font-family="Arial, sans-serif" font-weight="bold">N</text>
+    </svg>
     <h1>News</h1>
 </div>
 
@@ -89,26 +106,36 @@
 
 <div id="sourceModal" class="full-modal">
     <div class="modal-header">
-        <span style="font-weight: bold;">Réglages & Sources</span>
+        <span style="font-weight: bold;">Réglages</span>
         <button onclick="closeModal('sourceModal')" style="background:var(--accent); color:#000; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;">✕ RETOUR</button>
     </div>
     <div class="modal-container">
-        <h3>🎨 Thème</h3>
-        <select id="themeSelect" onchange="changeTheme(this.value)" style="width: 100%; margin-bottom: 20px;">
-            <option value="cyber">Cyber</option><option value="cyber2">Cyber 2</option>
-            <option value="night">Nuit</option><option value="matrix">Matrix</option>
-            <option value="dracula">Dracula</option><option value="ocean">Océan</option>
-            <option value="blood">Blood</option><option value="forest">Forest</option>
-            <option value="gold">Gold</option><option value="vapor">Vaporwave</option>
-            <option value="neon">Neon</option><option value="coffee">Coffee</option>
-            <option value="copper">Copper</option>
-        </select>
-        <h3>➕ Ajouter une source</h3>
-        <input type="text" id="newName" placeholder="Nom" style="width:94%; margin-bottom:5px;">
-        <input type="text" id="newUrl" placeholder="URL RSS" style="width:94%; margin-bottom:5px;">
-        <input type="text" id="newCat" placeholder="Catégorie" style="width:94%; margin-bottom:10px;">
-        <button onclick="addSource()" style="width:100%; background:var(--accent); color:#000; font-weight:bold;">AJOUTER SOURCE</button>
-        <div id="sourceList" style="margin-top:20px;"></div>
+        <div class="option-box">
+            <h3>🎨 Thème</h3>
+            <select id="themeSelect" onchange="changeTheme(this.value)" style="width: 100%;">
+                <option value="cyber">Cyber</option><option value="cyber2">Cyber 2</option>
+                <option value="night">Nuit</option><option value="matrix">Matrix</option>
+                <option value="dracula">Dracula</option><option value="ocean">Océan</option>
+                <option value="blood">Blood</option><option value="forest">Forest</option>
+                <option value="gold">Gold</option><option value="vapor">Vaporwave</option>
+                <option value="neon">Neon</option><option value="coffee">Coffee</option>
+                <option value="copper">Copper</option>
+            </select>
+        </div>
+        <div class="option-box">
+            <h3>➕ Ajouter une source</h3>
+            <div class="rss-help">
+                Cherchez "Flux RSS [Nom du site]" sur Google. Copiez l'adresse du lien et collez-la ci-dessus.
+            </div>
+            <input type="text" id="newName" placeholder="Nom" style="width:94%; margin-bottom:5px;">
+            <input type="text" id="newUrl" placeholder="URL RSS" style="width:94%; margin-bottom:5px;">
+            <input type="text" id="newCat" placeholder="Catégorie" style="width:94%; margin-bottom:10px;">
+            <button onclick="addSource()" style="width:100%; background:var(--accent); color:#000; font-weight:bold;">AJOUTER SOURCE</button>
+        </div>
+        <div class="option-box">
+            <h3>📡 Mes sources</h3>
+            <div id="sourceList"></div>
+        </div>
     </div>
 </div>
 
@@ -124,7 +151,6 @@
         <div id="catBar" class="row"></div>
         <div class="row">
             <select id="sourceSelect" style="flex-grow:1"><option value="Tous">Toutes les sources</option></select>
-            <button id="archiveBtn" onclick="toggleArchiveView()" style="background:var(--card); border: 2px solid var(--accent); font-weight:bold; min-width: 130px;">📂 ARCHIVES</button>
         </div>
     </div>
 </div>
@@ -133,17 +159,16 @@
 
 <script>
 let sources = JSON.parse(localStorage.getItem('nsc_sources')) || [{ name: "Le Monde", url: "https://www.lemonde.fr/rss/une.xml", cat: "Actu", pinned: true }];
-let vault = JSON.parse(localStorage.getItem('nsc_vault')) || [];
 let allArticles = [];
-let isArchiveView = false;
 let currentCat = "Tous";
 
 window.addEventListener('load', () => {
+    const splash = document.getElementById('splash-screen');
     setTimeout(() => {
-        document.getElementById('splash-screen').style.opacity = '0';
+        splash.style.opacity = '0';
         document.body.classList.add('ready');
-        setTimeout(() => document.getElementById('splash-screen').style.display = 'none', 600);
-    }, 1000);
+        setTimeout(() => splash.style.display = 'none', 600);
+    }, 1500);
 });
 
 function openModal(id) { document.getElementById(id).style.display = 'block'; document.body.classList.add('modal-open'); }
@@ -154,8 +179,17 @@ function changeTheme(theme) {
     localStorage.setItem('nsc_theme', theme);
 }
 
+function timeSince(date) {
+    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+    let interval = seconds / 3600;
+    if (interval > 24) return Math.floor(interval / 24) + "j";
+    if (interval >= 1) return Math.floor(interval) + "h";
+    interval = seconds / 60;
+    if (interval >= 1) return Math.floor(interval) + "m";
+    return Math.floor(seconds) + "s";
+}
+
 async function fetchAll() {
-    if(isArchiveView) return;
     document.getElementById('refreshBtn').classList.add('spin');
     let sourceBundles = {};
     
@@ -164,23 +198,40 @@ async function fetchAll() {
             const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(s.url)}&t=${Date.now()}`);
             const data = await res.json();
             if(data.status === 'ok') {
-                sourceBundles[s.name] = data.items.map(item => ({
-                    id: item.guid || item.link, title: item.title, link: item.link,
-                    img: item.enclosure?.link || item.thumbnail || "",
-                    source: s.name, category: s.cat, date: item.pubDate, content: item.content || item.description
-                }));
+                sourceBundles[s.name] = data.items.map(item => {
+                    let imgUrl = item.enclosure?.link || item.thumbnail || "";
+                    if (!imgUrl) {
+                        const match = (item.content || item.description || "").match(/<img[^>]+src="([^">]+)"/);
+                        if (match) imgUrl = match[1];
+                    }
+                    return {
+                        id: item.guid || item.link, 
+                        title: item.title, link: item.link,
+                        img: imgUrl, source: s.name, category: s.cat, date: item.pubDate, 
+                        content: item.content || item.description
+                    }
+                });
             }
         } catch(e) {}
     }));
 
-    // Mélange des sources
-    let mixed = [];
-    let bundles = Object.values(sourceBundles);
-    let max = Math.max(...bundles.map(b => b.length), 0);
-    for (let i = 0; i < max; i++) {
-        bundles.forEach(b => { if(b[i]) mixed.push(b[i]); });
-    }
-    allArticles = mixed;
+    let topPinned = []; let restOfNews = [];
+    let pinnedSources = sources.filter(s => s.pinned);
+    
+    Object.keys(sourceBundles).forEach(name => {
+        let bundle = sourceBundles[name];
+        let isSourcePinned = pinnedSources.some(ps => ps.name === name);
+        
+        if (isSourcePinned && bundle.length > 0) {
+            topPinned.push({...bundle[0], isTop: true});
+            restOfNews.push(...bundle.slice(1));
+        } else { 
+            restOfNews.push(...bundle); 
+        }
+    });
+
+    restOfNews.sort((a,b) => new Date(b.date) - new Date(a.date));
+    allArticles = [...topPinned, ...restOfNews];
     document.getElementById('refreshBtn').classList.remove('spin');
     updateUI(); render();
 }
@@ -188,53 +239,35 @@ async function fetchAll() {
 function render() {
     const grid = document.getElementById('grid');
     const search = document.getElementById('search').value.toLowerCase();
+    const sourceF = document.getElementById('sourceSelect').value;
     
-    // On choisit la source de données : Flux ou Archives
-    let data = isArchiveView ? vault : allArticles;
-
-    grid.innerHTML = data.filter(a => {
+    grid.innerHTML = allArticles.filter(a => {
         const matchesSearch = a.title.toLowerCase().includes(search);
         const matchesCat = (currentCat === "Tous" || a.category === currentCat);
-        return matchesSearch && matchesCat;
+        const matchesSource = (sourceF === "Tous" || a.source === sourceF);
+        return matchesSearch && matchesCat && matchesSource;
     }).map(a => {
-        const inVault = vault.some(v => v.id === a.id);
+        const d = new Date(a.date);
+        const timeStr = d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+        const dateStr = d.toLocaleDateString('fr-FR', {day:'2-digit', month:'2-digit', year:'numeric'});
+
         return `
-        <div class="card">
-            <img src="${a.img || 'https://via.placeholder.com/400x200?text='+a.source}" onclick="openReader('${encodeURIComponent(a.id)}')">
+        <div class="card" style="${a.isTop ? 'border: 2px solid var(--accent)' : ''}">
+            <a href="${a.link}" target="_blank"><img src="${a.img || 'https://via.placeholder.com/400x200/000/fff?text='+a.source}"></a>
             <div class="card-content">
-                <span class="card-title" onclick="openReader('${encodeURIComponent(a.id)}')">${a.title}</span>
-                <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;"><b>${a.source}</b> • ${a.date}</div>
-                <button class="read-btn" onclick="openReader('${encodeURIComponent(a.id)}')">LIRE</button>
-                <button class="save-btn ${inVault?'saved':''}" onclick="toggleSave('${encodeURIComponent(a.id)}')">
-                    ${inVault ? 'DÉSINSCRIRE' : 'ARCHIVER'}
-                </button>
+                <a href="${a.link}" target="_blank" class="card-title">${a.isTop ? '📌 ':''}${a.title}</a>
+                <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">
+                    <b>${a.source}</b> • ${dateStr} à ${timeStr} (${timeSince(a.date)})
+                </div>
+                <button class="read-btn" onclick="openReader('${encodeURIComponent(a.id)}')">LIRE L'ARTICLE</button>
             </div>
         </div>`
     }).join('');
 }
 
-function toggleSave(encodedId) {
-    const id = decodeURIComponent(encodedId);
-    const index = vault.findIndex(v => v.id === id);
-    if(index > -1) {
-        vault.splice(index, 1);
-    } else {
-        const art = allArticles.find(a => a.id === id);
-        if(art) vault.push({...art});
-    }
-    localStorage.setItem('nsc_vault', JSON.stringify(vault));
-    render();
-}
-
-function toggleArchiveView() {
-    isArchiveView = !isArchiveView;
-    document.getElementById('archiveBtn').innerHTML = isArchiveView ? "🗞️ FLUX" : "📂 ARCHIVES";
-    render();
-}
-
 function openReader(encodedId) {
     const id = decodeURIComponent(encodedId);
-    const art = (isArchiveView ? vault : allArticles).find(a => a.id === id);
+    const art = allArticles.find(a => a.id === id);
     if(!art) return;
     document.getElementById('readerSource').innerText = art.source;
     document.getElementById('readerView').innerHTML = `<h2>${art.title}</h2><div style="line-height:1.7;">${art.content}</div>`;
@@ -252,12 +285,16 @@ function addSource() {
 
 function updateUI() {
     const cats = ["Tous", ...new Set(sources.map(s => s.cat))];
-    document.getElementById('catBar').innerHTML = cats.map(c => `<button class="btn-cat ${currentCat===c?'active':''}" onclick="currentCat='${c}'; render(); updateUI();">${c}</button>`).join('');
+    document.getElementById('catBar').innerHTML = cats.map(c => `<button class="btn-cat ${currentCat===c?'active':''}" onclick="currentCat='${c}'; updateUI(); render();">${c}</button>`).join('');
+    const sel = document.getElementById('sourceSelect');
+    sel.innerHTML = '<option value="Tous">Toutes les sources</option>' + sources.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
     document.getElementById('sourceList').innerHTML = sources.map((s, i) => `
         <div class="source-item">
             <div class="source-grid">
-                <span>${s.name}</span>
-                <button onclick="sources.splice(${i},1); localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll();" style="background:red; color:white;">X</button>
+                <input type="text" value="${s.name}" onchange="sources[${i}].name=this.value; localStorage.setItem('nsc_sources', JSON.stringify(sources));">
+                <input type="text" value="${s.cat}" onchange="sources[${i}].cat=this.value; localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI();">
+                <button class="pin-btn ${s.pinned?'pinned':''}" onclick="sources[${i}].pinned=!sources[${i}].pinned; localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll();">${s.pinned?'📌':'📍'}</button>
+                <button class="del-btn" onclick="if(confirm('Supprimer cette source ?')){sources.splice(${i},1); localStorage.setItem('nsc_sources', JSON.stringify(sources)); updateUI(); fetchAll();}">X</button>
             </div>
         </div>`).join('');
 }
@@ -265,6 +302,7 @@ function updateUI() {
 const savedT = localStorage.getItem('nsc_theme');
 if(savedT) { document.getElementById('themeSelect').value = savedT; changeTheme(savedT); }
 document.getElementById('search').addEventListener('input', render);
+document.getElementById('sourceSelect').addEventListener('change', render);
 fetchAll();
 </script>
 </body>
