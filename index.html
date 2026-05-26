@@ -1,3 +1,13 @@
+C'est une excellente idée pour la portabilité de l'application !
+
+Voici ton code complet mis à jour. J'ai ajouté un nouveau bloc dans les réglages (⚙️) intitulé **💾 Sauvegarde / Sao lưu** avec deux nouveaux boutons :
+
+* **Exporter (Xuất)** : Télécharge instantanément un fichier `sources_news.json` contenant toutes tes configurations de sources.
+* **Importer (Nhập)** : Permet de choisir ce même fichier pour restaurer tes sources sur un nouveau téléphone ou navigateur.
+
+Le système prend également en compte la langue sélectionnée pour traduire les boutons, les titres, et les messages d'alerte (succès, erreur ou fichier invalide).
+
+```html
 <!DOCTYPE html>
 <html lang="fr" style="background: #ffffff;">
 <head>
@@ -6,10 +16,9 @@
     <title>News</title>
 
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-web-app-capable" content="yes">
-    <meta name="apple-web-app-capable" content="yes">
-    <meta name="apple-web-app-status-bar-style" content="default">
-    <meta name="apple-web-app-title" content="News">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="News">
     
     <meta name="theme-color" id="theme-meta" content="#ffffff">
     <meta name="background-color" content="#ffffff">
@@ -85,6 +94,10 @@
 
         .add-feed-btn { width: 100%; margin-top: 10px; padding: 10px; background: var(--border); color: var(--text); border: 1px dashed var(--meta); cursor: pointer; border-radius: 8px; font-size: 0.8rem; font-weight: bold;}
 
+        /* BOUTONS IMPORT EXPORT */
+        .backup-group { display: flex; gap: 10px; margin-top: 10px; }
+        .backup-btn { flex: 1; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 5px; }
+
         .spin { animation: rotation 1s infinite linear; }
         @keyframes rotation { from { transform: rotate(0deg); } to { transform: rotate(359deg); } }
     </style>
@@ -135,6 +148,15 @@
         </div>
 
         <div class="option-box">
+            <h3 data-i18n="setting-backup">💾 Sauvegarde / Backup</h3>
+            <div class="backup-group">
+                <button class="backup-btn" onclick="exportSources()">📤 <span data-i18n="btn-export">Exporter</span></button>
+                <button class="backup-btn" onclick="document.getElementById('importFile').click()">📥 <span data-i18n="btn-import">Importer</span></button>
+                <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importSources(this)">
+            </div>
+        </div>
+
+        <div class="option-box">
             <h3 data-i18n="setting-rss-help">➕ Aide RSS</h3>
             <div id="rssHelpText" class="rss-help" data-i18n="rss-help-content">
                 <b>Cliquez sur une source</b> pour voir/ajouter ses flux.<br>
@@ -168,7 +190,7 @@
 <div id="grid"></div>
 
 <script>
-// DICIONNAIRE DES TRADUCTIONS
+// DICTIONNAIRE DES TRADUCTIONS ENRICHI
 const translations = {
     fr: {
         "main-title": "Les News sans Cnews",
@@ -178,6 +200,9 @@ const translations = {
         "btn-back": "✕ RETOUR",
         "setting-lang": "🌐 Langue",
         "setting-theme": "🎨 Thème",
+        "setting-backup": "💾 Sauvegarde",
+        "btn-export": "Exporter",
+        "btn-import": "Importer",
         "setting-rss-help": "➕ Aide RSS",
         "rss-help-content": "<b>Cliquez sur une source</b> pour voir/ajouter ses flux.<br>Chaque flux peut avoir sa propre catégorie.",
         "title-my-sources": "📡 Mes sources",
@@ -192,7 +217,10 @@ const translations = {
         "feed-url-placeholder": "URL du flux RSS",
         "confirm-del-source": "Supprimer la source '{name}' ?",
         "confirm-del-feed": "Supprimer ce flux ?",
-        "time-day": "j", "time-hour": "h", "time-min": "m", "time-sec": "s", "time-at": "à"
+        "time-day": "j", "time-hour": "h", "time-min": "m", "time-sec": "s", "time-at": "à",
+        "alert-import-success": "Sources importées avec succès !",
+        "alert-import-error": "Erreur lors de la lecture du fichier.",
+        "alert-import-invalid": "Fichier invalide. Format de données incorrect."
     },
     vi: {
         "main-title": "Tin Tức Không Cnews",
@@ -202,6 +230,9 @@ const translations = {
         "btn-back": "✕ QUAY LẠI",
         "setting-lang": "🌐 Ngôn ngữ",
         "setting-theme": "🎨 Giao diện",
+        "setting-backup": "💾 Sao lưu",
+        "btn-export": "Xuất file",
+        "btn-import": "Nhập file",
         "setting-rss-help": "➕ Trợ giúp RSS",
         "rss-help-content": "<b>Nhấp vào một nguồn</b> để xem/thêm các nguồn cấp dữ liệu.<br>Mỗi nguồn cấp dữ liệu có thể có danh mục riêng.",
         "title-my-sources": "📡 Nguồn của tôi",
@@ -216,7 +247,10 @@ const translations = {
         "feed-url-placeholder": "URL nguồn cấp RSS",
         "confirm-del-source": "Xóa nguồn '{name}' ?",
         "confirm-del-feed": "Xóa nguồn cấp dữ liệu này ?",
-        "time-day": "ngày", "time-hour": "giờ", "time-min": "phút", "time-sec": "giây", "time-at": "lúc"
+        "time-day": "ngày", "time-hour": "giờ", "time-min": "phút", "time-sec": "giây", "time-at": "lúc",
+        "alert-import-success": "Nhập các nguồn thành công !",
+        "alert-import-error": "Lỗi khi đọc tập tin.",
+        "alert-import-invalid": "Tập tin không hợp lệ. Định dạng dữ liệu sai."
     }
 };
 
@@ -239,7 +273,6 @@ let currentCat = "Tous";
 
 window.addEventListener('load', () => {
     const splash = document.getElementById('splash-screen');
-    // Appliquer la langue stockée au démarrage
     document.getElementById('langSelect').value = currentLang;
     applyLanguageUI();
     
@@ -264,7 +297,49 @@ function changeTheme(theme) {
     localStorage.setItem('nsc_theme', theme);
 }
 
-// LOGIQUE DE CHANGEMENT DE LANGUE
+// LOGIQUE IMPORT / EXPORT
+function exportSources() {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sources, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", "sources_news.json");
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+}
+
+function importSources(input) {
+    const file = input.files[0];
+    const t = translations[currentLang];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const importedData = JSON.parse(e.target.result);
+            
+            // Vérification basique de la structure du JSON
+            if (Array.isArray(importedData) && (importedData.length === 0 || (importedData[0].name && importedData[0].feeds))) {
+                sources = importedData;
+                save();
+                updateUI();
+                alert(t["alert-import-success"]);
+            } else {
+                alert(t["alert-import-invalid"]);
+            }
+        } catch (err) {
+            alert(t["alert-import-invalid"]);
+        }
+        input.value = ''; // Reset l'input file
+    };
+    reader.onerror = function() {
+        alert(t["alert-import-error"]);
+        input.value = '';
+    };
+    reader.readAsText(file);
+}
+
+// CHANGEMENT DE LANGUE
 function changeLanguage(lang) {
     currentLang = lang;
     localStorage.setItem('nsc_lang', lang);
@@ -276,13 +351,11 @@ function changeLanguage(lang) {
 function applyLanguageUI() {
     const t = translations[currentLang];
     
-    // Traduction des éléments fixes via data-i18n
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if(t[key]) el.innerHTML = t[key];
     });
 
-    // Mettre à jour les placeholders
     document.getElementById('search').placeholder = t["search-placeholder"];
 }
 
@@ -359,7 +432,6 @@ function render() {
     }).map(a => {
         const d = new Date(a.date);
         
-        // Formatage de la date localisé selon le choix de langue
         const localeStr = currentLang === 'fr' ? 'fr-FR' : 'vi-VN';
         const timeStr = d.toLocaleTimeString(localeStr, {hour:'2-digit', minute:'2-digit'});
         const dateStr = d.toLocaleDateString(localeStr, {day:'2-digit', month:'2-digit', year:'numeric'});
@@ -403,19 +475,19 @@ function toggleDetails(idx) {
 function updateUI() {
     const t = translations[currentLang];
     
-    // Rendu barre de catégorie
+    // Catégories
     const cats = [...new Set(allArticles.map(a => a.category))];
     let catBarHTML = `<button class="btn-cat ${currentCat==='Tous'?'active':''}" onclick="currentCat='Tous'; updateUI(); render();">${t["all-cats"]}</button>`;
     catBarHTML += cats.map(c => `<button class="btn-cat ${currentCat===c?'active':''}" onclick="currentCat='${c}'; updateUI(); render();">${c}</button>`).join('');
     document.getElementById('catBar').innerHTML = catBarHTML;
     
-    // Selecteur des sources
+    // Selecteur de sources principal
     const sel = document.getElementById('sourceSelect');
     const selectedValue = sel.value || "Tous";
     sel.innerHTML = `<option value="Tous">${t["all-sources"]}</option>` + sources.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
     sel.value = selectedValue;
     
-    // Liste éditable des sources dans les options
+    // Liste éditable des sources
     document.getElementById('sourceList').innerHTML = sources.map((s, i) => `
         <div class="source-item">
             <div class="source-main">
@@ -445,3 +517,5 @@ fetchAll();
 </script>
 </body>
 </html>
+
+```
