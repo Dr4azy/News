@@ -6,15 +6,16 @@
     <title>News</title>
 
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="News">
+    <meta name="apple-web-app-capable" content="yes">
+    <meta name="apple-web-app-capable" content="yes">
+    <meta name="apple-web-app-status-bar-style" content="default">
+    <meta name="apple-web-app-title" content="News">
     
     <meta name="theme-color" id="theme-meta" content="#ffffff">
     <meta name="background-color" content="#ffffff">
 
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23000000%22/><text y=%2250%%22 x=%2250%%22 font-size=%2270%22 text-anchor=%22middle%22 dy=%22.35em%22 fill=%22white%22 font-family=%22Arial, sans-serif%22 font-weight=%22bold%22>N</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23000000%22/><text y=%2250%%22 x=%2250%%22 font-size=%2270%22 text-anchor=%22middle%22 dy=%22.35em%22 fill=%22white%22 font-family=%22Arial, sans-serif%22 font-weight=%22bold%22>N</text></svg>">
+    <link class="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23000000%22/><text y=%2250%%22 x=%2250%%22 font-size=%2270%22 text-anchor=%22middle%22 dy=%22.35em%22 fill=%22white%22 font-family=%22Arial, sans-serif%22 font-weight=%22bold%22>N</text></svg>">
 
     <style>
         #splash-screen {
@@ -100,20 +101,28 @@
 
 <div id="readerModal" class="full-modal">
     <div class="modal-header">
-        <span id="readerSource" style="font-weight: bold;">Article</span>
-        <button onclick="closeModal('readerModal')" style="background:var(--accent); color:#000; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;">✕ FERMER</button>
+        <span id="readerSource" style="font-weight: bold;" data-i18n="modal-article-title">Article</span>
+        <button id="closeReaderBtn" onclick="closeModal('readerModal')" style="background:var(--accent); color:#000; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;" data-i18n="btn-close">✕ FERMER</button>
     </div>
     <div class="modal-container" id="readerView"></div>
 </div>
 
 <div id="sourceModal" class="full-modal">
     <div class="modal-header">
-        <span style="font-weight: bold;">Réglages</span>
-        <button onclick="closeModal('sourceModal')" style="background:var(--accent); color:#000; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;">✕ RETOUR</button>
+        <span style="font-weight: bold;" data-i18n="title-settings">Réglages</span>
+        <button id="closeSettingsBtn" onclick="closeModal('sourceModal')" style="background:var(--accent); color:#000; border:none; padding:8px 15px; border-radius:20px; font-weight:bold;" data-i18n="btn-back">✕ RETOUR</button>
     </div>
     <div class="modal-container">
         <div class="option-box">
-            <h3>🎨 Thème</h3>
+            <h3 data-i18n="setting-lang">🌐 Langue / Ngôn ngữ</h3>
+            <select id="langSelect" onchange="changeLanguage(this.value)" style="width: 100%;">
+                <option value="fr">Français</option>
+                <option value="vi">Tiếng Việt</option>
+            </select>
+        </div>
+
+        <div class="option-box">
+            <h3 data-i18n="setting-theme">🎨 Thème</h3>
             <select id="themeSelect" onchange="changeTheme(this.value)" style="width: 100%;">
                 <option value="cyber">Cyber</option><option value="cyber2">Cyber 2</option>
                 <option value="night">Nuit</option><option value="matrix">Matrix</option>
@@ -126,21 +135,21 @@
         </div>
 
         <div class="option-box">
-            <h3>➕ Aide RSS</h3>
-            <div class="rss-help">
+            <h3 data-i18n="setting-rss-help">➕ Aide RSS</h3>
+            <div id="rssHelpText" class="rss-help" data-i18n="rss-help-content">
                 <b>Cliquez sur une source</b> pour voir/ajouter ses flux.<br>
                 Chaque flux peut avoir sa propre catégorie.
             </div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 style="margin:0;">📡 Mes sources</h3>
-                <button onclick="addNewEmptySource()" style="background:var(--accent); color:#000; border:none; padding:5px 12px; border-radius:6px; font-weight:bold;">+ SOURCE</button>
+                <h3 style="margin:0;" data-i18n="title-my-sources">📡 Mes sources</h3>
+                <button id="addSourceBtn" onclick="addNewEmptySource()" style="background:var(--accent); color:#000; border:none; padding:5px 12px; border-radius:6px; font-weight:bold;" data-i18n="btn-add-source">+ SOURCE</button>
             </div>
             <div id="sourceList"></div>
         </div>
     </div>
 </div>
 
-<header><h1>Les News sans Cnews</h1></header>
+<header><h1 id="mainTitle" data-i18n="main-title">Les News sans Cnews</h1></header>
 
 <div class="sticky-controls">
     <div class="controls">
@@ -159,6 +168,59 @@
 <div id="grid"></div>
 
 <script>
+// DICIONNAIRE DES TRADUCTIONS
+const translations = {
+    fr: {
+        "main-title": "Les News sans Cnews",
+        "modal-article-title": "Article",
+        "btn-close": "✕ FERMER",
+        "title-settings": "Réglages",
+        "btn-back": "✕ RETOUR",
+        "setting-lang": "🌐 Langue",
+        "setting-theme": "🎨 Thème",
+        "setting-rss-help": "➕ Aide RSS",
+        "rss-help-content": "<b>Cliquez sur une source</b> pour voir/ajouter ses flux.<br>Chaque flux peut avoir sa propre catégorie.",
+        "title-my-sources": "📡 Mes sources",
+        "btn-add-source": "+ SOURCE",
+        "search-placeholder": "Chercher...",
+        "all-sources": "Toutes les sources",
+        "all-cats": "Tous",
+        "read-article": "LIRE L'ARTICLE",
+        "new-source-placeholder": "Nouvelle Source",
+        "add-feed": "+ AJOUTER UN FLUX",
+        "feed-cat-placeholder": "Cat",
+        "feed-url-placeholder": "URL du flux RSS",
+        "confirm-del-source": "Supprimer la source '{name}' ?",
+        "confirm-del-feed": "Supprimer ce flux ?",
+        "time-day": "j", "time-hour": "h", "time-min": "m", "time-sec": "s", "time-at": "à"
+    },
+    vi: {
+        "main-title": "Tin Tức Không Cnews",
+        "modal-article-title": "Bài báo",
+        "btn-close": "✕ ĐÓNG",
+        "title-settings": "Cài đặt",
+        "btn-back": "✕ QUAY LẠI",
+        "setting-lang": "🌐 Ngôn ngữ",
+        "setting-theme": "🎨 Giao diện",
+        "setting-rss-help": "➕ Trợ giúp RSS",
+        "rss-help-content": "<b>Nhấp vào một nguồn</b> để xem/thêm các nguồn cấp dữ liệu.<br>Mỗi nguồn cấp dữ liệu có thể có danh mục riêng.",
+        "title-my-sources": "📡 Nguồn của tôi",
+        "btn-add-source": "+ THÊM NGUỒN",
+        "search-placeholder": "Tìm kiếm...",
+        "all-sources": "Tất cả các nguồn",
+        "all-cats": "Tất cả",
+        "read-article": "ĐỌC BÀI VIẾT",
+        "new-source-placeholder": "Nguồn mới",
+        "add-feed": "+ THÊM NGUỒN CẤP",
+        "feed-cat-placeholder": "Mục",
+        "feed-url-placeholder": "URL nguồn cấp RSS",
+        "confirm-del-source": "Xóa nguồn '{name}' ?",
+        "confirm-del-feed": "Xóa nguồn cấp dữ liệu này ?",
+        "time-day": "ngày", "time-hour": "giờ", "time-min": "phút", "time-sec": "giây", "time-at": "lúc"
+    }
+};
+
+let currentLang = localStorage.getItem('nsc_lang') || 'fr';
 let sources = JSON.parse(localStorage.getItem('nsc_sources_v2'));
 
 if(!sources) {
@@ -177,6 +239,10 @@ let currentCat = "Tous";
 
 window.addEventListener('load', () => {
     const splash = document.getElementById('splash-screen');
+    // Appliquer la langue stockée au démarrage
+    document.getElementById('langSelect').value = currentLang;
+    applyLanguageUI();
+    
     setTimeout(() => {
         splash.style.opacity = '0';
         document.body.classList.add('ready');
@@ -198,14 +264,37 @@ function changeTheme(theme) {
     localStorage.setItem('nsc_theme', theme);
 }
 
+// LOGIQUE DE CHANGEMENT DE LANGUE
+function changeLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('nsc_lang', lang);
+    applyLanguageUI();
+    updateUI();
+    render();
+}
+
+function applyLanguageUI() {
+    const t = translations[currentLang];
+    
+    // Traduction des éléments fixes via data-i18n
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if(t[key]) el.innerHTML = t[key];
+    });
+
+    // Mettre à jour les placeholders
+    document.getElementById('search').placeholder = t["search-placeholder"];
+}
+
 function timeSince(date) {
     const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+    const t = translations[currentLang];
     let interval = seconds / 3600;
-    if (interval > 24) return Math.floor(interval / 24) + "j";
-    if (interval >= 1) return Math.floor(interval) + "h";
+    if (interval > 24) return Math.floor(interval / 24) + t["time-day"];
+    if (interval >= 1) return Math.floor(interval) + t["time-hour"];
     interval = seconds / 60;
-    if (interval >= 1) return Math.floor(interval) + "m";
-    return Math.floor(seconds) + "s";
+    if (interval >= 1) return Math.floor(interval) + t["time-min"];
+    return Math.floor(seconds) + t["time-sec"];
 }
 
 async function fetchAll() {
@@ -260,6 +349,7 @@ function render() {
     const grid = document.getElementById('grid');
     const search = document.getElementById('search').value.toLowerCase();
     const sourceF = document.getElementById('sourceSelect').value;
+    const t = translations[currentLang];
     
     grid.innerHTML = allArticles.filter(a => {
         const matchesSearch = a.title.toLowerCase().includes(search);
@@ -268,8 +358,11 @@ function render() {
         return matchesSearch && matchesCat && matchesSource;
     }).map(a => {
         const d = new Date(a.date);
-        const timeStr = d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
-        const dateStr = d.toLocaleDateString('fr-FR', {day:'2-digit', month:'2-digit', year:'numeric'});
+        
+        // Formatage de la date localisé selon le choix de langue
+        const localeStr = currentLang === 'fr' ? 'fr-FR' : 'vi-VN';
+        const timeStr = d.toLocaleTimeString(localeStr, {hour:'2-digit', minute:'2-digit'});
+        const dateStr = d.toLocaleDateString(localeStr, {day:'2-digit', month:'2-digit', year:'numeric'});
 
         return `
         <div class="card" style="${a.isTop ? 'border: 2px solid var(--accent)' : ''}">
@@ -277,9 +370,9 @@ function render() {
             <div class="card-content">
                 <a href="${a.link}" target="_blank" class="card-title">${a.isTop ? '📌 ':''}${a.title}</a>
                 <div style="font-size:0.75rem; color:var(--meta); margin-bottom:12px;">
-                    <b>${a.source}</b> <span style="color:var(--accent)">[${a.category}]</span> • ${dateStr} à ${timeStr} (${timeSince(a.date)})
+                    <b>${a.source}</b> <span style="color:var(--accent)">[${a.category}]</span> • ${dateStr} ${t["time-at"]} ${timeStr} (${timeSince(a.date)})
                 </div>
-                <button class="read-btn" onclick="openReader('${encodeURIComponent(a.id)}')">LIRE L'ARTICLE</button>
+                <button class="read-btn" onclick="openReader('${encodeURIComponent(a.id)}')">${t["read-article"]}</button>
             </div>
         </div>`
     }).join('');
@@ -295,7 +388,8 @@ function openReader(encodedId) {
 }
 
 function addNewEmptySource() {
-    sources.unshift({ name: "Nouvelle Source", feeds: [{cat: "Actu", url: ""}], pinned: false });
+    const placeholderName = translations[currentLang]["new-source-placeholder"];
+    sources.unshift({ name: placeholderName, feeds: [{cat: "Actu", url: ""}], pinned: false });
     updateUI();
 }
 
@@ -307,29 +401,38 @@ function toggleDetails(idx) {
 }
 
 function updateUI() {
-    const cats = ["Tous", ...new Set(allArticles.map(a => a.category))];
-    document.getElementById('catBar').innerHTML = cats.map(c => `<button class="btn-cat ${currentCat===c?'active':''}" onclick="currentCat='${c}'; updateUI(); render();">${c}</button>`).join('');
+    const t = translations[currentLang];
     
+    // Rendu barre de catégorie
+    const cats = [...new Set(allArticles.map(a => a.category))];
+    let catBarHTML = `<button class="btn-cat ${currentCat==='Tous'?'active':''}" onclick="currentCat='Tous'; updateUI(); render();">${t["all-cats"]}</button>`;
+    catBarHTML += cats.map(c => `<button class="btn-cat ${currentCat===c?'active':''}" onclick="currentCat='${c}'; updateUI(); render();">${c}</button>`).join('');
+    document.getElementById('catBar').innerHTML = catBarHTML;
+    
+    // Selecteur des sources
     const sel = document.getElementById('sourceSelect');
-    sel.innerHTML = '<option value="Tous">Toutes les sources</option>' + sources.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
+    const selectedValue = sel.value || "Tous";
+    sel.innerHTML = `<option value="Tous">${t["all-sources"]}</option>` + sources.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
+    sel.value = selectedValue;
     
+    // Liste éditable des sources dans les options
     document.getElementById('sourceList').innerHTML = sources.map((s, i) => `
         <div class="source-item">
             <div class="source-main">
                 <button class="icon-btn toggle-btn" onclick="toggleDetails(${i})" id="arrow-${i}">▼</button>
                 <input type="text" class="source-name-input" value="${s.name}" onchange="sources[${i}].name=this.value; save();">
                 <button class="icon-btn pin-btn ${s.pinned?'pinned':''}" onclick="sources[${i}].pinned=!sources[${i}].pinned; save(); updateUI();">${s.pinned?'📌':'📍'}</button>
-                <button class="icon-btn del-btn" onclick="if(confirm('Supprimer la source \\'${s.name}\\' ?')){sources.splice(${i},1); save(); updateUI();}">✕</button>
+                <button class="icon-btn del-btn" onclick="if(confirm('${t["confirm-del-source"].replace('{name}', s.name)}')){sources.splice(${i},1); save(); updateUI();}">✕</button>
             </div>
             <div id="details-${i}" class="source-details">
                 ${s.feeds.map((f, fi) => `
                     <div class="feed-row">
-                        <input type="text" class="cat-input" value="${f.cat}" placeholder="Cat" onchange="sources[${i}].feeds[${fi}].cat=this.value; save();">
-                        <input type="text" value="${f.url}" placeholder="URL du flux RSS" onchange="sources[${i}].feeds[${fi}].url=this.value; save();">
-                        <button class="icon-btn del-btn" style="height:35px; min-width:35px; font-size:0.8rem;" onclick="if(confirm('Supprimer ce flux ?')){sources[${i}].feeds.splice(${fi},1); save(); updateUI();}">🗑</button>
+                        <input type="text" class="cat-input" value="${f.cat}" placeholder="${t["feed-cat-placeholder"]}" onchange="sources[${i}].feeds[${fi}].cat=this.value; save();">
+                        <input type="text" value="${f.url}" placeholder="${t["feed-url-placeholder"]}" onchange="sources[${i}].feeds[${fi}].url=this.value; save();">
+                        <button class="icon-btn del-btn" style="height:35px; min-width:35px; font-size:0.8rem;" onclick="if(confirm('${t["confirm-del-feed"]}')){sources[${i}].feeds.splice(${fi},1); save(); updateUI();}">🗑</button>
                     </div>
                 `).join('')}
-                <button class="add-feed-btn" onclick="sources[${i}].feeds.push({cat:'', url:''}); updateUI();">+ AJOUTER UN FLUX</button>
+                <button class="add-feed-btn" onclick="sources[${i}].feeds.push({cat:'', url:''}); updateUI();">${t["add-feed"]}</button>
             </div>
         </div>`).join('');
 }
